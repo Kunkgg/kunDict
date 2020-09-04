@@ -11,4 +11,12 @@ public class AppTest {
         App classUnderTest = new App();
         assertNotNull("app should have a greeting", classUnderTest.getGreeting());
     }
+
+    @Test public void testRequest() {
+        String url = "https://www.collinsdictionary.com/us/dictionary/english/water";
+        Request req = new Request(url);
+        String html = req.get();
+        System.out.println(html.substring(0, 500));
+        assertNotNull("request should get html String", html);
+    }
 }
