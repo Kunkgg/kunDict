@@ -1,12 +1,12 @@
 package kunDict;
 
 /**
- * Url
+ * Request
  */
-public class Url {
+public class Request {
     private String url;
 
-    public Url(String url){
+    public Request(String url){
         this.url = url;
     }
 
