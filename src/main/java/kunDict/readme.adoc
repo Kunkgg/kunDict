@@ -1,0 +1,123 @@
+= KunDict
+:toc:
+:icon: font
+gk07 <gk_520@hotmail.com>
+v1.0, 2020-09-04
+// v{revnumber}, {docdate}
+:library: Asciidoctor
+ifdef::asciidoctor[]
+:source-highlighter: coderay
+endif::asciidoctor[]
+:idprefix:
+:stylesheet: asciidoc.css
+:imagesdir: images
+:includesdir: includes
+//:title-logo-image: image:logo.png[pdfwidth=3.00in,align=center]
+//:backend: docbook45
+//:backend: html5
+//:doctype: book
+//:sectids!:
+:plus: &#43;
+
+// refs
+:url-github: https://github.com/Kunkgg
+//:url-blog: http-to-my-blog
+
+["plantuml"]
+----
+abstract class Dict {
+     + String name;
+     + String source;
+     + String desc;
+     - LocalDateTime lastModify;
+
+    {abstract} Boolean add(Word word);
+    {abstract} Boolean delete(String wordSpell);
+    {abstract} Word query(String wordSpell);
+    {abstract} Word random();
+    {abstract} Boolean update(Word word);
+    {abstract} int size();
+    {abstract} Boolean generate();
+}
+
+class MITDict {
+    Boolean add(Word word) ;
+    Boolean delete(String wordSpell);
+    Word query(String wordSpell);
+    Word random();
+    Boolean update(Word word);
+    int size();
+    Boolean generate();
+}
+
+class Word {
+    - String spell;
+    - Pronounce pronounce;
+    - String frequency;
+    - String[] forms;
+    - SenseEntry[] senseEntrylist;
+     - LocalDateTime lastModify;
+
+    + String toString();
+    + String getSpell();
+    + Pronounce getPronounce();
+    + String getfrequency();
+    + String[] getforms();
+    + SenseEntry[] getSenseEntry();
+    + Boolean setSpell();
+    + Boolean setPronounce();
+    + Boolean setfrequency();
+    + Boolean setforms();
+    + Boolean setSenseEntry();
+}
+
+class Pronounce {
+    + String soundmark;
+    + String[] sound;
+}
+
+class SenseEntry {
+    + String wordClass;
+    + String sense;
+    + String[] examples;
+}
+
+class Formatter {
+    + {static} String toAnki(Word word)
+}
+
+class Printer {
+    + {static} void toTerminal(String formattedWord)
+}
+
+class Extractor {
+    - String input;
+    - String[] ability;
+
+    + {static} Word collins()
+    + {static} Word getWord(String text)
+    + {static} String[] getAbility()
+    + {static} Boolean ifCan(String ability)
+}
+
+class Url {
+    - String url;
+
+    + String getUrl()
+    + String setUrl(String url)
+    + String get()
+    + String post()
+}
+
+class Database
+
+Dict <|.. MITDict
+Word *-- Pronounce
+Word *-- SenseEntry : sensenEntrylist
+Dict o-- Word
+Database -- MITDict
+Url <-- Extractor
+Extractor <-- Word
+Word <-- Formatter
+Formatter <-- Printer
+----
