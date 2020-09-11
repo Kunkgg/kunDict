@@ -7,9 +7,9 @@ import java.time.Instant;
  */
 public class Word {
     private String spell;
-    private Pronounce pronounce;
-    private String frequency;
     private String[] forms;
+    private String frequency;
+    private Pronounce pronounce;
     private SenseEntry[] senseEntryList;
     private Instant lastModify;
 
@@ -20,9 +20,9 @@ public class Word {
                 SenseEntry[] senseEntrylist) {
 
         this.spell = spell;
-        this.pronounce = pronounce;
-        this.frequency = frequency;
         this.forms = forms;
+        this.frequency = frequency;
+        this.pronounce = pronounce;
         this.senseEntryList = senseEntryList;
     }
 
@@ -86,8 +86,6 @@ public class Word {
         setLastModify();
     }
     // }}} setter //
-
-
 }
 
 /**

@@ -25,10 +25,27 @@ endif::asciidoctor[]
 
 ["plantuml"]
 ----
+
 abstract class Dict {
      + String name;
-     + String source;
-     + String desc;
+     + String description;
+     + DictType type;
+
+    {abstract} Word query(String wordSpell);
+}
+
+abstract class OnlineDict {
+     + String name;
+     + String description;
+     + DictType type;
+
+    {abstract} Word query(String wordSpell);
+}
+
+abstract class LocaleDict {
+     + String name;
+     + String description;
+     + DictType type;
      - LocalDateTime lastModify;
 
     {abstract} Boolean add(Word word);
@@ -50,13 +67,17 @@ class MITDict {
     Boolean generate();
 }
 
+class CollinsOnlineDict {
+    Word query(String wordSpell);
+}
+
 class Word {
     - String spell;
-    - Pronounce pronounce;
-    - String frequency;
     - String[] forms;
+    - String frequency;
+    - Pronounce pronounce;
     - SenseEntry[] senseEntrylist;
-     - LocalDateTime lastModify;
+    - LocalDateTime lastModify;
 
     + String toString();
     + String getSpell();
@@ -64,11 +85,11 @@ class Word {
     + String getfrequency();
     + String[] getforms();
     + SenseEntry[] getSenseEntry();
-    + Boolean setSpell();
-    + Boolean setPronounce();
-    + Boolean setfrequency();
-    + Boolean setforms();
-    + Boolean setSenseEntry();
+    + void setSpell();
+    + void setPronounce();
+    + void setfrequency();
+    + void setforms();
+    + void setSenseEntry();
 }
 
 class Pronounce {
@@ -101,23 +122,51 @@ class Extractor {
 }
 
 class Request {
-    - String url;
+    - String proxyHost
+    - int proxyPort
+    - HttpClient client
+    - HttpRequest.Builder requestBuilder
+    - HttpResponse.BodyHandler bodyHandler
+    - String url
 
+    + HttpResponse<String> get()
+    + HttpResponse<String> head()
+    + HttpResponse<String> post()
+    + HttpResponse<String> delete()
+    + HttpResponse<String> put()
+    + HttpResponse<String> option()
+
+    + void setUrl()
+    + void setClient()
+    + void setRequestBuilder()
+    + void setBodyHandler()
+    + void setProxyHost()
+    + void setProxyPort()
+
+    + String getProxyHost()
+    + int getProxyPort()
+    + HttpClient getClient()
+    + HttpRequest.Builder getRequestBuilder()
+    + HttpResponse.BodyHandler getBodyHandler()
     + String getUrl()
-    + String setUrl(String url)
-    + String get()
-    + String post()
 }
 
 class Database
 
-Dict <|.. MITDict
+Dict <|.. LocaleDict
+Dict <|.. OnlineDict
+LocaleDict <|.. MITDict
+OnlineDict <|.. CollinsOnlineDict
 Word *-- Pronounce
 Word *-- SenseEntry : sensenEntrylist
-Dict o-- Word
+MITDict o-- Word
 Database -- MITDict
+CollinsOnlineDict <-- Request
 Request <-- Extractor
 Extractor <-- Word
 Word <-- Formatter
 Formatter <-- Printer
 ----
+
+// Dict o.. Word
+// LocaleDict o.. Word
