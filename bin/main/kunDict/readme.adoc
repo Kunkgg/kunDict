@@ -100,7 +100,7 @@ class Extractor {
     + {static} Boolean ifCan(String ability)
 }
 
-class Url {
+class Request {
     - String url;
 
     + String getUrl()
@@ -116,7 +116,7 @@ Word *-- Pronounce
 Word *-- SenseEntry : sensenEntrylist
 Dict o-- Word
 Database -- MITDict
-Url <-- Extractor
+Request <-- Extractor
 Extractor <-- Word
 Word <-- Formatter
 Formatter <-- Printer

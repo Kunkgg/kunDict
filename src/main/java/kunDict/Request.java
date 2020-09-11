@@ -1,52 +1,42 @@
 package kunDict;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 
 /**
  * Request
  */
 public class Request {
-    private String url;
+    private static String proxyHost = "127.0.0.1";
+    private static int proxyPort = 1081;
+    HttpClient client;
+    HttpRequest.Builder requestBuilder;
+    HttpResponse.BodyHandler bodyHandler;
+    String url;
 
-    public Request(String url){
+    public Request(String url) {
         this.url = url;
+        this.client = HttpClient.newBuilder()
+            .proxy(ProxySelector.of(
+                        new InetSocketAddress(proxyHost, proxyPort)))
+            .build();
+        this.requestBuilder = HttpRequest.newBuilder(URI.create(url));
+        this.bodyHandler = BodyHandlers.ofString();
     }
 
-    public String getUrl() {
-        return this.url;
-    }
-
-    public String setUrl(String url) {
-        this.url = url;
-        return this.url;
-    }
-
-    public String get() {
-        String html = "";
+    public HttpResponse<String> get() {
+        HttpRequest request = requestBuilder.build();
+        HttpResponse<String> response = null;
         try {
-            URL url = new URL(this.url);
-            URLConnection con = url.openConnection();
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream())
-                    );
-
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            html += inputLine;
-        }
+            response = client.send(request, bodyHandler);
         } catch(Exception e){
             e.printStackTrace();
-            System.out.println("HTTP request failed!");
         }
-
-        return html;
-    }
-
-    public String post() {
-        return "html";
+        return response;
     }
 }

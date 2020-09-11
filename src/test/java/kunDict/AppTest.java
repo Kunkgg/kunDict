@@ -5,6 +5,9 @@ package kunDict;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.net.http.HttpResponse;
+import java.nio.file.Paths;
+
 
 public class AppTest {
     @Test public void testAppHasAGreeting() {
@@ -14,9 +17,14 @@ public class AppTest {
 
     @Test public void testRequest() {
         String url = "https://www.collinsdictionary.com/us/dictionary/english/water";
+        String fileName = "water.html";
         Request req = new Request(url);
-        String html = req.get();
-        System.out.println(html.substring(0, 500));
-        assertNotNull("request should get html String", html);
+        req.bodyHandler = HttpResponse.BodyHandlers.ofFile(
+                Paths.get(fileName));
+        HttpResponse<String> response = req.get();
+
+        // System.out.println(response.body().substring(0, 500));
+        assertEquals(200, response.statusCode());
+        assertNotNull("request should get response", response);
     }
 }
