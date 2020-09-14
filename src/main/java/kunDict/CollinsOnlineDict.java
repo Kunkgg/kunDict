@@ -1,6 +1,6 @@
 package kunDict;
 
-abstract class CollinsOnlineDict extends OnlineDict {
+public class CollinsOnlineDict extends OnlineDict {
 
     public CollinsOnlineDict(String name, String description, DictType type) {
         super(name, description, type);
@@ -13,7 +13,10 @@ abstract class CollinsOnlineDict extends OnlineDict {
 
         Request req = new Request(url);
         String html = req.get().body();
+        Extractor extractor = new Extractor(html);
+        Word word = extractor.collinsOnline();
 
+        return word;
     };
 
     public String getQueryUrlBase() {

@@ -7,6 +7,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import java.net.http.HttpResponse;
 import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
 
 
 public class AppTest {
@@ -26,5 +29,21 @@ public class AppTest {
         // System.out.println(response.body().substring(0, 500));
         assertEquals(200, response.statusCode());
         assertNotNull("request should get response", response);
+    }
+
+    @Test public void testCollinsExtracotr() throws IOException {
+        String fileName = "water.html";
+        String html = Files.readString(Path.of(fileName));
+        Extractor extractor = new Extractor(html);
+        Word water = extractor.collinsOnline();
+        System.out.println(water);
+        System.out.println(water.getSpell());
+        System.out.println(water.getPronounce());
+        System.out.println(water.getFrequency());
+        assertNotNull("water should be a Word class type", water);
+        assertEquals("should be water", "water", water.getSpell());
+        assertEquals("frequency should be 5","frequency band: 5", water.getFrequency().toString());
+        assertEquals("sensEntryList size should be 5",5, water.getSenesEntry().size());
+        assertNotNull("sensEntryList should not Null", water.getSenesEntry());
     }
 }
