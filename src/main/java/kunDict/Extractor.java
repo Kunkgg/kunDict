@@ -76,9 +76,9 @@ public class Extractor {
             }
         }
 
-        Word word = new Word(spell, pron, fre, forms);
+        Word word = new Word(spell, pron, fre, forms, senseEntryList);
 
-        word.setSenesEntry(senseEntryList);
+        // word.setSenesEntry(senseEntryList);
 
         return word;
 }

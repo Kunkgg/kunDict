@@ -17,12 +17,14 @@ public class Word {
     public Word(String spell,
                 Pronounce pronounce,
                 Frequency frequency,
-                ArrayList<String> forms) {
+                ArrayList<String> forms,
+                ArrayList<SenseEntry> senseEntryList) {
 
         this.spell = spell;
         this.pronounce = pronounce;
         this.frequency = frequency;
         this.forms = forms;
+        this.senseEntryList = senseEntryList;
     }
 
     public String toString() {
