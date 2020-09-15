@@ -1,9 +1,12 @@
 package kunDict;
 
+
 public class CollinsOnlineDict extends OnlineDict {
 
-    public CollinsOnlineDict(String name, String description, DictType type) {
-        super(name, description, type);
+    public CollinsOnlineDict(){
+        this.setName("Collins Online English Dictionary");
+        this.setDescription("English to English");
+        this.setType(DictType.Online);
     }
 
     private String queryUrlBase = "https://www.collinsdictionary.com/us/dictionary/english/";
@@ -12,9 +15,16 @@ public class CollinsOnlineDict extends OnlineDict {
         String url = queryUrlBase + wordSpell;
 
         Request req = new Request(url);
-        String html = req.get().body();
-        Extractor extractor = new Extractor(html);
-        Word word = extractor.collinsOnline();
+        Word word = null;
+        try {
+            String html = req.get().body();
+            Extractor extractor = new Extractor(html);
+            word = extractor.collinsOnline();
+
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            System.out.println("Http response is null.");
+        }
 
         return word;
     };

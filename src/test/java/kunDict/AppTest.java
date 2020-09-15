@@ -46,4 +46,20 @@ public class AppTest {
         assertEquals("sensEntryList size should be 5",5, water.getSenesEntry().size());
         assertNotNull("sensEntryList should not Null", water.getSenesEntry());
     }
+
+    @Test public void testCollinsQuery() throws IOException {
+        String word = "water";
+        CollinsOnlineDict collins = new CollinsOnlineDict();
+        assertEquals("Should get name of dictionary", "Collins Online English Dictionary", collins.getName());
+        Word water = collins.query(word);
+        // System.out.println(water);
+        // System.out.println(water.getSpell());
+        // System.out.println(water.getPronounce());
+        // System.out.println(water.getFrequency());
+        assertNotNull("water should be a Word class type", water);
+        assertEquals("should be water", "water", water.getSpell());
+        assertEquals("frequency should be 5","frequency band: 5", water.getFrequency().toString());
+        assertEquals("sensEntryList size should be 5",5, water.getSenesEntry().size());
+        assertNotNull("sensEntryList should not Null", water.getSenesEntry());
+    }
 }

@@ -7,6 +7,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.io.IOException;
+import java.lang.InterruptedException;
 
 /**
  * Request
@@ -34,9 +36,11 @@ public class Request {
         HttpResponse<String> response = null;
         try {
             response = client.send(request, bodyHandler);
-        } catch(Exception e){
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            System.out.println("Http request failed.");
         }
+
         return response;
     }
 }

@@ -11,6 +11,9 @@ abstract class Dict {
         this.type = type;
     }
 
+    public Dict(){
+    }
+
     public void setName(String name) {
         this.name = name;
     }

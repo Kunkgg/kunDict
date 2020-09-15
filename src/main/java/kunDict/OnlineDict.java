@@ -6,5 +6,8 @@ abstract class OnlineDict extends Dict {
         super(name, description, type);
     }
 
+    public OnlineDict(){
+    }
+
     abstract Word query(String wordSpell);
 }
