@@ -45,13 +45,13 @@ public class Extractor {
 
 
         String spell = dict.select("h2.h2_entry span.orth").text();
-        Pronounce pron = new Pronounce();
-        pron.soundmark = dict.select("div.mini_h2 span.pron").text();
-        pron.sound = dict.select("div.mini_h2 a.hwd_sound.audio_play_button")
-            .attr("data-src-mp3");
+        Pronounce pronounce = new Pronounce();
+        pronounce.setSoundmark(dict.select("div.mini_h2 span.pron").text());
+        pronounce.setSound(dict.select("div.mini_h2 a.hwd_sound.audio_play_button")
+            .attr("data-src-mp3"));
         Frequency fre = new Frequency();
-        fre.description = dict.select("span.word-frequency-img").attr("title");
-        fre.band = dict.select("span.word-frequency-img").attr("data-band");
+        fre.setBand(dict.select("span.word-frequency-img").attr("data-band"));
+        fre.setDescription(dict.select("span.word-frequency-img").attr("title"));
         Elements formsEle = dict.select("span.form span.orth");
         ArrayList<String> forms = new ArrayList<>();
         for(Element formEle : formsEle) {
@@ -65,21 +65,16 @@ public class Extractor {
             String wordClass = entry.select("span.gramGrp").text();
             if (! wordClass.equals("")) {
                 SenseEntry senseEntry = new SenseEntry();
-                senseEntry.wordClass = wordClass;
-                senseEntry.sense = entry.select("div.def").text();
-                senseEntry.examples = new ArrayList<String>();
+                senseEntry.setWordClass(wordClass);
+                senseEntry.setSense(entry.select("div.def").text());
                 for (Element example : entry.select("div.type-example")) {
-                    senseEntry.examples.add(example.text());
+                    senseEntry.addExample(example.text());
                 }
 
                 senseEntryList.add(senseEntry);
             }
         }
 
-        Word word = new Word(spell, pron, fre, forms, senseEntryList);
-
-        // word.setSenesEntry(senseEntryList);
-
-        return word;
+        return new Word(spell, pronounce, fre, forms, senseEntryList);
 }
 }

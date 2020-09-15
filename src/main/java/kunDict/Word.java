@@ -28,12 +28,13 @@ public class Word {
     }
 
     public String toString() {
-        return String.format("[%s, %s, %s, %s, length of examples: %d]",
+        return String.format("[%s, %s, %s, %s, length of examples: %d]%nFirst entry:%n%s",
                 this.spell,
                 this.pronounce.toString(),
                 this.frequency.toString(),
                 this.forms.toString(),
-                this.senseEntryList.size()
+                this.senseEntryList.size(),
+                this.senseEntryList.get(0).toString()
                 );
     }
 
@@ -99,32 +100,108 @@ public class Word {
  * Pronounce
  */
 class Pronounce {
-    public String soundmark;
-    public String sound;
+    private String soundmark;
+    private String sound;
 
     public String toString() {
         return this.soundmark;
     }
 
+    // getter and setter {{{ //
+    public String getSoundmark() {
+        return this.soundmark;
+    }
+
+    public String getSound() {
+        return this.sound;
+    }
+
+    public void setSoundmark(String soundmark) {
+        this.soundmark = soundmark;
+    }
+
+    public void setSound(String sound) {
+        this.sound = sound;
+    }
+    // }}} getter and setter //
 }
 
 /**
  * SenseEntry
  */
 class SenseEntry {
-    public String wordClass;
-    public String sense;
-    public ArrayList<String> examples;
+    private String wordClass;
+    private String sense;
+    private ArrayList<String> examples = new ArrayList<>();
+
+    public String toString() {
+        String entry = String.format("%s, %s%n", this.wordClass, this.sense);
+        for(String example: examples) {
+            entry = entry + example + "%n";
+        }
+        return entry;
+    }
+
+
+    // getter and setter {{{ //
+    public String getWordClass() {
+        return this.wordClass;
+    }
+
+    public String getSense() {
+        return this.sense;
+    }
+
+    public ArrayList<String> getExamples() {
+        return this.examples;
+    }
+
+    public void setWordClass(String wordClass) {
+        this.wordClass = wordClass;
+    }
+
+    public void setSense(String sense) {
+        this.sense = sense;
+    }
+
+    public void setExamples(ArrayList<String> examples) {
+        this.examples = examples;
+    }
+
+    public void addExample(String example) {
+        this.examples.add(example);
+    }
+    // }}} getter and setter //
 }
 
 /**
  * Frequency
  */
 class Frequency {
-    public String band;
-    public String description;
+    private String band;
+    private String description;
 
     public String toString() {
         return String.format("frequency band: %s", this.band);
     }
+
+    // getter and setter {{{ //
+    public String getBand() {
+        return this.band;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setBand(String band) {
+        this.band = band;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    // }}} getter and setter //
+
+
 }
