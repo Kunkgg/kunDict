@@ -40,6 +40,7 @@ public class Extractor {
 
     // }}} ability, not implemented //
     public Word collinsOnline() {
+        String source "Collins Online English Dictionary";
         Document doc = Jsoup.parse(this.input);
         Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
 
@@ -74,6 +75,6 @@ public class Extractor {
             }
         }
 
-        return new Word(spell, pronounce, fre, forms, senseEntryList);
+        return new Word(spell, pronounce, fre, forms, senseEntryList, source);
 }
 }

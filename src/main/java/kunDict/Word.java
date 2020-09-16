@@ -12,23 +12,27 @@ public class Word {
     private Frequency frequency;
     private Pronounce pronounce;
     private ArrayList<SenseEntry> senseEntryList;
+    private String source = "";
     private Instant lastModify;
 
     public Word(String spell,
                 Pronounce pronounce,
                 Frequency frequency,
                 ArrayList<String> forms,
-                ArrayList<SenseEntry> senseEntryList) {
+                ArrayList<SenseEntry> senseEntryList,
+                String source) {
 
         this.spell = spell;
         this.pronounce = pronounce;
         this.frequency = frequency;
         this.forms = forms;
         this.senseEntryList = senseEntryList;
+        this.source = source;
     }
 
     public String toString() {
-        return String.format("[%s, %s, %s, %s, length of examples: %d]%nFirst entry:%n%s",
+        return String.format("[%s]%n[%s, %s, %s, %s, length of examples: %d]%nFirst entry:%n%s",
+                this.source,
                 this.spell,
                 this.pronounce.toString(),
                 this.frequency.toString(),
@@ -62,6 +66,11 @@ public class Word {
     public Instant getLastModify() {
         return this.lastModify;
     }
+
+    public String getSource() {
+        return this.source;
+    }
+
     // }}} getter //
 
     // setter {{{ //
@@ -91,6 +100,11 @@ public class Word {
 
     public void setSenesEntry(ArrayList<SenseEntry> senseEntryList) {
         this.senseEntryList = senseEntryList;
+        setLastModify();
+    }
+
+    public void setSource(String source) {
+        this.source = source;
         setLastModify();
     }
     // }}} setter //
