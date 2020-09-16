@@ -9,6 +9,9 @@ abstract class LocaleDict extends Dict{
         super(name, description, type);
     }
 
+    public LocaleDict(){
+    }
+
     public Instant getLastModify(){
         return this.lastModify;
     }

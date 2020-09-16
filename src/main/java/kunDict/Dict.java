@@ -14,6 +14,7 @@ abstract class Dict {
     public Dict(){
     }
 
+    // getter and setter {{{ //
     public void setName(String name) {
         this.name = name;
     }
@@ -37,6 +38,7 @@ abstract class Dict {
     public DictType getType() {
         return this.type;
     }
+    // }}} getter and setter //
 
     abstract Word query(String wordSpell);
 }

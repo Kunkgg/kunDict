@@ -1,20 +1,24 @@
 package kunDict;
 
-// public class MITDict extends Dict {
+public class MITDict extends Dict {
 
-    // public MITDict(String name, String source, String desc) {
-    //     super();
-    //     this.name = name;
-    //     this.source = source;
-    //     this.desc = desc;
-    // }
+    public MITDict(){
+        this.setName("MIT 10K Englinsh Dictionary");
+        this.setDescription("Word list is from MIT. Word entries are from Collins online dictionary.");
+        this.setType(DictType.Locale);
+    }
+
+    public Word query(String wordSpell) {
+        Word word = null;
+        // query from locale database
+        return word;
+    };
 
     // public Boolean add(Word word) {
     // };
     // public Boolean delete(String wordSpell);
-    // public Word query(String wordSpell);
     // public Word random();
     // public Boolean update(Word word);
     // public int size();
     // public Boolean generate();
-// }
+}
