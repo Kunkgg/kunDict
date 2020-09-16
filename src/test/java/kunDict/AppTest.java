@@ -36,10 +36,10 @@ public class AppTest {
         String html = Files.readString(Path.of(fileName));
         Extractor extractor = new Extractor(html);
         Word water = extractor.collinsOnline();
-        System.out.println(water);
-        System.out.println(water.getSpell());
-        System.out.println(water.getPronounce());
-        System.out.println(water.getFrequency());
+        // System.out.println(water);
+        // System.out.println(water.getSpell());
+        // System.out.println(water.getPronounce());
+        // System.out.println(water.getFrequency());
         assertNotNull("water should be a Word class type", water);
         assertEquals("should be water", "water", water.getSpell());
         assertEquals("frequency should be 5","frequency band: 5", water.getFrequency().toString());
@@ -53,13 +53,20 @@ public class AppTest {
         assertEquals("Should get name of dictionary", "Collins Online English Dictionary", collins.getName());
         Word water = collins.query(word);
         // System.out.println(water);
-        // System.out.println(water.getSpell());
-        // System.out.println(water.getPronounce());
-        // System.out.println(water.getFrequency());
+        System.out.println(water.getSpell());
+        System.out.println(water.getforms());
+        System.out.println(water.getSource());
+        System.out.println(water.getPronounce().getSoundmark());
+        System.out.println(water.getPronounce().getSound());
+        System.out.println(water.getFrequency().getBand());
+        System.out.println(water.getFrequency().getDescription());
+        for(SenseEntry entry : water.getSenesEntry()) {
+            System.out.println(entry);
+        }
         assertNotNull("water should be a Word class type", water);
         assertEquals("should be water", "water", water.getSpell());
         assertEquals("frequency should be 5","frequency band: 5", water.getFrequency().toString());
-        assertEquals("sensEntryList size should be 5",5, water.getSenesEntry().size());
+        assertEquals("sensEntryList size should be 5",4, water.getSenesEntry().size());
         assertNotNull("sensEntryList should not Null", water.getSenesEntry());
     }
 }

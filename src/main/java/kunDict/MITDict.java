@@ -2,6 +2,8 @@ package kunDict;
 
 public class MITDict extends Dict {
 
+    final private String dbName = "mit_10k_dict";
+
     public MITDict(){
         this.setName("MIT 10K Englinsh Dictionary");
         this.setDescription("Word list is from MIT. Word entries are from Collins online dictionary.");

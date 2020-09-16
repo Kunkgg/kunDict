@@ -151,7 +151,7 @@ class SenseEntry {
     public String toString() {
         String entry = String.format("%s, %s%n", this.wordClass, this.sense);
         for(String example: examples) {
-            entry = entry + example + "%n";
+            entry = entry + example + "\n";
         }
         return entry;
     }
