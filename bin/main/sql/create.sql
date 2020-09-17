@@ -25,7 +25,7 @@ CREATE TABLE words
 CREATE TABLE frequencies
 (
   fre_id             int       NOT NULL AUTO_INCREMENT,
-  fre_band           int   NOT NULL ,
+  fre_band           int       NOT NULL ,
   fre_description    text      NULL ,
   PRIMARY KEY(fre_id)
 ) ENGINE=InnoDB;

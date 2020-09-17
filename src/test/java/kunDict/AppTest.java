@@ -66,7 +66,15 @@ public class AppTest {
         assertNotNull("water should be a Word class type", water);
         assertEquals("should be water", "water", water.getSpell());
         assertEquals("frequency should be 5","frequency band: 5", water.getFrequency().toString());
-        assertEquals("sensEntryList size should be 5",4, water.getSenesEntry().size());
+        assertEquals("sensEntryList size should be 5",5, water.getSenesEntry().size());
         assertNotNull("sensEntryList should not Null", water.getSenesEntry());
     }
+
+
+    @Test public void testDatabaseSetProperties() throws IOException {
+        String fileName = "./src/main/resources/database.config";
+        Database db = new Database(fileName);
+        assertNotNull("db should be a instance of class Database", db);
+    }
+
 }

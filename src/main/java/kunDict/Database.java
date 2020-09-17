@@ -34,9 +34,8 @@ public class Database {
     private int portNumber;
     private Properties prop;
 
-    public Database(String propertiesFileName)
-            throws FileNotFoundException, IOException,
-            InvalidPropertiesFormatException {
+    public Database(String propertiesFileName) throws FileNotFoundException,
+            IOException, InvalidPropertiesFormatException {
         super();
         this.setProperties(propertiesFileName);
     }
@@ -50,24 +49,13 @@ public class Database {
         String currentUrlString = null;
 
         if (this.dbms.equals("mysql")) {
-            currentUrlString = String.format("jdbc:%s://%s:%d/",
-                            this.dbms,
-                            this.serverName,
-                            this.portNumber);
+            currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
+                    this.serverName, this.portNumber);
             conn = DriverManager.getConnection(currentUrlString,
                     connectionProps);
 
             this.urlString = currentUrlString + this.dbName;
             conn.setCatalog(this.dbName);
-        } else if (this.dbms.equals("derby")) {
-            this.urlString = "jdbc:" + this.dbms + ":" + this.dbName;
-            this.urlString = String.format("jdbc:%s:%s;create=true",
-                                            this.dbms,
-                                            this.dbName);
-
-            conn = DriverManager.getConnection(this.urlString,
-                                               connectionProps);
-
         }
         System.out.println("Connected to database");
         return conn;
@@ -83,10 +71,8 @@ public class Database {
         String currentUrlString = null;
 
         if (this.dbms.equals("mysql")) {
-            currentUrlString = String.format("jdbc:%s://%s:%d/",
-                            this.dbms,
-                            this.serverName,
-                            this.portNumber);
+            currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
+                    this.serverName, this.portNumber);
             conn = DriverManager.getConnection(currentUrlString,
                     connectionProps);
 
@@ -94,12 +80,11 @@ public class Database {
             conn.setCatalog(this.dbName);
         } else if (this.dbms.equals("derby")) {
             this.urlString = "jdbc:" + this.dbms + ":" + this.dbName;
-            this.urlString = String.format("jdbc:%s:%s;create=true",
-                                            this.dbms,
-                                            this.dbName);
+            this.urlString = String.format("jdbc:%s:%s;create=true", this.dbms,
+                    this.dbName);
 
             conn = DriverManager.getConnection(this.urlString,
-                                               connectionProps);
+                    connectionProps);
 
         }
         System.out.println("Connected to database");
@@ -197,17 +182,18 @@ public class Database {
             IOException, InvalidPropertiesFormatException {
         this.prop = new Properties();
         FileInputStream fis = new FileInputStream(fileName);
-        prop.loadFromXML(fis);
+        prop.load(fis);
+        fis.close();
 
         this.dbms = this.prop.getProperty("dbms");
-        this.jarFile = this.prop.getProperty("jar_file");
+        this.jarFile = this.prop.getProperty("jarFile");
         this.driver = this.prop.getProperty("driver");
-        this.dbName = this.prop.getProperty("database_name");
-        this.userName = this.prop.getProperty("user_name");
+        this.dbName = this.prop.getProperty("dbName");
+        this.userName = this.prop.getProperty("userName");
         this.password = this.prop.getProperty("password");
-        this.serverName = this.prop.getProperty("server_name");
+        this.serverName = this.prop.getProperty("serverName");
         this.portNumber = Integer
-                .parseInt(this.prop.getProperty("port_number"));
+                .parseInt(this.prop.getProperty("portNumber"));
 
         System.out.println("Set the following properties:");
         System.out.println("dbms: " + dbms);
