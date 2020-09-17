@@ -22,24 +22,31 @@ import org.w3c.dom.Document;
 
 public class Database {
 
-    public String dbms;
-    public String jarFile;
-    public String dbName;
-    public String userName;
-    public String password;
-    public String urlString;
+    private String dbms;
+    private String dbName;
+    private String userName;
+    private String password;
+    private String urlString;
+    private String propertiesFileName = "./src/main/resources/database.config";
 
     private String driver;
     private String serverName;
     private int portNumber;
     private Properties prop;
 
-    public Database(String propertiesFileName) throws FileNotFoundException,
+    public Database() throws FileNotFoundException,
             IOException, InvalidPropertiesFormatException {
         super();
-        this.setProperties(propertiesFileName);
+        this.setProperties();
     }
 
+    public Database(String dbName) throws FileNotFoundException,
+            IOException, InvalidPropertiesFormatException {
+        this();
+        this.setDbName(dbName);
+    }
+
+    // getConnection {{{ //
     public Connection getConnection() throws SQLException {
         Properties connectionProps = new Properties();
         connectionProps.put("user", this.userName);
@@ -78,19 +85,13 @@ public class Database {
 
             this.urlString = currentUrlString + this.dbName;
             conn.setCatalog(this.dbName);
-        } else if (this.dbms.equals("derby")) {
-            this.urlString = "jdbc:" + this.dbms + ":" + this.dbName;
-            this.urlString = String.format("jdbc:%s:%s;create=true", this.dbms,
-                    this.dbName);
-
-            conn = DriverManager.getConnection(this.urlString,
-                    connectionProps);
-
         }
         System.out.println("Connected to database");
         return conn;
     }
+    // }}} getConnection //
 
+    // static methods {{{ //
     public static void createDatabase(Connection connArg, String dbNameArg,
             String dbmsArg) {
 
@@ -177,18 +178,18 @@ public class Database {
             }
         }
     }
+    // }}} static methods //
 
-    private void setProperties(String fileName) throws FileNotFoundException,
+    // load database config from property file {{{ //
+    private void setProperties() throws FileNotFoundException,
             IOException, InvalidPropertiesFormatException {
         this.prop = new Properties();
-        FileInputStream fis = new FileInputStream(fileName);
+        FileInputStream fis = new FileInputStream(this.propertiesFileName);
         prop.load(fis);
         fis.close();
 
         this.dbms = this.prop.getProperty("dbms");
-        this.jarFile = this.prop.getProperty("jarFile");
         this.driver = this.prop.getProperty("driver");
-        this.dbName = this.prop.getProperty("dbName");
         this.userName = this.prop.getProperty("userName");
         this.password = this.prop.getProperty("password");
         this.serverName = this.prop.getProperty("serverName");
@@ -198,9 +199,92 @@ public class Database {
         System.out.println("Set the following properties:");
         System.out.println("dbms: " + dbms);
         System.out.println("driver: " + driver);
-        System.out.println("dbName: " + dbName);
         System.out.println("userName: " + userName);
         System.out.println("serverName: " + serverName);
         System.out.println("portNumber: " + portNumber);
     }
+    // }}} load database config from property file //
+
+// getter {{{ //
+    public String getDbms() {
+        return this.dbms;
+    }
+
+    public String getDbName() {
+        return this.dbName;
+    }
+
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getUrlString() {
+        return this.urlString;
+    }
+
+    public String getPropertiesFileName() {
+        return this.propertiesFileName;
+    }
+
+    public String getDriver() {
+        return this.driver;
+    }
+
+    public String getServerName() {
+        return this.serverName;
+    }
+
+    public int getPortNumber() {
+        return this.portNumber;
+    }
+    public Properties getProrP() {
+        return this.prop;
+    }
+// }}} getter //
+
+// setter {{{ //
+    public void setDbms(String dbms) {
+        this.dbms = dbms;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setPassword(String password) {
+        this.password= password;
+    }
+
+    public void setUrlString(String urlString) {
+        this.urlString = urlString;
+    }
+
+    public void setPropertiesFileName(String propertiesFileName) {
+        this.propertiesFileName = propertiesFileName;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public void setPortNumber(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
+    public void setProp(Properties prop) {
+        this.prop = prop;
+    }
+// }}} setter //
 }

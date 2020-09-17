@@ -15,12 +15,9 @@ public class Word {
     private String source = "";
     private Instant lastModify;
 
-    public Word(String spell,
-                Pronounce pronounce,
-                Frequency frequency,
-                ArrayList<String> forms,
-                ArrayList<SenseEntry> senseEntryList,
-                String source) {
+    public Word(String spell, Pronounce pronounce, Frequency frequency,
+            ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
+            String source) {
 
         this.spell = spell;
         this.pronounce = pronounce;
@@ -31,15 +28,12 @@ public class Word {
     }
 
     public String toString() {
-        return String.format("[%s]%n[%s, %s, %s, %s, length of examples: %d]%nFirst entry:%n%s",
-                this.source,
-                this.spell,
-                this.pronounce.toString(),
-                this.frequency.toString(),
-                this.forms.toString(),
+        return String.format(
+                "[%s]%n[%s, %s, %s, %s, length of examples: %d]%nFirst entry:%n%s",
+                this.source, this.spell, this.pronounce.toString(),
+                this.frequency.toString(), this.forms.toString(),
                 this.senseEntryList.size(),
-                this.senseEntryList.get(0).toString()
-                );
+                this.senseEntryList.get(0).toString());
     }
 
     // getter {{{ //
@@ -117,6 +111,14 @@ class Pronounce {
     private String soundmark;
     private String sound;
 
+    public Pronounce() {
+    }
+
+    public Pronounce(String soundmark, String sound) {
+        this.soundmark = soundmark;
+        this.sound = sound;
+    }
+
     public String toString() {
         return this.soundmark;
     }
@@ -150,12 +152,39 @@ class SenseEntry {
 
     public String toString() {
         String entry = String.format("%s, %s%n", this.wordClass, this.sense);
-        for(String example: examples) {
+        for (String example : examples) {
             entry = entry + example + "\n";
         }
         return entry;
     }
 
+    public void combine(SenseEntry other) {
+        if (this.getWordClass().equals(other.getWordClass())
+                && this.getSense().equals(other.getSense())) {
+            for (String example : other.getExamples()) {
+                if (!this.getExamples().contains(example)) {
+                    this.addExample(example);
+                }
+            }
+        }
+    }
+
+    public static ArrayList<SenseEntry> noDeuplicateItem(ArrayList<SenseEntry> senseEntryList) {
+        for (int i = 0; i < senseEntryList.size() - 1; i++) {
+            for (int j = i + 1; j < senseEntryList.size(); j++) {
+                SenseEntry entryI = senseEntryList.get(i);
+                SenseEntry entryJ = senseEntryList.get(j);
+                if(entryI.getWordClass().equals(entryJ.getWordClass()) &&
+                    entryI.getSense().equals(entryJ.getSense())) {
+                        entryI.combine(entryJ);
+                        senseEntryList.set(i, entryI);
+                        senseEntryList.set(j, null);
+                    }
+            }
+        }
+        senseEntryList.removeIf(n -> (n == null));
+        return senseEntryList;
+    }
 
     // getter and setter {{{ //
     public String getWordClass() {
@@ -195,6 +224,14 @@ class Frequency {
     private String band;
     private String description;
 
+    public Frequency() {
+    }
+
+    public Frequency(String band, String description) {
+        this.band = band;
+        this.description = description;
+    }
+
     public String toString() {
         return String.format("frequency band: %s", this.band);
     }
@@ -216,6 +253,5 @@ class Frequency {
         this.description = description;
     }
     // }}} getter and setter //
-
 
 }

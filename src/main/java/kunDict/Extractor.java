@@ -40,10 +40,10 @@ public class Extractor {
 
     // }}} ability, not implemented //
     public Word collinsOnline() {
-        String source = "Collins Online English Dictionary";
         Document doc = Jsoup.parse(this.input);
         Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
 
+        String source = "Collins Online English Dictionary";
         String spell = dict.select("h2.h2_entry span.orth").text();
         Pronounce pronounce = new Pronounce();
         pronounce.setSoundmark(dict.select("div.mini_h2 span.pron").text());

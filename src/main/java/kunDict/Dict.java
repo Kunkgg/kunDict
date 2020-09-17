@@ -1,5 +1,8 @@
 package kunDict;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 abstract class Dict {
     private String name;
     private String description;
@@ -40,7 +43,7 @@ abstract class Dict {
     }
     // }}} getter and setter //
 
-    abstract Word query(String wordSpell);
+    abstract Word query(String wordSpell) throws IOException, SQLException;
 }
 
 enum  DictType {
