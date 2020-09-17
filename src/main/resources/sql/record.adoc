@@ -1,0 +1,75 @@
+= The meaning of FOREIGN KEY
+v1.0, 2020-09-17
+:icons: font
+:library: Asciidoctor
+// ifdef::asciidoctor[]
+// :source-highlighter: coderay
+// endif::asciidoctor[]
+:idprefix:
+// :stylesheet: ../../resources/asciidoctor.css
+:imagesdir: images
+:includesdir: includes
+//:title-logo-image: image:logo.png[pdfwidth=3.00in,align=center]
+//:backend: docbook45
+//:backend: html5
+//:doctype: book
+//:sectids!:
+:plus: &#43;
+
+// refs
+:url-github: https://github.com/Kunkgg
+//:url-blog: http-to-my-blog
+
+== with FOREIGN KEY
+
+.FOREIGN KEY setting
+[source, sql]
+----
+ALTER TABLE words ADD CONSTRAINT fk_words_frequencies FOREIGN KEY (fre_id)
+REFERENCES  frequencies (fre_id); //<.>
+ALTER TABLE entries ADD CONSTRAINT fk_entries_words FOREIGN KEY (word_id)
+REFERENCES  words (word_id); //<.>
+ALTER TABLE examples ADD CONSTRAINT fk_examples_entries FOREIGN KEY (entry_id)
+REFERENCES  entries (entry_id); //<.>
+----
+<.> fk_words_frequencies, one row in frequencies table can be referenced
+multiple times in words table by fre_id field.
+<.> fk_entries_words, one row in words table can be referenced multiple times
+in entries table by word_id field.
+<.> fk_examples_entries, one row in entries table can be referenced multiple
+times in examples by entry_id field.
+
+.Query a word
+[source, sql]
+----
+SELECT word_spell, word_source, word_forms, word_pron_soundmark,
+word_pron_sound, fre_band, fre_description, entry_wordClass, entry_sense,
+example_text
+FROM words, frequencies, entries, examples
+WHERE (
+    words.fre_id = frequencies.fre_id AND
+    words.word_id = entries.word_id AND
+    entries.entry_id = examples.entry_id
+    )
+----
+
+.Result of query a word
+[format="csv", options="header"]
+|===
+include::{includesdir}/withfk.csv[]
+|===
+
+== without FOREIGN KEY
+
+*without FOREIGN KEY* can get the *same result* with `Query a word`.
+
+== Hypothesis
+
+FOREIGN KEY is used for add CONSTRAINT between tables.
+
+It don't influence the result of `Query` operators.
+
+It adds conditions for `Update` and `Insert` operators.
+
+Because the additional conditions must be implemented by checking datas.
+So it can influence the performance of database.

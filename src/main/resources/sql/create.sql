@@ -1,7 +1,8 @@
 ########################
 # Create database
 ########################
-# CREATE DATABASE IF NOT EXISTS mit_10k_dict;
+CREATE DATABASE IF NOT EXISTS mit_10k_dict;
+USE mit_10k_dict;
 
 ########################
 # Create words table
@@ -24,7 +25,7 @@ CREATE TABLE words
 CREATE TABLE frequencies
 (
   fre_id             int       NOT NULL AUTO_INCREMENT,
-  fre_band           char(8)   NOT NULL ,
+  fre_band           int       NOT NULL ,
   fre_description    text      NULL ,
   PRIMARY KEY(fre_id)
 ) ENGINE=InnoDB;

@@ -3,7 +3,7 @@
 ##########################
 
 INSERT INTO frequencies(fre_band, fre_description)
-VALUES('5', 'Extremely Common. water is one of the 1000 most commonly used words in the Collins dictionary');
+VALUES(5, 'Extremely Common. water is one of the 1000 most commonly used words in the Collins dictionary');
 
 INSERT INTO words(word_spell, word_source, word_forms, word_pron_soundmark, word_pron_sound, fre_id)
 VALUES('water', 'Collins Online English Dictionary', '[waters, watering, watered]', 'wɔtər', 'http://test.com/sound.mp3', 1);

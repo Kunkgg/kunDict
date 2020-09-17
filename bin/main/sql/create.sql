@@ -1,19 +1,21 @@
 ########################
 # Create database
 ########################
-# CREATE DATABASE IF NOT EXISTS mit_10k_dict;
+CREATE DATABASE IF NOT EXISTS mit_10k_dict;
+USE mit_10k_dict;
 
 ########################
 # Create words table
 ########################
 CREATE TABLE words
 (
-  word_id      int       NOT NULL AUTO_INCREMENT,
-  word_spell   char(50)  NOT NULL ,
-  word_source  char(50)  NULL ,
-  word_forms   char(255) NULL ,
-  word_pron    char(255) NULL ,
-  fre_id       int       NOT NULL ,
+  word_id                int       NOT NULL AUTO_INCREMENT,
+  word_spell             char(50)  NOT NULL ,
+  word_source            char(50)  NULL ,
+  word_forms             char(255) NULL ,
+  word_pron_soundmark    char(50)  NULL ,
+  word_pron_sound        char(255) NULL ,
+  fre_id                 int       NULL ,
   PRIMARY KEY (word_id)
 ) ENGINE=InnoDB;
 
@@ -23,8 +25,8 @@ CREATE TABLE words
 CREATE TABLE frequencies
 (
   fre_id             int       NOT NULL AUTO_INCREMENT,
-  fre_band           char(8)   NOT NULL ,
-  fre_description    char(255) NULL ,
+  fre_band           int   NOT NULL ,
+  fre_description    text      NULL ,
   PRIMARY KEY(fre_id)
 ) ENGINE=InnoDB;
 
@@ -35,9 +37,8 @@ CREATE TABLE entries
 (
   entry_id         int       NOT NULL AUTO_INCREMENT,
   entry_wordClass  char(255) NOT NULL ,
-  entry_sense      char(255) NULL ,
-  entry_examples   char(255) NULL ,
-  word_id          int       NOT NULL ,
+  entry_sense      text      NULL ,
+  word_id          int       NULL ,
   PRIMARY KEY(entry_id)
 ) ENGINE=InnoDB;
 
