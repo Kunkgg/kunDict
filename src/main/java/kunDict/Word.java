@@ -40,14 +40,21 @@ public class Word {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Word other = (Word) otherObj;
-        if (!this.getSpell().equals(other.getSpell())) return false;
-        if (!this.getForms().equals(other.getForms())) return false;
-        if (!this.getFrequency().equals(other.getFrequency())) return false;
-        if (!this.getPronounce().equals(other.getPronounce())) return false;
-        if (!this.getSenesEntrys().equals(other.getSenesEntrys())) return false;
-        if (!this.getSource().equals(other.getSource())) return false;
+        if (!this.spell.equals(other.getSpell())) return false;
+        if (!this.forms.equals(other.getForms())) return false;
+        if (!this.frequency.equals(other.getFrequency())) return false;
+        if (!this.pronounce.equals(other.getPronounce())) return false;
+        if (!this.senseEntryList.equals(other.getSenesEntries())) return false;
+        if (!this.source.equals(other.getSource())) return false;
 
         return true;
+    }
+
+    public boolean isEmypty() {
+        if (this.senseEntryList == null || this.senseEntryList.size() == 0) {
+            return true;
+        }
+        return false;
     }
 
     // getter {{{ //
@@ -67,7 +74,7 @@ public class Word {
         return this.forms;
     }
 
-    public ArrayList<SenseEntry> getSenesEntrys() {
+    public ArrayList<SenseEntry> getSenesEntries() {
         return this.senseEntryList;
     }
 
@@ -106,7 +113,7 @@ public class Word {
         setLastModify();
     }
 
-    public void setSenesEntrys(ArrayList<SenseEntry> senseEntryList) {
+    public void setSenesEntries(ArrayList<SenseEntry> senseEntryList) {
         this.senseEntryList = senseEntryList;
         setLastModify();
     }
@@ -141,8 +148,8 @@ class Pronounce {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Pronounce other = (Pronounce) otherObj;
-        if (!this.getSoundmark().equals(other.getSoundmark())) return false;
-        if (!this.getSound().equals(other.getSound())) return false;
+        if (!this.soundmark.equals(other.getSoundmark())) return false;
+        if (!this.sound.equals(other.getSound())) return false;
 
         return true;
     }
@@ -186,9 +193,9 @@ class SenseEntry {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         SenseEntry other = (SenseEntry) otherObj;
-        if (!this.getWordClass().equals(other.getWordClass())) return false;
-        if (!this.getSense().equals(other.getSense())) return false;
-        if (!this.getExamples().equals(other.getExamples())) return false;
+        if (!this.wordClass.equals(other.getWordClass())) return false;
+        if (!this.sense.equals(other.getSense())) return false;
+        if (!this.examples.equals(other.getExamples())) return false;
 
         return true;
     }
@@ -196,7 +203,7 @@ class SenseEntry {
     /**
      * combine
      * combine with other duplicated {@link SenseEntry} instance
-     * Duplicated senseEntrys have same wordClass and sense,
+     * Duplicated senseEntries have same wordClass and sense,
      * regardless whether they have same examples.
      */
     public void combine(SenseEntry other) {
@@ -288,8 +295,8 @@ class Frequency {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Frequency other = (Frequency) otherObj;
-        if (!this.getBand().equals(other.getBand())) return false;
-        if (!this.getDescription().equals(other.getDescription())) return false;
+        if (!this.band.equals(other.getBand())) return false;
+        if (!this.description.equals(other.getDescription())) return false;
 
         return true;
     }
@@ -311,5 +318,4 @@ class Frequency {
         this.description = description;
     }
     // }}} getter and setter //
-
 }

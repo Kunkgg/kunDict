@@ -43,14 +43,18 @@ public class Extractor {
     public Word collinsOnline() {
         // extract a word from collins website through Jsoup {{{ //
         Document doc = Jsoup.parse(this.input);
-        Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
+
+        // Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
+        Elements dicts = doc.select("div.dictentry");
+        Element dict = dicts.first();
+        System.out.println("dicts size: " + dicts.size());
 
         String source = "Collins Online English Dictionary";
         String spell = dict.select("h2.h2_entry span.orth").text();
         Pronounce pronounce = new Pronounce();
-        pronounce.setSoundmark(dict.select("div.mini_h2 span.pron").text());
+        pronounce.setSoundmark(dict.select("span.pron").text());
         pronounce.setSound(
-                dict.select("div.mini_h2 a.hwd_sound.audio_play_button")
+                dict.select("a.hwd_sound.audio_play_button")
                         .attr("data-src-mp3"));
         Frequency fre = new Frequency();
         fre.setBand(dict.select("span.word-frequency-img").attr("data-band"));
@@ -59,23 +63,26 @@ public class Extractor {
         Elements formsEle = dict.select("span.form span.orth");
         ArrayList<String> forms = new ArrayList<>();
         for(Element formEle : formsEle) {
-            forms.add(formEle.text());
+            String form = formEle.text();
+            if (!forms.contains(form)) forms.add(form);
         }
 
         Elements entrys = dict.select("div.hom");
         ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
 
-        for (Element entry : entrys) {
-            String wordClass = entry.select("span.gramGrp").text();
+        for (Element hom : entrys) {
+            String wordClass = hom.select("span.pos").text();
             if (! wordClass.equals("")) {
-                SenseEntry senseEntry = new SenseEntry();
-                senseEntry.setWordClass(wordClass);
-                senseEntry.setSense(entry.select("div.def").text());
-                for (Element example : entry.select("div.type-example")) {
-                    senseEntry.addExample(example.text());
-                }
 
-                senseEntryList.add(senseEntry);
+                for (Element sense : hom.select("div.sense")){
+                    SenseEntry senseEntry = new SenseEntry();
+                    senseEntry.setWordClass(wordClass);
+                    senseEntry.setSense(sense.select("div.def").text());
+                    for (Element example : sense.select("span.quote")) {
+                        senseEntry.addExample(example.text());
+                    }
+                    senseEntryList.add(senseEntry);
+                }
             }
         }
         // }}} extract a word from collins website through Jsoup //

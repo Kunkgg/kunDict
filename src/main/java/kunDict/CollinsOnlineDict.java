@@ -13,6 +13,7 @@ public class CollinsOnlineDict extends OnlineDict {
 
     public Word query(String wordSpell) {
         String url = queryUrlBase + wordSpell;
+        System.out.println("URL: " + url);
 
         Request req = new Request(url);
         Word word = null;

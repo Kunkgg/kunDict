@@ -36,6 +36,7 @@ public class Request {
         HttpResponse<String> response = null;
         try {
             response = client.send(request, bodyHandler);
+            System.out.println("status code: " + response.statusCode());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             System.out.println("Http request failed.");

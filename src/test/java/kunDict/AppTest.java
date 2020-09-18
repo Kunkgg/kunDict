@@ -54,36 +54,60 @@ public class AppTest {
         assertEquals("frequency should be 5", "frequency band: 5",
                 water.getFrequency().toString());
         assertEquals("sensEntryList size should be 5", 5,
-                water.getSenesEntrys().size());
-        assertNotNull("sensEntryList should not Null", water.getSenesEntrys());
+                water.getSenesEntries().size());
+        assertNotNull("sensEntryList should not Null", water.getSenesEntries());
     }
 
-    @Ignore
     @Test
     public void testCollinsQuery() throws IOException {
-        String word = "water";
         CollinsOnlineDict collins = new CollinsOnlineDict();
         assertEquals("Should get name of dictionary",
                 "Collins Online English Dictionary", collins.getName());
-        Word water = collins.query(word);
+
+        Word water = collins.query("water");
+        Formatter fwater = new Formatter(water);
+        fwater.printText();
+
+        Word duplicate = collins.query("duplicate");
+        Formatter fduplicate = new Formatter(duplicate);
+        fduplicate.printText();
+
+        Word polymorphism = collins.query("polymorphism");
+        Formatter fpolymorphism = new Formatter(polymorphism);
+        fpolymorphism.printText();
+
+        Word casual = collins.query("casual");
+        Formatter fcasual = new Formatter(casual);
+        fcasual.printText();
+
+        Word hibernate = collins.query("hibernate");
+        Formatter fhibernate = new Formatter(hibernate);
+        fhibernate.printText();
+
+        Word hypothesis = collins.query("hypothesis");
+        Formatter fhypothesis = new Formatter(hypothesis);
+        fhypothesis.printText();
+
+        Word test = collins.query("test");
+        Formatter ftest = new Formatter(test);
+        ftest.printText();
+
+        Word thes = collins.query("thes");
+        Formatter fthes = new Formatter(thes);
+        fthes.printText();
+
+        Word ace = collins.query("ace");
+        Formatter face = new Formatter(ace);
+        face.printText();
+
         // System.out.println(water);
-        System.out.println(water.getSpell());
-        System.out.println(water.getForms());
-        System.out.println(water.getSource());
-        System.out.println(water.getPronounce().getSoundmark());
-        System.out.println(water.getPronounce().getSound());
-        System.out.println(water.getFrequency().getBand());
-        System.out.println(water.getFrequency().getDescription());
-        for (SenseEntry entry : water.getSenesEntrys()) {
-            System.out.println(entry);
-        }
-        assertNotNull("water should be a Word class type", water);
-        assertEquals("should be water", "water", water.getSpell());
-        assertEquals("frequency should be 5", "frequency band: 5",
-                water.getFrequency().toString());
-        assertEquals("sensEntryList size should be 5", 5,
-                water.getSenesEntrys().size());
-        assertNotNull("sensEntryList should not Null", water.getSenesEntrys());
+        // assertNotNull("water should be a Word class type", water);
+        // assertEquals("should be water", "water", water.getSpell());
+        // assertEquals("frequency should be 5", "frequency band: 5",
+        //         water.getFrequency().toString());
+        // assertEquals("sensEntryList size should be 5", 5,
+        //         water.getSenesEntries().size());
+        // assertNotNull("sensEntryList should not Null", water.getSenesEntries());
     }
 
     @Ignore
@@ -104,6 +128,7 @@ public class AppTest {
         assertTrue(con.isClosed());
     }
 
+    @Ignore
     @Test
     public void testMITDictQuery() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -116,12 +141,12 @@ public class AppTest {
         Word wordCollins = collins.query(word);
         // assertNotNull("water should be a instance of class Word", wordLocal);
         // assertEquals("results local and collins of query should equal.", wordCollins, wordLocal);
-        assertEquals(wordLocal.getSenesEntrys(), wordCollins.getSenesEntrys());
+        assertEquals(wordLocal.getSenesEntries(), wordCollins.getSenesEntries());
         assertEquals(wordLocal.getSpell(), wordCollins.getSpell());
         assertEquals(wordLocal.getForms(), wordCollins.getForms());
         assertEquals(wordLocal.getFrequency(), wordCollins.getFrequency());
         // assertEquals(wordLocal.getPronounce(), wordCollins.getPronounce());
-        assertEquals(wordLocal.getSenesEntrys(), wordCollins.getSenesEntrys());
+        assertEquals(wordLocal.getSenesEntries(), wordCollins.getSenesEntries());
         assertEquals(wordLocal.getSource(), wordCollins.getSource());
         System.out.println("database: " + wordLocal.getPronounce().getSound());
         System.out.println("online: " + wordCollins.getPronounce().getSound());

@@ -36,7 +36,6 @@ abstract class LocalDict extends Dict{
         this.dbName = dbName;
     }
 
-
     public Word query(String wordSpell) throws IOException, SQLException {
         Word word = null;
         Database db = new Database(this.dbName);
@@ -100,6 +99,16 @@ abstract class LocalDict extends Dict{
             // }}} process the ResultSet //
         return word;
     };
+
+    // public boolean add(Word word) {
+    //     if (word.isEmypty()) {
+    //         System.out.println(
+    //                 "[Warning] Could't add a empty word to database.");
+    //         return false;
+    //     }
+
+    // }
+
 
     // abstract Boolean add(Word word);
     // abstract Boolean delete(String wordSpell);
