@@ -4,6 +4,7 @@
 package kunDict;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 import java.net.http.HttpResponse;
 import java.nio.file.Paths;
@@ -12,9 +13,9 @@ import java.nio.file.Files;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.ResultSet;
 
 public class AppTest {
+    @Ignore
     @Test
     public void testAppHasAGreeting() {
         App classUnderTest = new App();
@@ -22,6 +23,7 @@ public class AppTest {
                 classUnderTest.getGreeting());
     }
 
+    @Ignore
     @Test
     public void testRequest() {
         String url = "https://www.collinsdictionary.com/us/dictionary/english/water";
@@ -36,6 +38,7 @@ public class AppTest {
         assertNotNull("request should get response", response);
     }
 
+    @Ignore
     @Test
     public void testCollinsExtracotr() throws IOException {
         String fileName = "water.html";
@@ -51,10 +54,11 @@ public class AppTest {
         assertEquals("frequency should be 5", "frequency band: 5",
                 water.getFrequency().toString());
         assertEquals("sensEntryList size should be 5", 5,
-                water.getSenesEntry().size());
-        assertNotNull("sensEntryList should not Null", water.getSenesEntry());
+                water.getSenesEntrys().size());
+        assertNotNull("sensEntryList should not Null", water.getSenesEntrys());
     }
 
+    @Ignore
     @Test
     public void testCollinsQuery() throws IOException {
         String word = "water";
@@ -64,13 +68,13 @@ public class AppTest {
         Word water = collins.query(word);
         // System.out.println(water);
         System.out.println(water.getSpell());
-        System.out.println(water.getforms());
+        System.out.println(water.getForms());
         System.out.println(water.getSource());
         System.out.println(water.getPronounce().getSoundmark());
         System.out.println(water.getPronounce().getSound());
         System.out.println(water.getFrequency().getBand());
         System.out.println(water.getFrequency().getDescription());
-        for (SenseEntry entry : water.getSenesEntry()) {
+        for (SenseEntry entry : water.getSenesEntrys()) {
             System.out.println(entry);
         }
         assertNotNull("water should be a Word class type", water);
@@ -78,32 +82,48 @@ public class AppTest {
         assertEquals("frequency should be 5", "frequency band: 5",
                 water.getFrequency().toString());
         assertEquals("sensEntryList size should be 5", 5,
-                water.getSenesEntry().size());
-        assertNotNull("sensEntryList should not Null", water.getSenesEntry());
+                water.getSenesEntrys().size());
+        assertNotNull("sensEntryList should not Null", water.getSenesEntrys());
     }
 
-    // @Test public void testDatabaseSetProperties() throws IOException {
-    // String fileName = "./src/main/resources/database.config";
-    // Database db = new Database(fileName);
-    // assertNotNull("db should be a instance of class Database", db);
-    // }
+    @Ignore
+    @Test
+    public void testDatabaseSetProperties() throws IOException {
+        Database db = new Database();
+        assertNotNull("db should be a instance of class Database", db);
+    }
 
-    // @Test
-    // public void testDatabaseGetConnection() throws IOException, SQLException {
-    //     String dbName = "mit_10k_dict";
-    //     Database db = new Database(dbName);
-    //     Connection con = db.getConnection();
-    //     assertNotNull("con should be a instance of class Connection", con);
-    //     Database.closeConnection(con);
-    //     assertTrue(con.isClosed());
-    // }
+    @Ignore
+    @Test
+    public void testDatabaseGetConnection() throws IOException, SQLException {
+        String dbName = "mit_10k_dict";
+        Database db = new Database(dbName);
+        Connection con = db.getConnection();
+        assertNotNull("con should be a instance of class Connection", con);
+        Database.closeConnection(con);
+        assertTrue(con.isClosed());
+    }
 
     @Test
     public void testMITDictQuery() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
 
-        Word water = mitDict.query("water");
-        System.out.println(water);
-        assertNotNull("water should be a instance of class Word", water);
+        String word = "water";
+        Word wordLocal = mitDict.query(word);
+        // System.out.println(wordLocal);
+        // assertNotNull("water should be a instance of class Word", wordLocal);
+        CollinsOnlineDict collins = new CollinsOnlineDict();
+        Word wordCollins = collins.query(word);
+        // assertNotNull("water should be a instance of class Word", wordLocal);
+        // assertEquals("results local and collins of query should equal.", wordCollins, wordLocal);
+        assertEquals(wordLocal.getSenesEntrys(), wordCollins.getSenesEntrys());
+        assertEquals(wordLocal.getSpell(), wordCollins.getSpell());
+        assertEquals(wordLocal.getForms(), wordCollins.getForms());
+        assertEquals(wordLocal.getFrequency(), wordCollins.getFrequency());
+        // assertEquals(wordLocal.getPronounce(), wordCollins.getPronounce());
+        assertEquals(wordLocal.getSenesEntrys(), wordCollins.getSenesEntrys());
+        assertEquals(wordLocal.getSource(), wordCollins.getSource());
+        System.out.println("database: " + wordLocal.getPronounce().getSound());
+        System.out.println("online: " + wordCollins.getPronounce().getSound());
     }
 }

@@ -47,11 +47,13 @@ public class Extractor {
         String spell = dict.select("h2.h2_entry span.orth").text();
         Pronounce pronounce = new Pronounce();
         pronounce.setSoundmark(dict.select("div.mini_h2 span.pron").text());
-        pronounce.setSound(dict.select("div.mini_h2 a.hwd_sound.audio_play_button")
-            .attr("data-src-mp3"));
+        pronounce.setSound(
+                dict.select("div.mini_h2 a.hwd_sound.audio_play_button")
+                        .attr("data-src-mp3"));
         Frequency fre = new Frequency();
         fre.setBand(dict.select("span.word-frequency-img").attr("data-band"));
-        fre.setDescription(dict.select("span.word-frequency-img").attr("title"));
+        fre.setDescription(
+                dict.select("span.word-frequency-img").attr("title"));
         Elements formsEle = dict.select("span.form span.orth");
         ArrayList<String> forms = new ArrayList<>();
         for(Element formEle : formsEle) {

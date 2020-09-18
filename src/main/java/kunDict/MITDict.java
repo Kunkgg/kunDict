@@ -74,10 +74,10 @@ public class MITDict extends Dict {
                 senseEntry.addExample(rs.getString("example_text"));
 
                 senseEntryList.add(senseEntry);
+                count++;
             }
 
-            // TODO: fix SenseEntry.noDeuplicateItem method <17-09-20, gk07>
-            // senseEntryList = SenseEntry.noDeuplicateItem(senseEntryList);
+            senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList, source);
         } catch (SQLException e) {
             Database.printSQLException(e);

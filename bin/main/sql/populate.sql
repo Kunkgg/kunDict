@@ -40,3 +40,6 @@ VALUES('His eyes watered from cigarette smoke.', 4);
 
 INSERT INTO examples(example_text, entry_id)
 VALUES('...cookies to make your mouth water.', 5);
+
+
+# SELECT word_spell, word_source, word_forms,word_pron_soundmark, word_pron_sound, fre_band,fre_description, entry_wordClass, entry_sense, example_text FROM words, frequencies, entries, examples WHERE (words.fre_id = frequencies.fre_id AND words.word_id = entries.word_id AND entries.entry_id = examples.entry_id AND words.word_spell = 'water')

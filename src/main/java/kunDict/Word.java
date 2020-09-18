@@ -29,11 +29,25 @@ public class Word {
 
     public String toString() {
         return String.format(
-                "[%s]%n[%s, %s, %s, %s, length of examples: %d]%nFirst entry:%n%s",
+                "[%s]%n%s, %s, %s, %s, length of examples: %d%nFirst entry:%n%s",
                 this.source, this.spell, this.pronounce.toString(),
                 this.frequency.toString(), this.forms.toString(),
                 this.senseEntryList.size(),
                 this.senseEntryList.get(0).toString());
+    }
+
+    public boolean equals(Object otherObj) {
+        if (otherObj == null) return false;
+        if (this.getClass() != otherObj.getClass()) return false;
+        Word other = (Word) otherObj;
+        if (!this.getSpell().equals(other.getSpell())) return false;
+        if (!this.getForms().equals(other.getForms())) return false;
+        if (!this.getFrequency().equals(other.getFrequency())) return false;
+        if (!this.getPronounce().equals(other.getPronounce())) return false;
+        if (!this.getSenesEntrys().equals(other.getSenesEntrys())) return false;
+        if (!this.getSource().equals(other.getSource())) return false;
+
+        return true;
     }
 
     // getter {{{ //
@@ -49,11 +63,11 @@ public class Word {
         return this.frequency;
     }
 
-    public ArrayList<String> getforms() {
+    public ArrayList<String> getForms() {
         return this.forms;
     }
 
-    public ArrayList<SenseEntry> getSenesEntry() {
+    public ArrayList<SenseEntry> getSenesEntrys() {
         return this.senseEntryList;
     }
 
@@ -87,12 +101,12 @@ public class Word {
         setLastModify();
     }
 
-    public void setforms(ArrayList<String> forms) {
+    public void setForms(ArrayList<String> forms) {
         this.forms = forms;
         setLastModify();
     }
 
-    public void setSenesEntry(ArrayList<SenseEntry> senseEntryList) {
+    public void setSenesEntrys(ArrayList<SenseEntry> senseEntryList) {
         this.senseEntryList = senseEntryList;
         setLastModify();
     }
@@ -121,6 +135,16 @@ class Pronounce {
 
     public String toString() {
         return this.soundmark;
+    }
+
+    public boolean equals(Object otherObj) {
+        if (otherObj == null) return false;
+        if (this.getClass() != otherObj.getClass()) return false;
+        Pronounce other = (Pronounce) otherObj;
+        if (!this.getSoundmark().equals(other.getSoundmark())) return false;
+        if (!this.getSound().equals(other.getSound())) return false;
+
+        return true;
     }
 
     // getter and setter {{{ //
@@ -158,6 +182,23 @@ class SenseEntry {
         return entry;
     }
 
+    public boolean equals(Object otherObj) {
+        if (otherObj == null) return false;
+        if (this.getClass() != otherObj.getClass()) return false;
+        SenseEntry other = (SenseEntry) otherObj;
+        if (!this.getWordClass().equals(other.getWordClass())) return false;
+        if (!this.getSense().equals(other.getSense())) return false;
+        if (!this.getExamples().equals(other.getExamples())) return false;
+
+        return true;
+    }
+
+    /**
+     * combine
+     * combine with other duplicated {@link SenseEntry} instance
+     * Duplicated senseEntrys have same wordClass and sense,
+     * regardless whether they have same examples.
+     */
     public void combine(SenseEntry other) {
         if (this.getWordClass().equals(other.getWordClass())
                 && this.getSense().equals(other.getSense())) {
@@ -169,17 +210,24 @@ class SenseEntry {
         }
     }
 
-    public static ArrayList<SenseEntry> noDeuplicateItem(ArrayList<SenseEntry> senseEntryList) {
+    /**
+     * noDuplicatedSense
+     * Remove all duplicated senseEntry elements in specific senseEntryList
+     */
+    public static ArrayList<SenseEntry> noDuplicatedSense(
+            ArrayList<SenseEntry> senseEntryList) {
         for (int i = 0; i < senseEntryList.size() - 1; i++) {
             for (int j = i + 1; j < senseEntryList.size(); j++) {
                 SenseEntry entryI = senseEntryList.get(i);
                 SenseEntry entryJ = senseEntryList.get(j);
-                if(entryI.getWordClass().equals(entryJ.getWordClass()) &&
-                    entryI.getSense().equals(entryJ.getSense())) {
-                        entryI.combine(entryJ);
-                        senseEntryList.set(i, entryI);
-                        senseEntryList.set(j, null);
-                    }
+
+                if (entryI != null && entryJ != null
+                        && entryI.getWordClass().equals(entryJ.getWordClass())
+                        && entryI.getSense().equals(entryJ.getSense())) {
+                    entryI.combine(entryJ);
+                    senseEntryList.set(i, entryI);
+                    senseEntryList.set(j, null);
+                }
             }
         }
         senseEntryList.removeIf(n -> (n == null));
@@ -234,6 +282,16 @@ class Frequency {
 
     public String toString() {
         return String.format("frequency band: %s", this.band);
+    }
+
+    public boolean equals(Object otherObj) {
+        if (otherObj == null) return false;
+        if (this.getClass() != otherObj.getClass()) return false;
+        Frequency other = (Frequency) otherObj;
+        if (!this.getBand().equals(other.getBand())) return false;
+        if (!this.getDescription().equals(other.getDescription())) return false;
+
+        return true;
     }
 
     // getter and setter {{{ //
