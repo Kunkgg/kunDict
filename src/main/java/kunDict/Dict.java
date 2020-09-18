@@ -52,9 +52,9 @@ enum  DictType {
             return "Online Dict";
         }
     },
-    Locale {
+    Local {
         public String toString() {
-            return "Locale Dict";
+            return "Local Dict";
         }
     }
 }

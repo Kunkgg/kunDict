@@ -39,7 +39,9 @@ public class Extractor {
     // public static Boolean ifCan(String ability) { return true; };
 
     // }}} ability, not implemented //
+
     public Word collinsOnline() {
+        // extract a word from collins website through Jsoup {{{ //
         Document doc = Jsoup.parse(this.input);
         Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
 
@@ -76,6 +78,7 @@ public class Extractor {
                 senseEntryList.add(senseEntry);
             }
         }
+        // }}} extract a word from collins website through Jsoup //
 
         return new Word(spell, pronounce, fre, forms, senseEntryList, source);
 }
