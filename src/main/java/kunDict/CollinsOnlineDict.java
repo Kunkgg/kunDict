@@ -9,7 +9,8 @@ public class CollinsOnlineDict extends OnlineDict {
         this.setType(DictType.Online);
     }
 
-    private String queryUrlBase = "https://www.collinsdictionary.com/us/dictionary/english/";
+    private String queryUrlBase = "https://www.collinsdictionary.com/"
+                                    + "us/dictionary/english/";
 
     public Word query(String wordSpell) {
         String url = queryUrlBase + wordSpell;

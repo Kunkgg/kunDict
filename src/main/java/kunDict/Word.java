@@ -13,7 +13,10 @@ public class Word {
     private Pronounce pronounce;
     private ArrayList<SenseEntry> senseEntryList;
     private String source = "";
-    private Instant lastModify;
+    // timestamp for last modify
+    private Instant timestamp;
+    private int counter = -1;
+
 
     public Word(String spell, Pronounce pronounce, Frequency frequency,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
@@ -25,6 +28,20 @@ public class Word {
         this.forms = forms;
         this.senseEntryList = senseEntryList;
         this.source = source;
+    }
+
+    public Word(String spell, Pronounce pronounce, Frequency frequency,
+            ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
+            String source, int counter, Instant timestamp) {
+
+        this.spell = spell;
+        this.pronounce = pronounce;
+        this.frequency = frequency;
+        this.forms = forms;
+        this.senseEntryList = senseEntryList;
+        this.source = source;
+        this.counter = counter;
+        this.timestamp = timestamp;
     }
 
     public String toString() {
@@ -78,49 +95,52 @@ public class Word {
         return this.senseEntryList;
     }
 
-    public Instant getLastModify() {
-        return this.lastModify;
+    public Instant getTimestamp() {
+        return this.timestamp;
     }
 
     public String getSource() {
         return this.source;
     }
 
+    public int getCounter() {
+        return this.counter;
+    }
     // }}} getter //
 
     // setter {{{ //
-    private void setLastModify() {
-        this.lastModify = Instant.now();
+    private void setTimestamp() {
+        this.timestamp = Instant.now();
     }
 
     public void setSpell(String spell) {
         this.spell = spell;
-        setLastModify();
+        setTimestamp();
     }
 
     public void setPronounce(Pronounce pronounce) {
         this.pronounce = pronounce;
-        setLastModify();
+        setTimestamp();
     }
 
     public void setFrequency(Frequency frequency) {
         this.frequency = frequency;
-        setLastModify();
+        setTimestamp();
     }
 
     public void setForms(ArrayList<String> forms) {
         this.forms = forms;
-        setLastModify();
+        setTimestamp();
     }
 
     public void setSenesEntries(ArrayList<SenseEntry> senseEntryList) {
         this.senseEntryList = senseEntryList;
-        setLastModify();
+        setTimestamp();
     }
 
     public void setSource(String source) {
         this.source = source;
-        setLastModify();
+        setTimestamp();
     }
     // }}} setter //
 }

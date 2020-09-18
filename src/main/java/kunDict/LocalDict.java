@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 abstract class LocalDict extends Dict{
-    private Instant lastModify;
+    private Instant timestamp;
     private String dbName;
 
     public LocalDict(String name, String description, DictType type) {
@@ -20,12 +20,12 @@ abstract class LocalDict extends Dict{
     public LocalDict(){
     }
 
-    public Instant getLastModify(){
-        return this.lastModify;
+    public Instant getTimestamp(){
+        return this.timestamp;
     }
 
-    private void updateLastModify(){
-        this.lastModify = Instant.now();
+    private void updateTimestamp(){
+        this.timestamp = Instant.now();
     }
 
     public String getDbName() {
@@ -46,8 +46,8 @@ abstract class LocalDict extends Dict{
         // make query string for querying a word {{{ //
             String query = "SELECT word_spell, word_source, word_forms, "
                     + "word_pron_soundmark, word_pron_sound, fre_band, "
-                    + "fre_description, entry_wordClass, "
-                    + "entry_sense, example_text "
+                    + "word_counter, wrod_timestamp, fre_description, "
+                    + "entry_wordClass, entry_sense, example_text "
                     + "FROM words, frequencies, entries, examples "
                     + "WHERE ("
                     + "words.fre_id = frequencies.fre_id AND "
@@ -64,6 +64,8 @@ abstract class LocalDict extends Dict{
             Pronounce pron = null;
             Frequency fre = null;
             ArrayList<String> forms = null;
+            int counter = -1;
+            Instant timestamp = null;
 
             ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
             int count = 0;
@@ -78,6 +80,8 @@ abstract class LocalDict extends Dict{
                     fre = new Frequency(freBand, freDescription);
                     forms = Utils.convertStringToArrayList(
                             rs.getString("word_forms"));
+                    counter = rs.getInt("word_counter");
+                    timestamp = rs.getTimestamp("word_timestamp").toInstant();
                 }
 
                 SenseEntry senseEntry = new SenseEntry();
@@ -91,7 +95,7 @@ abstract class LocalDict extends Dict{
 
             senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList,
-                    source);
+                    source, counter, timestamp);
         } catch (SQLException e) {
             Database.printSQLException(e);
         }

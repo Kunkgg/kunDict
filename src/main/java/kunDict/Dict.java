@@ -49,12 +49,12 @@ abstract class Dict {
 enum  DictType {
     Online {
         public String toString() {
-            return "Online Dict";
+            return "Online";
         }
     },
     Local {
         public String toString() {
-            return "Local Dict";
+            return "Local";
         }
     }
 }
