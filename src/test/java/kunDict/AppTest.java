@@ -58,6 +58,7 @@ public class AppTest {
         assertNotNull("sensEntryList should not Null", water.getSenesEntries());
     }
 
+    @Ignore
     @Test
     public void testCollinsQuery() throws IOException {
         CollinsOnlineDict collins = new CollinsOnlineDict();
@@ -128,27 +129,26 @@ public class AppTest {
         assertTrue(con.isClosed());
     }
 
-    @Ignore
     @Test
     public void testMITDictQuery() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
 
-        String word = "water";
+        String word = "ace";
+        System.out.println("### Local ###");
         Word wordLocal = mitDict.query(word);
-        // System.out.println(wordLocal);
-        // assertNotNull("water should be a instance of class Word", wordLocal);
+        Formatter fmtLocal = new Formatter(wordLocal);
+        fmtLocal.printText();
+        System.out.println("### Online ###");
         CollinsOnlineDict collins = new CollinsOnlineDict();
         Word wordCollins = collins.query(word);
-        // assertNotNull("water should be a instance of class Word", wordLocal);
-        // assertEquals("results local and collins of query should equal.", wordCollins, wordLocal);
-        assertEquals(wordLocal.getSenesEntries(), wordCollins.getSenesEntries());
+        Formatter fmtCollins = new Formatter(wordCollins);
+        fmtCollins.printText();
+        assertEquals("results local and collins of query should equal.", wordCollins, wordLocal);
         assertEquals(wordLocal.getSpell(), wordCollins.getSpell());
         assertEquals(wordLocal.getForms(), wordCollins.getForms());
         assertEquals(wordLocal.getFrequency(), wordCollins.getFrequency());
-        // assertEquals(wordLocal.getPronounce(), wordCollins.getPronounce());
+        assertEquals(wordLocal.getPronounce(), wordCollins.getPronounce());
         assertEquals(wordLocal.getSenesEntries(), wordCollins.getSenesEntries());
         assertEquals(wordLocal.getSource(), wordCollins.getSource());
-        System.out.println("database: " + wordLocal.getPronounce().getSound());
-        System.out.println("online: " + wordCollins.getPronounce().getSound());
     }
 }

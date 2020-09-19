@@ -15,7 +15,7 @@ public class MITDict extends LocalDict {
         this.setDescription(
                 "Word list is from MIT. "
                 +"Word entries are from Collins online dictionary.");
-        this.setDbName("mit10k");
+        this.setShortName("mit10k");
     }
 
     // public Boolean add(Word word) {

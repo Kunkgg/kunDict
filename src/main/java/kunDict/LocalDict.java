@@ -10,7 +10,8 @@ import java.util.ArrayList;
 
 abstract class LocalDict extends Dict{
     private Instant timestamp;
-    private String dbName;
+    private final String dbName = "dict";
+    private String shortName;
 
     public LocalDict(String name, String description, DictType type) {
         super(name, description, type);
@@ -33,8 +34,12 @@ abstract class LocalDict extends Dict{
        return this.dbName;
     }
 
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
+    public String getShortName() {
+        return this.shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     // }}} getter and setter //
@@ -46,18 +51,7 @@ abstract class LocalDict extends Dict{
 
         // query from locale database
         try (Statement stmt = con.createStatement();) {
-        // make query string for querying a word {{{ //
-            String query = "SELECT word_spell, word_source, word_forms, "
-                    + "word_pron_soundmark, word_pron_sound, fre_band, "
-                    + "word_counter, wrod_timestamp, fre_description, "
-                    + "entry_wordClass, entry_sense, example_text "
-                    + "FROM words, frequencies, entries, examples "
-                    + "WHERE ("
-                    + "words.fre_id = frequencies.fre_id AND "
-                    + "words.word_id = entries.word_id AND "
-                    + "entries.entry_id = examples.entry_id AND "
-                    + "words.word_spell = " + "\'" + wordSpell + "\')";
-        // }}} make query string for querying a word //
+            String query = SQLStr.queryWord(this.shortName, wordSpell);
             System.out.println(query);
 
             // process the ResultSet {{{ //
@@ -66,9 +60,9 @@ abstract class LocalDict extends Dict{
             String source = null;
             Pronounce pron = null;
             Frequency fre = null;
-            ArrayList<String> forms = null;
             int counter = -1;
             Instant timestamp = null;
+            ArrayList<String> forms = null;
 
             ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
             int count = 0;

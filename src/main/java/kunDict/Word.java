@@ -54,6 +54,7 @@ public class Word {
     }
 
     public boolean equals(Object otherObj) {
+        if (this == otherObj) return true;
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Word other = (Word) otherObj;
@@ -165,6 +166,7 @@ class Pronounce {
     }
 
     public boolean equals(Object otherObj) {
+        if (this == otherObj) return true;
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Pronounce other = (Pronounce) otherObj;
@@ -210,6 +212,7 @@ class SenseEntry {
     }
 
     public boolean equals(Object otherObj) {
+        if (this == otherObj) return true;
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         SenseEntry other = (SenseEntry) otherObj;
@@ -312,6 +315,7 @@ class Frequency {
     }
 
     public boolean equals(Object otherObj) {
+        if (this == otherObj) return true;
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Frequency other = (Frequency) otherObj;
