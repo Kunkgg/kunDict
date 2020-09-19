@@ -10,8 +10,8 @@ public class Utils {
 
     /**
      * convertStringToArrayList
-     * param: String str = "[waters, watering, watered]"
-     * return: ArrayList<String> [waters, watering, watered]
+     * @param String str = "[waters, watering, watered]"
+     * @return ArrayList<String> [waters, watering, watered]
      */
     public static ArrayList<String> convertStringToArrayList(String str) {
 

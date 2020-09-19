@@ -20,6 +20,7 @@ abstract class LocalDict extends Dict{
     public LocalDict(){
     }
 
+    // getter and setter {{{ //
     public Instant getTimestamp(){
         return this.timestamp;
     }
@@ -35,6 +36,8 @@ abstract class LocalDict extends Dict{
     public void setDbName(String dbName) {
         this.dbName = dbName;
     }
+
+    // }}} getter and setter //
 
     public Word query(String wordSpell) throws IOException, SQLException {
         Word word = null;
