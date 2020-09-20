@@ -17,10 +17,16 @@ public class SQLStr {
                             "entry_wordClass",
                             "entry_sense",
                             "example_text"};
+
+    static final String[] tableListApp = {"dicts", "dict_types"};
     // }}} static fields //
 
     public static String commaJoin(String... columns) {
         return String.join(", ", columns);
+    }
+
+    public static String hasTables(String keyword) {
+        return "SHOW TABLES LIKE \'%" + keyword + "%\';";
     }
 
     // operate word in a dictionary {{{ //
@@ -66,11 +72,7 @@ public class SQLStr {
     }
     // }}} operate word in a dictionary //
 
-    // Create table for each dictionary {{{ //
-    public static String hasTables(String shortName) {
-        return "SHOW TABLES LIKE \'%" + shortName + "%\';";
-    }
-
+    // Create table in a dictionary {{{ //
     public static String createTableWords(String shortName) {
         return "CREATE TABLE " + shortName + "_words"
             + "("
@@ -141,7 +143,7 @@ public class SQLStr {
             + " FOREIGN KEY (" + foreignKey + ")"
             + " REFERENCES " + tableB + "(" + foreignKey + ");";
     }
-    // }}} Create table for each dictionary //
+    // }}} Create table in a dictionary //
 
     // Delete tables for each dictionary {{{ //
     public static String dropTableInDict(String shortName) {
@@ -150,16 +152,39 @@ public class SQLStr {
             tableListInDictWithShortName[i] = shortName + "_"
                 + tableListInDict[i];
         }
+
         return "DROP TABLE " + commaJoin(tableListInDictWithShortName) + ";";
     }
     // }}} Delete tables for each dictionary //
 
-    // Create tables for dicts {{{ //
-    public static String AddForeignKeyDicts() {
+    // Create tables for App {{{ //
+    public static String createTableDicts() {
+        return "CREATE TABLE dicts"
+            + "("
+            + "  dict_id                int       NOT NULL AUTO_INCREMENT,"
+            + "  dict_name              char(50)  NOT NULL UNIQUE,"
+            + "  dict_type_id           int       NULL ,"
+            + "  dict_dbName            char(50)  NULL UNIQUE,"
+            + "  dict_size              int       DEFAULT 0,"
+            + "  dict_timestamp         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "  PRIMARY KEY (dict_id)"
+            + ") ENGINE=InnoDB;";
+    }
+
+    public static String createTableDictTypes() {
+        return "CREATE TABLE dict_types"
+            + "("
+            + "  dict_type_id           int       NOT NULL AUTO_INCREMENT,"
+            + "  dict_type              char(50)  NULL UNIQUE,"
+            + "  PRIMARY KEY (dict_type_id)"
+            + ") ENGINE=InnoDB;";
+    }
+
+    public static String addForeignKeyDictTypeId() {
         return "ALTER TABLE dicts ADD CONSTRAINT fk_dicts_types "
             + "FOREIGN KEY (dict_type_id) "
             + "REFERENCES  dict_types (dict_type_id);";
     }
 
-    // }}} Create tables for dicts //
+    // }}} Create tables for App //
 }

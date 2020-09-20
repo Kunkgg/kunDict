@@ -22,14 +22,7 @@ import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.JVM)
 public class AppTest {
-    @Ignore
-    @Test
-    public void testAppHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull("app should have a greeting",
-                classUnderTest.getGreeting());
-    }
-
+    // Request {{{ //
     @Ignore
     @Test
     public void testRequest() {
@@ -44,7 +37,9 @@ public class AppTest {
         assertEquals(200, response.statusCode());
         assertNotNull("request should get response", response);
     }
+    // }}} Request //
 
+    // Extractor {{{ //
     @Ignore
     @Test
     public void testCollinsExtracotr() throws IOException {
@@ -60,7 +55,9 @@ public class AppTest {
                 water.getSenesEntries().size());
         assertNotNull("sensEntryList should not Null", water.getSenesEntries());
     }
+    // }}} Extractor //
 
+    // CollinsQuery {{{ //
     @Ignore
     @Test
     public void testCollinsQuery() throws IOException {
@@ -68,6 +65,7 @@ public class AppTest {
         assertEquals("Should get name of dictionary",
                 "Collins Online English Dictionary", collins.getName());
 
+        // words {{{ //
         Word water = collins.query("water");
         Formatter fwater = new Formatter(water);
         fwater.printText();
@@ -103,8 +101,11 @@ public class AppTest {
         Word ace = collins.query("ace");
         Formatter face = new Formatter(ace);
         face.printText();
+        // }}} words //
     }
+    // }}} CollinsQuery //
 
+    // dict database {{{ //
     @Ignore
     @Test
     public void testDatabaseSetProperties() throws IOException {
@@ -124,13 +125,15 @@ public class AppTest {
         assertTrue(db.getCurrentCon().isClosed());
     }
 
-    // @Test
-    // public void testDictHasTables() throws IOException, SQLException {
-    //     MITDict mitDict = new MITDict();
-    //     // assertTrue("Should have tables", mitDict.hasTables());
-    //     assertFalse("Should NOT have tables", mitDict.hasTables());
-    // }
+    @Ignore
+    @Test
+    public void testDictHasTables() throws IOException, SQLException {
+        MITDict mitDict = new MITDict();
+        // assertTrue("Should have tables", mitDict.hasTables());
+        assertFalse("Should NOT have tables", mitDict.hasTables());
+    }
 
+    @Ignore
     @Test
     public void testDictInitializeTables() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -140,6 +143,7 @@ public class AppTest {
         assertTrue("Should have tables", mitDict.hasTables());
     }
 
+    @Ignore
     @Test
     public void testDictDropTables() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -147,7 +151,10 @@ public class AppTest {
         mitDict.dropTables();
         assertFalse("Should NOT have tables", mitDict.hasTables());
     }
+    // }}} dict database //
 
+    // MITDict operate {{{ //
+    // Query {{{ //
     @Ignore
     @Test
     public void testMITDictQuery() throws IOException, SQLException {
@@ -171,4 +178,22 @@ public class AppTest {
         assertEquals(wordLocal.getSenesEntries(), wordCollins.getSenesEntries());
         assertEquals(wordLocal.getSource(), wordCollins.getSource());
     }
+    // }}} Query //
+    // }}} MITDict operate //
+
+    // App database {{{ //
+    @Test
+    public void testAppInitializeTables() throws IOException, SQLException {
+        App app = new App();
+        app.initializeTables();
+        assertTrue("Should have tables", app.hasTables());
+    }
+
+    @Test
+    public void testAppHasTables() throws IOException, SQLException {
+        App app = new App();
+        assertTrue("Should have tables", app.hasTables());
+    }
+    // }}} App database //
+
 }

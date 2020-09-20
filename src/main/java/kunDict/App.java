@@ -3,12 +3,82 @@
  */
 package kunDict;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
+    private Database db;
+
+    public App() throws IOException, SQLException{
+        Database db = new Database();
+        this.setDb(db);
     }
 
+    // getter and setter {{{ //
+    public Database getDb() {
+        return this.db;
+    }
+
+    public void setDb(Database db) {
+        this.db = db;
+    }
+    // }}} getter and setter //
+
+    public void initializeTables() throws IOException, SQLException {
+        this.db.getConnection();
+        this.db.createDatabase();
+        this.db.useDbName();
+
+        if (!hasTables()) {
+            db.createTable(SQLStr.createTableDicts());
+            db.createTable(SQLStr.createTableDictTypes());
+            db.addForeignKey(SQLStr.addForeignKeyDictTypeId());
+        }
+
+        Utils.info("APP INITED");
+    }
+
+    public boolean hasTables() throws IOException, SQLException {
+        Boolean result = false;
+        Connection con = this.db.getCurrentConUseDb();
+
+        try (Statement stmt = con.createStatement();) {
+            String query = SQLStr.hasTables("dict");
+
+            // process the ResultSet {{{ //
+            ResultSet rs = stmt.executeQuery(query);
+            ArrayList<String> existedTables = new ArrayList<>();
+            ArrayList<String> designedTables = new ArrayList<>(
+                    Arrays.asList(SQLStr.tableListApp));
+            while (rs.next()) {
+                existedTables.add(rs.getString(1));
+            }
+
+            result = existedTables.containsAll(designedTables);
+
+        } catch (SQLException e) {
+            Database.printSQLException(e);
+        }
+        if (result) {
+            Utils.info("App tables existed");
+        } else {
+            Utils.info("App tables NOT existed");
+        }
+
+        return result;
+        // }}} process the ResultSet //
+    }
+
+    // public boolean checkForeignKey(){}
+    // public boolean checkTableValuse(){}
+
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+
     }
 }

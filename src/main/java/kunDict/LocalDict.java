@@ -53,7 +53,7 @@ abstract class LocalDict extends Dict{
 
     // manage each dict {{{ //
     public void initializeTables() throws IOException, SQLException {
-        this.db.getConnectionUseDb();
+        this.db.getConnectionUseDbName();
 
         if (!hasTables()) {
             db.createTable(SQLStr.createTableWords(this.shortName));
@@ -69,7 +69,7 @@ abstract class LocalDict extends Dict{
     }
 
     public void dropTables() throws IOException, SQLException {
-        this.db.getConnectionUseDb();
+        this.db.getConnectionUseDbName();
         db.dropTable(SQLStr.dropTableInDict(this.shortName));
 
         Utils.info(this.shortName + " dictionary tables DELETED");
@@ -108,6 +108,9 @@ abstract class LocalDict extends Dict{
         return result;
         // }}} process the ResultSet //
     }
+
+    // public boolean checkForeignKey(){}
+
     // }}} manage each dict //
 
     // operater in dictionary {{{ //

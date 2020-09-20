@@ -52,28 +52,16 @@ public class Database {
     /** getConnection
       * @param useDbName wether use the this.dbName nor not
     */
-    public void getConnectionUseDb() throws SQLException {
-        if (! this.isConnected()) {
-            Properties connectionProps = new Properties();
-            connectionProps.put("user", this.userName);
-            connectionProps.put("password", this.password);
+    public void getConnectionUseDbName() throws SQLException {
+        this.getConnection();
+        this.useDbName();
+    }
 
-            Connection con = null;
-            String currentUrlString = null;
-
-            if (this.dbms.equals("mysql")) {
-                currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
-                        this.serverName, this.portNumber);
-                con = DriverManager.getConnection(currentUrlString,
-                        connectionProps);
-                this.currentCon = con;
-                Utils.info("Connected to " + this.dbms);
-            }
-
-            this.urlString = currentUrlString + this.dbName;
-            con.setCatalog(this.dbName);
-            this.currentCon = con;
-            Utils.info("Using database " + this.dbName);
+    public void useDbName() throws SQLException {
+        if ( this.isConnected()) {
+            this.urlString = this.urlString + this.dbName;
+            this.currentCon.setCatalog(this.dbName);
+            Utils.info("Using database: " + this.dbName);
         }
     }
 
@@ -83,15 +71,11 @@ public class Database {
             connectionProps.put("user", this.userName);
             connectionProps.put("password", this.password);
 
-            Connection con = null;
-            String currentUrlString = null;
-
             if (this.dbms.equals("mysql")) {
-                currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
+                this.urlString = String.format("jdbc:%s://%s:%d/", this.dbms,
                         this.serverName, this.portNumber);
-                con = DriverManager.getConnection(currentUrlString,
+                this.currentCon = DriverManager.getConnection(this.urlString,
                         connectionProps);
-                this.currentCon = con;
                 Utils.info("Connected to " + this.dbms);
             }
         }
@@ -118,7 +102,7 @@ public class Database {
     }
 
     public Connection getCurrentConUseDb() throws SQLException{
-        this.getConnectionUseDb();
+        this.getConnectionUseDbName();
         return this.currentCon;
     }
 
@@ -165,16 +149,13 @@ public class Database {
         }
     }
 
-    public static void createDatabase(Connection con, String dbName,
-            String dbms) {
-
-        if (dbms.equals("mysql")) {
-            try {
-                Statement stmt = con.createStatement();
-                String newDatabaseString = "CREATE DATABASE IF NOT EXISTS "
-                        + dbName;
-
-                System.out.println("Created database " + dbName);
+    public void createDatabase() {
+        if (this.dbms.equals("mysql")) {
+            try (Statement stmt = this.currentCon.createStatement()) {
+                String createDatabaseStr = "CREATE DATABASE IF NOT EXISTS "
+                        + this.dbName;
+                stmt.executeUpdate(createDatabaseStr);
+                Utils.info("Created database " + this.dbName);
             } catch (SQLException e) {
                 printSQLException(e);
             }
@@ -183,7 +164,6 @@ public class Database {
     // }}} Create table and database //
 
     // static methods {{{ //
-
     public static void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
