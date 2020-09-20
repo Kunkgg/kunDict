@@ -51,6 +51,7 @@ abstract class LocalDict extends Dict{
 
     // }}} getter and setter //
 
+    // manage each dict {{{ //
     public void initializeTables() throws IOException, SQLException {
         this.db.getConnectionUseDb();
 
@@ -59,7 +60,19 @@ abstract class LocalDict extends Dict{
             db.createTable(SQLStr.createTableFrequencies(this.shortName));
             db.createTable(SQLStr.createTableEntries(this.shortName));
             db.createTable(SQLStr.createTableExamples(this.shortName));
+            db.addForeignKey(SQLStr.addForeignKeyFreId(this.shortName));
+            db.addForeignKey(SQLStr.addForeignKeyWordId(this.shortName));
+            db.addForeignKey(SQLStr.addForeignKeyEntryId(this.shortName));
         }
+
+        Utils.info(this.shortName + " dictionary INITED");
+    }
+
+    public void dropTables() throws IOException, SQLException {
+        this.db.getConnectionUseDb();
+        db.dropTable(SQLStr.dropTableInDict(this.shortName));
+
+        Utils.info(this.shortName + " dictionary tables DELETED");
     }
 
     public boolean hasTables() throws IOException, SQLException {
@@ -68,7 +81,6 @@ abstract class LocalDict extends Dict{
 
         try (Statement stmt = con.createStatement();) {
             String query = SQLStr.hasTables(this.shortName);
-            System.out.println(query);
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
@@ -82,15 +94,23 @@ abstract class LocalDict extends Dict{
                 designedTables.set(i,
                         this.shortName + "_" + designedTables.get(i));
             }
-            return existedTables.containsAll(designedTables);
+            result = existedTables.containsAll(designedTables);
 
         } catch (SQLException e) {
             Database.printSQLException(e);
         }
+        if (result) {
+            Utils.info(this.shortName + " dictionary tables existed");
+        } else {
+            Utils.info(this.shortName + " dictionary tables NOT existed");
+        }
+
         return result;
         // }}} process the ResultSet //
     }
+    // }}} manage each dict //
 
+    // operater in dictionary {{{ //
     public Word query(String wordSpell) throws IOException, SQLException {
         Word word = null;
         Connection con = this.db.getCurrentConUseDb();
@@ -146,6 +166,7 @@ abstract class LocalDict extends Dict{
             // }}} process the ResultSet //
         return word;
     };
+    // }}} operater in dictionary //
 
     // public boolean add(Word word) {
     //     if (word.isEmypty()) {

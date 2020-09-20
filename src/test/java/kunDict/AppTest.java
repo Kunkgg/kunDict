@@ -3,17 +3,24 @@
  */
 package kunDict;
 
-import org.junit.Test;
-import org.junit.Ignore;
-import static org.junit.Assert.*;
-import java.net.http.HttpResponse;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.nio.file.Files;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
-import java.sql.Connection;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
+import org.junit.FixMethodOrder;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
+@FixMethodOrder(MethodSorters.JVM)
 public class AppTest {
     @Ignore
     @Test
@@ -125,9 +132,19 @@ public class AppTest {
     // }
 
     @Test
-    public void testDictCreateTables() throws IOException, SQLException {
+    public void testDictInitializeTables() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
         // assertTrue("Should have tables", mitDict.hasTables());
+        // assertFalse("Should NOT have tables", mitDict.hasTables());
+        mitDict.initializeTables();
+        assertTrue("Should have tables", mitDict.hasTables());
+    }
+
+    @Test
+    public void testDictDropTables() throws IOException, SQLException {
+        MITDict mitDict = new MITDict();
+        // mitDict.initializeTables();
+        mitDict.dropTables();
         assertFalse("Should NOT have tables", mitDict.hasTables());
     }
 

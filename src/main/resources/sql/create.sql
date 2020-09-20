@@ -82,8 +82,9 @@ CREATE TABLE mit10k_examples
   example_text    text      NOT NULL ,
   entry_id        int       NOT NULL ,
   PRIMARY KEY(example_id),
-  FULLTEXT(example_text)
-) ENGINE=MyISAM;
+) ENGINE=InnoDB;
+
+# FULLTEXT(example_text)
 
 /* }}} Each dict tables */
 

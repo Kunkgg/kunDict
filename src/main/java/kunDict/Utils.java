@@ -19,6 +19,21 @@ public class Utils {
         ArrayList<String> result = new ArrayList<>(Arrays.asList(list));
 
         return result;
+    }
 
+    public static void info(String... str) {
+        System.out.println("[INFO] " + String.join(", ", str));
+    }
+
+    public static void warning(String... str) {
+        System.out.println("[WARNING] " + String.join(", ", str));
+    }
+
+    public static void debug(String... str) {
+        System.out.println("[DEBUG] " + String.join(", ", str));
+    }
+
+    public static void config(String... str) {
+        System.out.println("[CONFIG] " + String.join(", ", str));
     }
 }

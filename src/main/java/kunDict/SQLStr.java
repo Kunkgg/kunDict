@@ -2,10 +2,10 @@ package kunDict;
 
 public class SQLStr {
     // static fields {{{ //
-    static String[] tableListInDict = {"words", "frequencies",
+    static final String[] tableListInDict = {"words", "frequencies",
         "entries", "examples" };
 
-    static String[] columnListInDict = {"word_spell",
+    static final String[] columnListInDict = {"word_spell",
                             "word_source",
                             "word_forms",
                             "word_pron_soundmark",
@@ -66,7 +66,6 @@ public class SQLStr {
     }
     // }}} operate word in a dictionary //
 
-
     // Create table for each dictionary {{{ //
     public static String hasTables(String shortName) {
         return "SHOW TABLES LIKE \'%" + shortName + "%\';";
@@ -115,10 +114,52 @@ public class SQLStr {
                   + "example_id      int       NOT NULL AUTO_INCREMENT,"
                   + "example_text    text      NOT NULL ,"
                   + "entry_id        int       NOT NULL ,"
-                  + "PRIMARY KEY(example_id),"
-                  + "FULLTEXT(example_text)"
-                + ") ENGINE=MyISAM;";
+                  + "PRIMARY KEY(example_id)"
+                + ") ENGINE=InnoDB;";
     }
 
+    public static String addForeignKeyFreId(String shortName) {
+        return addForeignKey(shortName, "words", "frequencies", "fre_id");
+    }
+
+    public static String addForeignKeyWordId(String shortName) {
+        return addForeignKey(shortName, "entries", "words", "word_id");
+    }
+
+    public static String addForeignKeyEntryId(String shortName) {
+        return addForeignKey(shortName, "examples", "entries", "entry_id");
+    }
+
+    public static String addForeignKey(String shortName,
+            String tableA, String tableB, String foreignKey) {
+        String constraintName = shortName + "_fk_" + tableA + "_" + tableB;
+        tableA = shortName + "_" + tableA;
+        tableB = shortName + "_" + tableB;
+
+        return "ALTER TABLE " + tableA
+            + " ADD CONSTRAINT " + constraintName
+            + " FOREIGN KEY (" + foreignKey + ")"
+            + " REFERENCES " + tableB + "(" + foreignKey + ");";
+    }
     // }}} Create table for each dictionary //
+
+    // Delete tables for each dictionary {{{ //
+    public static String dropTableInDict(String shortName) {
+        String[] tableListInDictWithShortName = new String[tableListInDict.length];
+        for (int i = 0; i < tableListInDictWithShortName.length; i++) {
+            tableListInDictWithShortName[i] = shortName + "_"
+                + tableListInDict[i];
+        }
+        return "DROP TABLE " + commaJoin(tableListInDictWithShortName) + ";";
+    }
+    // }}} Delete tables for each dictionary //
+
+    // Create tables for dicts {{{ //
+    public static String AddForeignKeyDicts() {
+        return "ALTER TABLE dicts ADD CONSTRAINT fk_dicts_types "
+            + "FOREIGN KEY (dict_type_id) "
+            + "REFERENCES  dict_types (dict_type_id);";
+    }
+
+    // }}} Create tables for dicts //
 }

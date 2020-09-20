@@ -67,13 +67,13 @@ public class Database {
                 con = DriverManager.getConnection(currentUrlString,
                         connectionProps);
                 this.currentCon = con;
-                System.out.println("Connected to " + this.dbms);
+                Utils.info("Connected to " + this.dbms);
             }
 
             this.urlString = currentUrlString + this.dbName;
             con.setCatalog(this.dbName);
             this.currentCon = con;
-            System.out.println("Using database " + this.dbName);
+            Utils.info("Using database " + this.dbName);
         }
     }
 
@@ -92,13 +92,13 @@ public class Database {
                 con = DriverManager.getConnection(currentUrlString,
                         connectionProps);
                 this.currentCon = con;
-                System.out.println("Connected to " + this.dbms);
+                Utils.info("Connected to " + this.dbms);
             }
         }
     }
 
     public void closeConnection() {
-        System.out.println("Releasing all open resources ...");
+        Utils.info("Releasing all open resources ...");
         try {
             if (this.currentCon != null) {
                 this.currentCon.close();
@@ -128,13 +128,37 @@ public class Database {
     }
     // }}} manage connection //
 
-    // Create table and database {{{ //
+    // manage table and database {{{ //
     public void createTable(String createTableStr) {
         if (this.dbms.equals("mysql")) {
             try (Statement stmt = this.currentCon.createStatement()){
                 stmt.executeUpdate(createTableStr);
-                System.out.println("Created Table "
-                        + createTableStr.split(" ")[2]);
+                Utils.info("Created Table " + createTableStr.split(" ")[2]);
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+        }
+    }
+
+    public void addForeignKey(String addForeignKeyStr) {
+        if (this.dbms.equals("mysql")) {
+            try (Statement stmt = this.currentCon.createStatement()){
+                stmt.executeUpdate(addForeignKeyStr);
+                Utils.info("Added foreignKey "
+                        + addForeignKeyStr.split(" ")[5]);
+            } catch (SQLException e) {
+                printSQLException(e);
+            }
+        }
+    }
+
+    public void dropTable(String dropTableStr) {
+        String[] temp = dropTableStr.split(" ");
+        if (this.dbms.equals("mysql")) {
+            try (Statement stmt = this.currentCon.createStatement()) {
+                stmt.executeUpdate(dropTableStr);
+                Utils.info("Droped table " + String.join(" ",
+                        Arrays.copyOfRange(temp, 2, temp.length)));
             } catch (SQLException e) {
                 printSQLException(e);
             }
@@ -159,7 +183,6 @@ public class Database {
     // }}} Create table and database //
 
     // static methods {{{ //
-
 
     public static void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
@@ -238,13 +261,14 @@ public class Database {
         this.portNumber = Integer
                 .parseInt(this.prop.getProperty("portNumber"));
 
-        System.out.println("Set the following properties:");
-        System.out.println("dbms: " + dbms);
-        System.out.println("driver: " + driver);
-        System.out.println("dbName" + dbName);
-        System.out.println("userName: " + userName);
-        System.out.println("serverName: " + serverName);
-        System.out.println("portNumber: " + portNumber);
+        Utils.config("Set the following properties:");
+        Utils.config("config file: " + this.propertiesFileName);
+        Utils.config("dbms: " + dbms);
+        Utils.config("driver: " + driver);
+        Utils.config("dbName: " + dbName);
+        Utils.config("userName: " + userName);
+        Utils.config("serverName: " + serverName);
+        Utils.config("portNumber: " + portNumber);
     }
     // }}} load database config from property file //
 

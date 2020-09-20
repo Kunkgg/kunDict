@@ -6,7 +6,7 @@ INSERT INTO mit10k_frequencies(fre_band, fre_description)
 VALUES(5, 'Extremely Common. water is one of the 1000 most commonly used words in the Collins dictionary');
 
 INSERT INTO mit10k_words(word_spell, word_source, word_forms, word_pron_soundmark, word_pron_sound, fre_id)
-VALUES('water', 'Collins Online English Dictionary', '[waters, watering, watered]', 'wɔtər', 'http://test.com/sound.mp3', 1);
+VALUES('water', 'Collins Online English Dictionary', '[waters, watering, watered]', 'wɔtər', 'https://www.collinsdictionary.com/us/sounds/hwd_sounds/en_us_water_2.mp3', 1);
 
 INSERT INTO mit10k_entries(entry_wordClass, entry_sense, word_id)
 VALUES('uncountable noun', 'Water is a clear thin liquid that has no color or taste when it is pure. It falls from clouds as rain and enters rivers and seas. All animals and people need water in order to live.', 1);
@@ -71,7 +71,7 @@ INSERT INTO mit10k_examples(example_text, entry_id)
 VALUES('Despite the loss of their ace early in the game, Seattle beat the Brewers 6-5.', 7);
 
 INSERT INTO mit10k_examples(example_text, entry_id)
-VALUES('countable noun, In tennis, an ace is a serve which is so fast that the other player cannot reach the ball.', 8);
+VALUES('Agassi believed he had served an ace at 5-3 (40-30) in the deciding set.', 8);
 
 ##########################
 # insert dict_types table
