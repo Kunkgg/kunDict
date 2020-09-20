@@ -45,10 +45,6 @@ public class AppTest {
         String html = Files.readString(Path.of(fileName));
         Extractor extractor = new Extractor(html);
         Word water = extractor.collinsOnline();
-        // System.out.println(water);
-        // System.out.println(water.getSpell());
-        // System.out.println(water.getPronounce());
-        // System.out.println(water.getFrequency());
         assertNotNull("water should be a Word class type", water);
         assertEquals("should be water", "water", water.getSpell());
         assertEquals("frequency should be 5", "frequency band: 5",
@@ -100,15 +96,6 @@ public class AppTest {
         Word ace = collins.query("ace");
         Formatter face = new Formatter(ace);
         face.printText();
-
-        // System.out.println(water);
-        // assertNotNull("water should be a Word class type", water);
-        // assertEquals("should be water", "water", water.getSpell());
-        // assertEquals("frequency should be 5", "frequency band: 5",
-        //         water.getFrequency().toString());
-        // assertEquals("sensEntryList size should be 5", 5,
-        //         water.getSenesEntries().size());
-        // assertNotNull("sensEntryList should not Null", water.getSenesEntries());
     }
 
     @Ignore
@@ -121,14 +108,30 @@ public class AppTest {
     @Ignore
     @Test
     public void testDatabaseGetConnection() throws IOException, SQLException {
-        String dbName = "mit_10k_dict";
+        String dbName = "dict";
         Database db = new Database(dbName);
-        Connection con = db.getConnection();
-        assertNotNull("con should be a instance of class Connection", con);
-        Database.closeConnection(con);
-        assertTrue(con.isClosed());
+        db.getConnection();
+        assertNotNull("con should be a instance of class Connection",
+                db.getCurrentCon());
+        db.closeConnection();
+        assertTrue(db.getCurrentCon().isClosed());
     }
 
+    // @Test
+    // public void testDictHasTables() throws IOException, SQLException {
+    //     MITDict mitDict = new MITDict();
+    //     // assertTrue("Should have tables", mitDict.hasTables());
+    //     assertFalse("Should NOT have tables", mitDict.hasTables());
+    // }
+
+    @Test
+    public void testDictCreateTables() throws IOException, SQLException {
+        MITDict mitDict = new MITDict();
+        // assertTrue("Should have tables", mitDict.hasTables());
+        assertFalse("Should NOT have tables", mitDict.hasTables());
+    }
+
+    @Ignore
     @Test
     public void testMITDictQuery() throws IOException, SQLException {
         MITDict mitDict = new MITDict();

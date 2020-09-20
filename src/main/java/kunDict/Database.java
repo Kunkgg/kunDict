@@ -29,6 +29,8 @@ public class Database {
     private String urlString;
     private String propertiesFileName = "./src/main/resources/database.config";
 
+    private Connection currentCon;
+
     private String driver;
     private String serverName;
     private int portNumber;
@@ -46,79 +48,118 @@ public class Database {
         this.setDbName(dbName);
     }
 
-    // getConnection {{{ //
-    public Connection getConnection() throws SQLException {
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", this.userName);
-        connectionProps.put("password", this.password);
+    // manage connection {{{ //
+    /** getConnection
+      * @param useDbName wether use the this.dbName nor not
+    */
+    public void getConnectionUseDb() throws SQLException {
+        if (! this.isConnected()) {
+            Properties connectionProps = new Properties();
+            connectionProps.put("user", this.userName);
+            connectionProps.put("password", this.password);
 
-        Connection conn = null;
-        String currentUrlString = null;
+            Connection con = null;
+            String currentUrlString = null;
 
-        if (this.dbms.equals("mysql")) {
-            currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
-                    this.serverName, this.portNumber);
-            conn = DriverManager.getConnection(currentUrlString,
-                    connectionProps);
-
-            this.urlString = currentUrlString + this.dbName;
-            conn.setCatalog(this.dbName);
-        }
-        System.out.println("Connected to database");
-        return conn;
-    }
-
-    public Connection getConnection(String userName, String password)
-            throws SQLException {
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", userName);
-        connectionProps.put("password", password);
-
-        Connection conn = null;
-        String currentUrlString = null;
-
-        if (this.dbms.equals("mysql")) {
-            currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
-                    this.serverName, this.portNumber);
-            conn = DriverManager.getConnection(currentUrlString,
-                    connectionProps);
+            if (this.dbms.equals("mysql")) {
+                currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
+                        this.serverName, this.portNumber);
+                con = DriverManager.getConnection(currentUrlString,
+                        connectionProps);
+                this.currentCon = con;
+                System.out.println("Connected to " + this.dbms);
+            }
 
             this.urlString = currentUrlString + this.dbName;
-            conn.setCatalog(this.dbName);
+            con.setCatalog(this.dbName);
+            this.currentCon = con;
+            System.out.println("Using database " + this.dbName);
         }
-        System.out.println("Connected to database");
-        return conn;
     }
-    // }}} getConnection //
 
-    // static methods {{{ //
-    public static void createDatabase(Connection connArg, String dbNameArg,
-            String dbmsArg) {
+    public void getConnection() throws SQLException {
+        if (! this.isConnected()) {
+            Properties connectionProps = new Properties();
+            connectionProps.put("user", this.userName);
+            connectionProps.put("password", this.password);
 
-        if (dbmsArg.equals("mysql")) {
-            try {
-                Statement s = connArg.createStatement();
-                String newDatabaseString = "CREATE DATABASE IF NOT EXISTS "
-                        + dbNameArg;
+            Connection con = null;
+            String currentUrlString = null;
 
-                System.out.println("Created database " + dbNameArg);
+            if (this.dbms.equals("mysql")) {
+                currentUrlString = String.format("jdbc:%s://%s:%d/", this.dbms,
+                        this.serverName, this.portNumber);
+                con = DriverManager.getConnection(currentUrlString,
+                        connectionProps);
+                this.currentCon = con;
+                System.out.println("Connected to " + this.dbms);
+            }
+        }
+    }
+
+    public void closeConnection() {
+        System.out.println("Releasing all open resources ...");
+        try {
+            if (this.currentCon != null) {
+                this.currentCon.close();
+                this.currentCon = null;
+            }
+        } catch (SQLException sqle) {
+            printSQLException(sqle);
+        }
+    }
+
+    public boolean isConnected() throws SQLException{
+        boolean result = false;
+        if (this.currentCon != null && this.currentCon.isValid(1)) {
+            result = true;
+        }
+        return result;
+    }
+
+    public Connection getCurrentConUseDb() throws SQLException{
+        this.getConnectionUseDb();
+        return this.currentCon;
+    }
+
+    public Connection getCurrentCon() throws SQLException{
+        this.getConnection();
+        return this.currentCon;
+    }
+    // }}} manage connection //
+
+    // Create table and database {{{ //
+    public void createTable(String createTableStr) {
+        if (this.dbms.equals("mysql")) {
+            try (Statement stmt = this.currentCon.createStatement()){
+                stmt.executeUpdate(createTableStr);
+                System.out.println("Created Table "
+                        + createTableStr.split(" ")[2]);
             } catch (SQLException e) {
                 printSQLException(e);
             }
         }
     }
 
-    public static void closeConnection(Connection connArg) {
-        System.out.println("Releasing all open resources ...");
-        try {
-            if (connArg != null) {
-                connArg.close();
-                connArg = null;
+    public static void createDatabase(Connection con, String dbName,
+            String dbms) {
+
+        if (dbms.equals("mysql")) {
+            try {
+                Statement stmt = con.createStatement();
+                String newDatabaseString = "CREATE DATABASE IF NOT EXISTS "
+                        + dbName;
+
+                System.out.println("Created database " + dbName);
+            } catch (SQLException e) {
+                printSQLException(e);
             }
-        } catch (SQLException sqle) {
-            printSQLException(sqle);
         }
     }
+    // }}} Create table and database //
+
+    // static methods {{{ //
+
 
     public static void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
@@ -190,6 +231,7 @@ public class Database {
 
         this.dbms = this.prop.getProperty("dbms");
         this.driver = this.prop.getProperty("driver");
+        this.dbName = this.prop.getProperty("dbName");
         this.userName = this.prop.getProperty("userName");
         this.password = this.prop.getProperty("password");
         this.serverName = this.prop.getProperty("serverName");
@@ -199,6 +241,7 @@ public class Database {
         System.out.println("Set the following properties:");
         System.out.println("dbms: " + dbms);
         System.out.println("driver: " + driver);
+        System.out.println("dbName" + dbName);
         System.out.println("userName: " + userName);
         System.out.println("serverName: " + serverName);
         System.out.println("portNumber: " + portNumber);
@@ -244,6 +287,7 @@ public class Database {
     public Properties getProrP() {
         return this.prop;
     }
+
 // }}} getter //
 
 // setter {{{ //
@@ -285,6 +329,10 @@ public class Database {
 
     public void setProp(Properties prop) {
         this.prop = prop;
+    }
+
+    public void setCurrentCon(Connection currentCon){
+        this.currentCon = currentCon;
     }
 // }}} setter //
 }

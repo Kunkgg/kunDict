@@ -7,10 +7,13 @@ import java.sql.ResultSet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 abstract class LocalDict extends Dict{
     private Instant timestamp;
-    private final String dbName = "dict";
+    private Database db;
+    // shortName is the short name of Dict.name
+    // It is used to be prefix of each tables of respective dictionary.
     private String shortName;
 
     public LocalDict(String name, String description, DictType type) {
@@ -30,8 +33,8 @@ abstract class LocalDict extends Dict{
         this.timestamp = Instant.now();
     }
 
-    public String getDbName() {
-       return this.dbName;
+    public Database getDb() {
+        return this.db;
     }
 
     public String getShortName() {
@@ -42,12 +45,55 @@ abstract class LocalDict extends Dict{
         this.shortName = shortName;
     }
 
+    public void setDb(Database db){
+        this.db = db;
+    }
+
     // }}} getter and setter //
+
+    public void initializeTables() throws IOException, SQLException {
+        this.db.getConnectionUseDb();
+
+        if (!hasTables()) {
+            db.createTable(SQLStr.createTableWords(this.shortName));
+            db.createTable(SQLStr.createTableFrequencies(this.shortName));
+            db.createTable(SQLStr.createTableEntries(this.shortName));
+            db.createTable(SQLStr.createTableExamples(this.shortName));
+        }
+    }
+
+    public boolean hasTables() throws IOException, SQLException {
+        Boolean result = false;
+        Connection con = this.db.getCurrentConUseDb();
+
+        try (Statement stmt = con.createStatement();) {
+            String query = SQLStr.hasTables(this.shortName);
+            System.out.println(query);
+
+            // process the ResultSet {{{ //
+            ResultSet rs = stmt.executeQuery(query);
+            ArrayList<String> existedTables = new ArrayList<>();
+            ArrayList<String> designedTables = new ArrayList<>(
+                    Arrays.asList(SQLStr.tableListInDict));
+            while (rs.next()) {
+                existedTables.add(rs.getString(1));
+            }
+            for (int i = 0; i < designedTables.size(); i++) {
+                designedTables.set(i,
+                        this.shortName + "_" + designedTables.get(i));
+            }
+            return existedTables.containsAll(designedTables);
+
+        } catch (SQLException e) {
+            Database.printSQLException(e);
+        }
+        return result;
+        // }}} process the ResultSet //
+    }
 
     public Word query(String wordSpell) throws IOException, SQLException {
         Word word = null;
-        Database db = new Database(this.dbName);
-        Connection con = db.getConnection();
+        Connection con = this.db.getCurrentConUseDb();
 
         // query from locale database
         try (Statement stmt = con.createStatement();) {
