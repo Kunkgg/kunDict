@@ -12,7 +12,7 @@ public class CollinsOnlineDict extends OnlineDict {
     private String queryUrlBase = "https://www.collinsdictionary.com/"
                                     + "us/dictionary/english/";
 
-    public Word query(String wordSpell) {
+    public Word queryWord(String wordSpell) {
         String url = queryUrlBase + wordSpell;
         System.out.println("URL: " + url);
 

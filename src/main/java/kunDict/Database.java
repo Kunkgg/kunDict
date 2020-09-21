@@ -8,17 +8,7 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.*;
 import java.io.*;
-import java.sql.BatchUpdateException;
-import java.sql.DatabaseMetaData;
-import java.sql.RowIdLifetime;
 import java.sql.SQLWarning;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
 
 public class Database {
 

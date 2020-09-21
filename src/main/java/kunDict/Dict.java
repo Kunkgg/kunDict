@@ -43,7 +43,7 @@ abstract class Dict {
     }
     // }}} getter and setter //
 
-    abstract Word query(String wordSpell) throws IOException, SQLException;
+    abstract Word queryWord(String wordSpell) throws IOException, SQLException;
 }
 
 enum  DictType {

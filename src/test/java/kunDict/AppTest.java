@@ -28,6 +28,27 @@ public class AppTest {
         this.app = new App();
     }
 
+    // App database {{{ //
+    @Test
+    public void testAppInitializeTables() throws IOException, SQLException {
+        app.initializeTables();
+        assertTrue("Should have tables", app.hasTables());
+    }
+
+    // @Test
+    // public void testAppHasTables() throws IOException, SQLException {
+    //     assertTrue("Should have tables", app.hasTables());
+    // }
+
+
+    // @Test
+    // public void testAppInsertValuesIntoDictTypes()
+    //     throws IOException, SQLException {
+    //     app.insertValuesIntoDictTypes();
+    //     // assertTrue("Should have tables", app.hasTables());
+    // }
+    // }}} App database //
+
     // Request {{{ //
     @Ignore
     @Test
@@ -72,39 +93,39 @@ public class AppTest {
                 "Collins Online English Dictionary", collins.getName());
 
         // words {{{ //
-        Word water = collins.query("water");
+        Word water = collins.queryWord("water");
         Formatter fwater = new Formatter(water);
         fwater.printText();
 
-        Word duplicate = collins.query("duplicate");
+        Word duplicate = collins.queryWord("duplicate");
         Formatter fduplicate = new Formatter(duplicate);
         fduplicate.printText();
 
-        Word polymorphism = collins.query("polymorphism");
+        Word polymorphism = collins.queryWord("polymorphism");
         Formatter fpolymorphism = new Formatter(polymorphism);
         fpolymorphism.printText();
 
-        Word casual = collins.query("casual");
+        Word casual = collins.queryWord("casual");
         Formatter fcasual = new Formatter(casual);
         fcasual.printText();
 
-        Word hibernate = collins.query("hibernate");
+        Word hibernate = collins.queryWord("hibernate");
         Formatter fhibernate = new Formatter(hibernate);
         fhibernate.printText();
 
-        Word hypothesis = collins.query("hypothesis");
+        Word hypothesis = collins.queryWord("hypothesis");
         Formatter fhypothesis = new Formatter(hypothesis);
         fhypothesis.printText();
 
-        Word test = collins.query("test");
+        Word test = collins.queryWord("test");
         Formatter ftest = new Formatter(test);
         ftest.printText();
 
-        Word thes = collins.query("thes");
+        Word thes = collins.queryWord("thes");
         Formatter fthes = new Formatter(thes);
         fthes.printText();
 
-        Word ace = collins.query("ace");
+        Word ace = collins.queryWord("ace");
         Formatter face = new Formatter(ace);
         face.printText();
         // }}} words //
@@ -139,7 +160,6 @@ public class AppTest {
         assertFalse("Should NOT have tables", mitDict.hasTables());
     }
 
-    @Ignore
     @Test
     public void testDictInitializeTables() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -160,6 +180,24 @@ public class AppTest {
     // }}} dict database //
 
     // MITDict operate {{{ //
+    // Add {{{ //
+    @Test
+    public void testMITDictAdd() throws IOException, SQLException {
+        CollinsOnlineDict collins = new CollinsOnlineDict();
+        Word water = collins.queryWord("water");
+        MITDict mitDict = new MITDict();
+        mitDict.addWord(water);
+        Word hibernate = collins.queryWord("hibernate");
+        mitDict.addWord(hibernate);
+        Word duplicate = collins.queryWord("duplicate");
+        mitDict.addWord(duplicate);
+        Word thes = collins.queryWord("thes");
+        mitDict.addWord(thes);
+        Word casual = collins.queryWord("casual");
+        mitDict.addWord(casual);
+    }
+
+    // }}} Add //
     // Query {{{ //
     @Ignore
     @Test
@@ -168,12 +206,12 @@ public class AppTest {
 
         String word = "ace";
         System.out.println("### Local ###");
-        Word wordLocal = mitDict.query(word);
+        Word wordLocal = mitDict.queryWord(word);
         Formatter fmtLocal = new Formatter(wordLocal);
         fmtLocal.printText();
         System.out.println("### Online ###");
         CollinsOnlineDict collins = new CollinsOnlineDict();
-        Word wordCollins = collins.query(word);
+        Word wordCollins = collins.queryWord(word);
         Formatter fmtCollins = new Formatter(wordCollins);
         fmtCollins.printText();
         assertEquals("results local and collins of query should equal.", wordCollins, wordLocal);
@@ -187,25 +225,5 @@ public class AppTest {
     // }}} Query //
     // }}} MITDict operate //
 
-    // App database {{{ //
-    @Test
-    public void testAppInitializeTables() throws IOException, SQLException {
-        app.initializeTables();
-        assertTrue("Should have tables", app.hasTables());
-    }
-
-    // @Test
-    // public void testAppHasTables() throws IOException, SQLException {
-    //     assertTrue("Should have tables", app.hasTables());
-    // }
-
-
-    // @Test
-    // public void testAppInsertValuesIntoDictTypes()
-    //     throws IOException, SQLException {
-    //     app.insertValuesIntoDictTypes();
-    //     // assertTrue("Should have tables", app.hasTables());
-    // }
-    // }}} App database //
 
 }

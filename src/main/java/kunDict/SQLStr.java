@@ -2,27 +2,38 @@ package kunDict;
 
 public class SQLStr {
     // static fields {{{ //
-    static final String[] tableListInDict = {"words", "frequencies",
-        "entries", "examples" };
+    static final String[] tableListInDict = { "words", "frequencies",
+            "entries", "examples" };
 
-    static final String[] columnListInDict = {"word_spell",
-                            "word_source",
-                            "word_forms",
-                            "word_pron_soundmark",
-                            "word_pron_sound",
-                            "word_counter",
-                            "word_timestamp",
-                            "fre_band",
-                            "fre_description",
-                            "entry_wordClass",
-                            "entry_sense",
-                            "example_text"};
+    static final String[] columnListInDict = { "word_spell", "word_source",
+            "word_forms", "word_pron_soundmark", "word_pron_sound",
+            "word_counter", "word_timestamp", "fre_band", "fre_description",
+            "entry_wordClass", "entry_sense", "example_text" };
+
+    static final String[] columnListInFrequencies = { "fre_band",
+            "fre_description" };
+
+    static final String[] columnListInWords = { "word_spell", "word_source",
+            "word_forms", "word_pron_soundmark", "word_pron_sound", "fre_id" };
+    static final String[] columnListInEntries = { "entry_wordClass",
+            "entry_sense", "word_id" };
+
+    static final String[] columnListInExamples = { "example_text",
+            "entry_id" };
 
     static final String[] tableListApp = {"dicts", "dict_types"};
     // }}} static fields //
 
     public static String commaJoin(String... columns) {
         return String.join(", ", columns);
+    }
+
+    public static String getPlaceholder(String[] columnList) {
+        String[] temp = columnList.clone();
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = "?";
+        }
+        return String.join(",", temp);
     }
 
     public static String hasTables(String keyword) {
@@ -70,6 +81,43 @@ public class SQLStr {
 
         return String.join(" AND ", conditions);
     }
+    // Add {{{ //
+
+    public static String insertValueIntoFrequenies(String shortName) {
+        String columns = commaJoin(columnListInFrequencies);
+        String placeholder = getPlaceholder(columnListInFrequencies);
+        String result = String.format("INSERT INTO %s_frequencies(%s) VALUES(%s)", shortName, columns, placeholder);
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String insertValueIntoWords(String shortName) {
+        String columns = commaJoin(columnListInWords);
+        String placeholder = getPlaceholder(columnListInWords);
+        String result = String.format("INSERT INTO %s_words(%s) VALUES(%s)",
+                shortName, columns, placeholder);
+        Utils.debug(result);
+        return result;
+
+    }
+
+    public static String insertValueIntoEntries(String shortName) {
+        String columns = commaJoin(columnListInEntries);
+        String placeholder = getPlaceholder(columnListInEntries);
+        String result =  String.format("INSERT INTO %s_entries(%s) VALUES(%s)", shortName, columns, placeholder);
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String insertValueIntoExamples(String shortName) {
+        String columns = commaJoin(columnListInExamples);
+        String placeholder = getPlaceholder(columnListInExamples);
+        String result =  String.format("INSERT INTO %s_examples(%s) VALUES(%s)", shortName, columns, placeholder);
+        Utils.debug(result);
+        return result;
+    }
+
+    // }}} Add //
     // }}} operate word in a dictionary //
 
     // Create table in a dictionary {{{ //

@@ -91,6 +91,8 @@ public class App {
             Database.printSQLException(e);
         } catch (SQLException e) {
             Database.printSQLException(e);
+        } finally {
+            con.setAutoCommit(true);
         }
     }
 
