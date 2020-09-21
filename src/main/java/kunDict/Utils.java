@@ -7,6 +7,9 @@ import java.util.Arrays;
  * Utils
  */
 public class Utils {
+    private static boolean info = true;
+    private static boolean warning = true;
+    private static boolean debug = true;
 
     /**
      * convertStringToArrayList
@@ -22,15 +25,21 @@ public class Utils {
     }
 
     public static void info(String... str) {
+        if (info) {
         System.out.println("[INFO] " + String.join(", ", str));
+        }
     }
 
     public static void warning(String... str) {
+        if (warning) {
         System.out.println("[WARNING] " + String.join(", ", str));
+        }
     }
 
     public static void debug(String... str) {
+        if (debug) {
         System.out.println("[DEBUG] " + String.join(", ", str));
+        }
     }
 
     public static void config(String... str) {
