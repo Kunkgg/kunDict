@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.BatchUpdateException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ public class App {
             db.createTable(SQLStr.createTableDicts());
             db.createTable(SQLStr.createTableDictTypes());
             db.addForeignKey(SQLStr.addForeignKeyDictTypeId());
+            this.insertValuesIntoDictTypes();
         }
 
         Utils.info("APP INITED");
@@ -75,6 +77,25 @@ public class App {
         // }}} process the ResultSet //
     }
 
+    public void insertValuesIntoDictTypes() throws SQLException {
+        Connection con = db.getCurrentConUseDb();
+        try (Statement stmt = con.createStatement()) {
+            con.setAutoCommit(false);
+            for (DictType e : DictType.values()) {
+                stmt.addBatch(SQLStr.insertValueIntoDictTypes(e.toString()));
+            }
+            stmt.executeBatch();
+            con.commit();
+            Utils.info("Inerted values of dict_types table");
+        } catch (BatchUpdateException e) {
+            Database.printSQLException(e);
+        } catch (SQLException e) {
+            Database.printSQLException(e);
+        }
+    }
+
+
+    // TODO: check app database status <21-09-20, gk07> //
     // public boolean checkForeignKey(){}
     // public boolean checkTableValuse(){}
 

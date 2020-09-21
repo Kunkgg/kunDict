@@ -186,5 +186,9 @@ public class SQLStr {
             + "REFERENCES  dict_types (dict_type_id);";
     }
 
+    public static String insertValueIntoDictTypes(String dictType) {
+        return "INSERT INTO dict_types(dict_type)"
+                + "VALUES(\'" + dictType + "\');";
+    }
     // }}} Create tables for App //
 }

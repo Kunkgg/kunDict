@@ -22,6 +22,12 @@ import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.JVM)
 public class AppTest {
+    public App app;
+
+    public AppTest() throws IOException, SQLException{
+        this.app = new App();
+    }
+
     // Request {{{ //
     @Ignore
     @Test
@@ -184,16 +190,22 @@ public class AppTest {
     // App database {{{ //
     @Test
     public void testAppInitializeTables() throws IOException, SQLException {
-        App app = new App();
         app.initializeTables();
         assertTrue("Should have tables", app.hasTables());
     }
 
-    @Test
-    public void testAppHasTables() throws IOException, SQLException {
-        App app = new App();
-        assertTrue("Should have tables", app.hasTables());
-    }
+    // @Test
+    // public void testAppHasTables() throws IOException, SQLException {
+    //     assertTrue("Should have tables", app.hasTables());
+    // }
+
+
+    // @Test
+    // public void testAppInsertValuesIntoDictTypes()
+    //     throws IOException, SQLException {
+    //     app.insertValuesIntoDictTypes();
+    //     // assertTrue("Should have tables", app.hasTables());
+    // }
     // }}} App database //
 
 }
