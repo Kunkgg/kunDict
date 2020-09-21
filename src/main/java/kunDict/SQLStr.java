@@ -1,6 +1,11 @@
 package kunDict;
 
 public class SQLStr {
+    // errer code {{{ //
+
+    static final int ERRORCODE_DUPLICATE_ENTRY = 1062;
+
+    // }}} errer code //
     // static fields {{{ //
     static final String[] tableListInDict = { "words", "frequencies",
             "entries", "examples" };
@@ -113,6 +118,14 @@ public class SQLStr {
         String columns = commaJoin(columnListInExamples);
         String placeholder = getPlaceholder(columnListInExamples);
         String result =  String.format("INSERT INTO %s_examples(%s) VALUES(%s)", shortName, columns, placeholder);
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String queryFreId(String shortName, String fre_band){
+        String result = String.format(
+                "SELECT fre_id FROM %s_frequencies WHERE fre_band = \'%s\';",
+                shortName, fre_band);
         Utils.debug(result);
         return result;
     }

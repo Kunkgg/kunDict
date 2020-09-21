@@ -195,6 +195,8 @@ public class AppTest {
         mitDict.addWord(thes);
         Word casual = collins.queryWord("casual");
         mitDict.addWord(casual);
+        Word ace = collins.queryWord("ace");
+        mitDict.addWord(ace);
     }
 
     // }}} Add //
