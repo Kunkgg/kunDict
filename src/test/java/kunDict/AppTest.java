@@ -8,7 +8,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +33,7 @@ public class AppTest {
     }
 
     // App database {{{ //
+    @Ignore
     @Test
     public void testAppInitializeTables() throws IOException, SQLException {
         app.initializeTables();
@@ -131,6 +136,56 @@ public class AppTest {
         // }}} words //
     }
     // }}} CollinsQuery //
+
+    // Word class serialize and deserialize {{{ //
+    // TODO: fix the Word Object serialize method <22-09-20, gk07> //
+    @Ignore
+    @Test
+    public void testWordSerialize() throws IOException {
+        CollinsOnlineDict collins = new CollinsOnlineDict();
+        Word word = collins.queryWord("water");
+        String filename = "./src/test/resources/water.ser";
+        try {
+            FileOutputStream file = new FileOutputStream(filename);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+
+            // serialize
+            out.writeObject(word);
+
+            out.close();
+            file.close();
+
+            System.out.println("Word Object has been serialized");
+
+        } catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Caught IOException while serialize");
+        }
+
+        Word aWord = null;
+
+        try {
+            FileInputStream file = new FileInputStream(filename);
+            ObjectInputStream in = new ObjectInputStream(file);
+
+            aWord = (Word) in.readObject();
+
+            in.close();
+            file.close();
+
+            System.out.println("Word Object has been deserialized");
+        } catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Caught IOException while deserialize");
+        }
+
+        assertEquals("words Should equals", word, aWord);
+        Formatter f = new Formatter(aWord);
+        Utils.test("Deserialized Word Object: ");
+        f.printText();
+    }
+
+    // }}} Word class serialize //
 
     // dict database {{{ //
     @Ignore
@@ -246,6 +301,7 @@ public class AppTest {
     }
     // }}} delete //
     // update {{{ //
+    @Ignore
     @Test
     public void testMITDictUpdate() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -264,6 +320,4 @@ public class AppTest {
 
     // }}} update //
     // }}} MITDict operate //
-
-
 }

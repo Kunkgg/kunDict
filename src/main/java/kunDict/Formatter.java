@@ -18,9 +18,7 @@ public class Formatter {
     public void printText() {
         System.out.println("############################################");
         if (this.word.isEmypty()) {
-            System.out
-                    .println("[Warning] " + word.getSpell()
-                            + " is not found.");
+            Utils.warning(word.getSpell() + " is not found.");
         } else {
             System.out.println(this.word.getSpell());
             System.out.println("Forms: " + this.word.getForms());

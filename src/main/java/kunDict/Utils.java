@@ -49,4 +49,8 @@ public class Utils {
     public static void err(String... str) {
         System.err.println("[ERROR] " + String.join(", ", str));
     }
+
+    public static void test(String... str) {
+        System.err.println("[TEST] " + String.join(", ", str));
+    }
 }
