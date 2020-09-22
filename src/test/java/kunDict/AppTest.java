@@ -227,6 +227,7 @@ public class AppTest {
     }
     // }}} Query //
     // delete {{{ //
+    @Ignore
     @Test
     public void testMITDictDelete() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -243,8 +244,25 @@ public class AppTest {
         mitDict.deleteWord("water");
         // String word = "ace";
     }
-
     // }}} delete //
+    // update {{{ //
+    @Test
+    public void testMITDictUpdate() throws IOException, SQLException {
+        MITDict mitDict = new MITDict();
+        CollinsOnlineDict collins = new CollinsOnlineDict();
+        Word word = collins.queryWord("ace");
+        word.setPronounce(new Pronounce("test for update", "test url"));
+        mitDict.updateWord(word);
+        word = mitDict.queryWord("ace");
+        assertEquals("test for update", word.getPronounce().getSoundmark());
+        assertEquals("test url", word.getPronounce().getSound());
+
+        // String word = "ace";
+    }
+
+
+
+    // }}} update //
     // }}} MITDict operate //
 
 

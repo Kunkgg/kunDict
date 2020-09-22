@@ -387,6 +387,21 @@ abstract class LocalDict extends Dict {
     };
     // }}} delete a word //
 
+    // update {{{ //
+    public void updateWord(Word word) throws SQLException {
+        if (!word.isEmypty()) {
+            Utils.info(String.format(
+                    "Trying to update word (%s) in {%s} database...",
+                    word.getSpell(), this.getName()));
+            deleteWord(word.getSpell());
+            addWord(word);
+            Utils.info(String.format(
+                    "Updated word (%s) in {%s} database",
+                    word.getSpell(), this.getName()));
+        }
+    }
+    // }}} update //
+
     // }}} operater in dictionary //
     // public void insertValuesIntoFrequenies(Word word) {
 
