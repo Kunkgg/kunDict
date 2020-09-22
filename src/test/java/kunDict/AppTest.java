@@ -215,6 +215,7 @@ public class AppTest {
         assertFalse("Should NOT have tables", mitDict.hasTables());
     }
 
+    @Ignore
     @Test
     public void testDictInitializeTables() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -315,9 +316,16 @@ public class AppTest {
 
         // String word = "ace";
     }
-
-
-
     // }}} update //
+    // size {{{ //
+    @Test
+    public void testMITDictSize() throws IOException, SQLException {
+        MITDict mitDict = new MITDict();
+        int size = mitDict.size();
+        assertTrue("size of dictionary should be greater or equal than zero",
+                size >= 0);
+        Utils.test(String.format("{%s} size: %d", mitDict.getName(), size));
+    }
+    // }}} size //
     // }}} MITDict operate //
 }

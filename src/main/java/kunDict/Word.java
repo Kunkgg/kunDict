@@ -16,6 +16,7 @@ public class Word implements Serializable{
     private String source = "";
     // timestamp for last modify
     private Instant timestamp;
+    // counter query
     private int counter = -1;
 
 

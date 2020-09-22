@@ -99,7 +99,6 @@ public class SQLStr {
         Utils.debug(result);
         return result;
     }
-
     // }}} delete //
 
     // Add {{{ //
@@ -147,6 +146,17 @@ public class SQLStr {
     }
 
     // }}} Add //
+
+    // query size of a local dictionary database {{{ //
+    public static String querySize(String shortName) {
+        String result = String.format("SELECT COUNT(*) FROM %s_words",
+                shortName);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    // }}} query size of a local dictionary database //
 
     // }}} operate word in a dictionary //
 

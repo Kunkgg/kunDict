@@ -402,18 +402,29 @@ abstract class LocalDict extends Dict {
     }
     // }}} update //
 
+    public int size() throws SQLException {
+        Connection con = this.db.getCurrentConUseDb();
+        int size = 0;
+
+        try (Statement stmt = con.createStatement();) {
+            String query = SQLStr.querySize(this.shortName);
+
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next())
+                size = rs.getInt(1);
+
+            Utils.info(String.format(
+                        "{%s} database included %d words.",
+                        this.getName(), size));
+        } catch (SQLException e) {
+            Database.printSQLException(e);
+        }
+        return size;
+    }
+
     // }}} operater in dictionary //
-    // public void insertValuesIntoFrequenies(Word word) {
 
-    // }
-
-
-
-    // abstract Boolean add(Word word);
-    // abstract Boolean delete(String wordSpell);
     // abstract Word random();
-    // abstract Boolean update(Word word);
     // abstract int size();
     // abstract Boolean generate();
-
 }
