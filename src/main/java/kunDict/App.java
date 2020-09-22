@@ -48,7 +48,7 @@ public class App {
 
     public boolean hasTables() throws IOException, SQLException {
         Boolean result = false;
-        Connection con = this.db.getCurrentConUseDb();
+        Connection con = this.db.getCurrentConUseDbName();
 
         try (Statement stmt = con.createStatement();) {
             String query = SQLStr.hasTables("dict");
@@ -78,7 +78,7 @@ public class App {
     }
 
     public void insertValuesIntoDictTypes() throws SQLException {
-        Connection con = db.getCurrentConUseDb();
+        Connection con = db.getCurrentConUseDbName();
         try (Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
             for (DictType e : DictType.values()) {

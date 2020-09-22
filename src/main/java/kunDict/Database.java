@@ -94,7 +94,7 @@ public class Database {
         return result;
     }
 
-    public Connection getCurrentConUseDb() throws SQLException{
+    public Connection getCurrentConUseDbName() throws SQLException{
         this.getConnectionUseDbName();
         return this.currentCon;
     }

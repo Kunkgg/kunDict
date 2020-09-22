@@ -27,9 +27,11 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.JVM)
 public class AppTest {
     public App app;
+    public static boolean testFlag = false;
 
     public AppTest() throws IOException, SQLException{
         this.app = new App();
+        testFlag = true;
     }
 
     // App database {{{ //
@@ -302,7 +304,6 @@ public class AppTest {
     }
     // }}} delete //
     // update {{{ //
-    @Ignore
     @Test
     public void testMITDictUpdate() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
@@ -321,9 +322,11 @@ public class AppTest {
     @Test
     public void testMITDictSize() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
+        mitDict.initializeTables();
         int size = mitDict.size();
         assertTrue("size of dictionary should be greater or equal than zero",
                 size >= 0);
+
         Utils.test(String.format("{%s} size: %d", mitDict.getName(), size));
     }
     // }}} size //

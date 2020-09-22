@@ -18,9 +18,11 @@ abstract class LocalDict extends Dict {
     // It is used to be prefix of each tables of respective dictionary.
     private String shortName;
 
-    public LocalDict(String name, String description, DictType type) {
-        super(name, description, type);
-        this.setType(DictType.Local);
+    public LocalDict(String name, String description)
+            throws IOException, SQLException{
+        super(name, description, DictType.Local);
+
+        this.db = new Database();
     }
 
     public LocalDict() {
@@ -58,13 +60,13 @@ abstract class LocalDict extends Dict {
         this.db.getConnectionUseDbName();
 
         if (!hasTables()) {
-            db.createTable(SQLStr.createTableWords(this.shortName));
-            db.createTable(SQLStr.createTableFrequencies(this.shortName));
-            db.createTable(SQLStr.createTableEntries(this.shortName));
-            db.createTable(SQLStr.createTableExamples(this.shortName));
-            db.addForeignKey(SQLStr.addForeignKeyFreId(this.shortName));
-            db.addForeignKey(SQLStr.addForeignKeyWordId(this.shortName));
-            db.addForeignKey(SQLStr.addForeignKeyEntryId(this.shortName));
+            this.db.createTable(SQLStr.createTableWords(this.shortName));
+            this.db.createTable(SQLStr.createTableFrequencies(this.shortName));
+            this.db.createTable(SQLStr.createTableEntries(this.shortName));
+            this.db.createTable(SQLStr.createTableExamples(this.shortName));
+            this.db.addForeignKey(SQLStr.addForeignKeyFreId(this.shortName));
+            this.db.addForeignKey(SQLStr.addForeignKeyWordId(this.shortName));
+            this.db.addForeignKey(SQLStr.addForeignKeyEntryId(this.shortName));
         }
 
         Utils.info(this.shortName + " dictionary INITED");
@@ -72,14 +74,14 @@ abstract class LocalDict extends Dict {
 
     public void dropTables() throws IOException, SQLException {
         this.db.getConnectionUseDbName();
-        db.dropTable(SQLStr.dropTableInDict(this.shortName));
+        this.db.dropTable(SQLStr.dropTableInDict(this.shortName));
 
         Utils.info(this.shortName + " dictionary tables DELETED");
     }
 
     public boolean hasTables() throws IOException, SQLException {
         Boolean result = false;
-        Connection con = this.db.getCurrentConUseDb();
+        Connection con = this.db.getCurrentConUseDbName();
 
         try (Statement stmt = con.createStatement();) {
             String query = SQLStr.hasTables(this.shortName);
@@ -119,7 +121,7 @@ abstract class LocalDict extends Dict {
     // Query a word {{{ //
     public Word queryWord(String wordSpell) throws IOException, SQLException {
         Word word = null;
-        Connection con = this.db.getCurrentConUseDb();
+        Connection con = this.db.getCurrentConUseDbName();
 
         // query from locale database
         try (Statement stmt = con.createStatement();) {
@@ -217,7 +219,7 @@ abstract class LocalDict extends Dict {
             Utils.warning("Could't add a empty word to database.");
         } else {
             // initial variables {{{ //
-            Connection con = this.db.getCurrentConUseDb();
+            Connection con = this.db.getCurrentConUseDbName();
             PreparedStatement pstmtFrequencies = null;
             PreparedStatement pstmtWords = null;
             PreparedStatement pstmtEntries = null;
@@ -362,7 +364,7 @@ abstract class LocalDict extends Dict {
 
     // delete a word {{{ //
     public void deleteWord(String wordSpell) throws SQLException {
-        Connection con = this.db.getCurrentConUseDb();
+        Connection con = this.db.getCurrentConUseDbName();
         int affectedRow = 0;
 
         // delete word from locale database by wordSpell
@@ -403,7 +405,7 @@ abstract class LocalDict extends Dict {
     // }}} update //
 
     public int size() throws SQLException {
-        Connection con = this.db.getCurrentConUseDb();
+        Connection con = this.db.getCurrentConUseDbName();
         int size = 0;
 
         try (Statement stmt = con.createStatement();) {
@@ -425,6 +427,5 @@ abstract class LocalDict extends Dict {
     // }}} operater in dictionary //
 
     // abstract Word random();
-    // abstract int size();
     // abstract Boolean generate();
 }
