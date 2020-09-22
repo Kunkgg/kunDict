@@ -45,4 +45,8 @@ public class Utils {
     public static void config(String... str) {
         System.out.println("[CONFIG] " + String.join(", ", str));
     }
+
+    public static void err(String... str) {
+        System.err.println("[ERROR] " + String.join(", ", str));
+    }
 }

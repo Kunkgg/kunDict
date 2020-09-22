@@ -160,14 +160,14 @@ public class Database {
                 if (ignoreSQLException(
                         ((SQLException) e).getSQLState()) == false) {
                     e.printStackTrace(System.err);
-                    System.err.println(
-                            "SQLState: " + ((SQLException) e).getSQLState());
-                    System.err.println("Error Code: "
+                    Utils.err("SQLState: "
+                            + ((SQLException) e).getSQLState());
+                    Utils.err("Error Code: "
                             + ((SQLException) e).getErrorCode());
-                    System.err.println("Message: " + e.getMessage());
+                    Utils.err("Message: " + e.getMessage());
                     Throwable t = ex.getCause();
                     while (t != null) {
-                        System.out.println("Cause: " + t);
+                        Utils.warning("Cause: " + t);
                         t = t.getCause();
                     }
                 }
@@ -177,7 +177,7 @@ public class Database {
 
     public static boolean ignoreSQLException(String sqlState) {
         if (sqlState == null) {
-            System.out.println("The SQL state is not defined!");
+            Utils.warning("The SQL state is not defined!");
             return false;
         }
         // X0Y32: Jar file already exists in schema
@@ -201,12 +201,11 @@ public class Database {
 
     public static void printWarnings(SQLWarning warning) throws SQLException {
         if (warning != null) {
-            System.out.println("\n---Warning---\n");
+            Utils.warning("\n---Warning---\n");
             while (warning != null) {
-                System.out.println("Message: " + warning.getMessage());
-                System.out.println("SQLState: " + warning.getSQLState());
-                System.out.print("Vendor error code: ");
-                System.out.println(warning.getErrorCode());
+                Utils.warning("Message: " + warning.getMessage());
+                Utils.warning("SQLState: " + warning.getSQLState());
+                Utils.warning("Vendor error code: " + warning.getErrorCode());
                 System.out.println("");
                 warning = warning.getNextWarning();
             }

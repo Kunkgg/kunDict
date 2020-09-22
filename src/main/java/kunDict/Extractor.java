@@ -47,7 +47,7 @@ public class Extractor {
         // Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
         Elements dicts = doc.select("div.dictentry");
         Element dict = dicts.first();
-        System.out.println("dicts size: " + dicts.size());
+        Utils.debug("dicts size: " + dicts.size());
 
         String source = "Collins Online English Dictionary";
         String spell = dict.select("h2.h2_entry span.orth").text();

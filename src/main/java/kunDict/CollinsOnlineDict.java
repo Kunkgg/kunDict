@@ -14,7 +14,7 @@ public class CollinsOnlineDict extends OnlineDict {
 
     public Word queryWord(String wordSpell) {
         String url = queryUrlBase + wordSpell;
-        System.out.println("URL: " + url);
+        Utils.debug("URL: " + url);
 
         Request req = new Request(url);
         Word word = null;
@@ -25,7 +25,7 @@ public class CollinsOnlineDict extends OnlineDict {
 
         } catch(NullPointerException e){
             e.printStackTrace();
-            System.out.println("Http response is null.");
+            Utils.warning("Http response is null.");
         }
 
         return word;
