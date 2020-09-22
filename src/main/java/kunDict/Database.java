@@ -1,14 +1,17 @@
 package kunDict;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
-import java.util.*;
-import java.io.*;
 import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
 
 public class Database {
 
@@ -181,10 +184,10 @@ public class Database {
             return false;
         }
         // X0Y32: Jar file already exists in schema
-        if (sqlState.equalsIgnoreCase("X0Y32"))
+        if (sqlState.equalsIgnoreCase(SQLStr.SQLSTATE_JAR_FILE_EXISTED))
             return true;
         // 42Y55: Table already exists in schema
-        if (sqlState.equalsIgnoreCase("42Y55"))
+        if (sqlState.equalsIgnoreCase(SQLStr.SQLSTATE_TABLE_EXISTED))
             return true;
         return false;
     }

@@ -2,11 +2,12 @@ package kunDict;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
  * Word
  */
-public class Word {
+public class Word implements Serializable{
     private String spell;
     private ArrayList<String> forms;
     private Frequency frequency;

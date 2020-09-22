@@ -2,8 +2,11 @@ package kunDict;
 
 public class SQLStr {
     // errer code {{{ //
-
     static final int ERRORCODE_DUPLICATE_ENTRY = 1062;
+    // X0Y32: Jar file already exists in schema
+    static final String SQLSTATE_JAR_FILE_EXISTED = "X0Y32";
+    // 42Y55: Table already exists in schema
+    static final String SQLSTATE_TABLE_EXISTED = "X0Y32";
 
     // }}} errer code //
     // static fields {{{ //
