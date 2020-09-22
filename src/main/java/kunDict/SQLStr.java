@@ -59,11 +59,11 @@ public class SQLStr {
 
     public static String tableStrDictQueryWord(String shortName,
             String... tables) {
-
-        for (int i = 0; i < tables.length; i++) {
-            tables[i] = shortName + "_" + tables[i];
+        String[] temp = tables.clone();
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = shortName + "_" + temp[i];
         }
-        return String.join(", ", tables);
+        return String.join(", ", temp);
     }
 
     public static String joinConditionStrDict(String shortName, String table1, String table2, String foreignKey)
@@ -86,6 +86,19 @@ public class SQLStr {
 
         return String.join(" AND ", conditions);
     }
+
+    // delete {{{ //
+    public static String deleteWord(String shortName, String wordSpell) {
+        String result = String.format(
+                "DELETE FROM %s_words WHERE word_spell = \'%s\'",
+                shortName, wordSpell);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    // }}} delete //
+
     // Add {{{ //
 
     public static String insertValueIntoFrequenies(String shortName) {
@@ -131,6 +144,7 @@ public class SQLStr {
     }
 
     // }}} Add //
+
     // }}} operate word in a dictionary //
 
     // Create table in a dictionary {{{ //
@@ -182,15 +196,28 @@ public class SQLStr {
     }
 
     public static String addForeignKeyFreId(String shortName) {
-        return addForeignKey(shortName, "words", "frequencies", "fre_id");
+        String result = addForeignKey(shortName, "words", "frequencies", "fre_id");
+
+        Utils.debug(result);
+        return result;
     }
 
     public static String addForeignKeyWordId(String shortName) {
-        return addForeignKey(shortName, "entries", "words", "word_id");
+        String onDeleteCascade = " ON DELETE CASCADE";
+        String result = addForeignKey(shortName, "entries", "words", "word_id")
+            + onDeleteCascade;
+
+        Utils.debug(result);
+        return result;
     }
 
     public static String addForeignKeyEntryId(String shortName) {
-        return addForeignKey(shortName, "examples", "entries", "entry_id");
+        String onDeleteCascade = " ON DELETE CASCADE";
+        String result = addForeignKey(shortName, "examples", "entries", "entry_id")
+            + onDeleteCascade;
+
+        Utils.debug(result);
+        return result;
     }
 
     public static String addForeignKey(String shortName,
@@ -202,7 +229,7 @@ public class SQLStr {
         return "ALTER TABLE " + tableA
             + " ADD CONSTRAINT " + constraintName
             + " FOREIGN KEY (" + foreignKey + ")"
-            + " REFERENCES " + tableB + "(" + foreignKey + ");";
+            + " REFERENCES " + tableB + "(" + foreignKey + ")";
     }
     // }}} Create table in a dictionary //
 

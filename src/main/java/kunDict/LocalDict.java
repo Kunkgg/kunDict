@@ -124,7 +124,6 @@ abstract class LocalDict extends Dict {
         // query from locale database
         try (Statement stmt = con.createStatement();) {
             String query = SQLStr.queryWord(this.shortName, wordSpell);
-            System.out.println(query);
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
@@ -165,11 +164,11 @@ abstract class LocalDict extends Dict {
             senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList,
                     source, counter, timestamp);
+        // }}} process the ResultSet //
         } catch (SQLException e) {
             Database.printSQLException(e);
         }
 
-        // }}} process the ResultSet //
         return word;
     };
     // }}} Query a word //
@@ -224,7 +223,7 @@ abstract class LocalDict extends Dict {
             PreparedStatement pstmtEntries = null;
             PreparedStatement pstmtExamples = null;
             ResultSet rs = null;
-            int rowAffected = 0;
+            int affectedRow = 0;
             int freId = 0;
             int wordId = 0;
             int entryId = 0;
@@ -251,7 +250,7 @@ abstract class LocalDict extends Dict {
                 // into frequencies table {{{ //
                 pstmtFrequencies = setPstmtFrequencies(pstmtFrequencies, word);
                 try {
-                    rowAffected = pstmtFrequencies.executeUpdate();
+                    affectedRow = pstmtFrequencies.executeUpdate();
                     rs = pstmtFrequencies.getGeneratedKeys();
                 } catch(SQLException e) {
                     if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
@@ -274,7 +273,7 @@ abstract class LocalDict extends Dict {
                     pstmtWords = setPstmtWords(pstmtWords, word);
                     pstmtWords.setInt(SQLStr.columnListInWords.length, freId);
                     try {
-                        rowAffected = pstmtWords.executeUpdate();
+                        affectedRow = pstmtWords.executeUpdate();
                         rs = pstmtWords.getGeneratedKeys();
                     } catch(SQLException e) {
                     if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
@@ -289,14 +288,14 @@ abstract class LocalDict extends Dict {
                     }
                     // }}} into words table //
 
-                    if (wordId > 0 && rowAffected == 1) {
+                    if (wordId > 0 && affectedRow == 1) {
                         // into entries table {{{ //
                         for(SenseEntry entry : word.getSenesEntries()) {
                             pstmtEntries = setPstmtEntries(pstmtEntries,
                                     entry.getWordClass(), entry.getSense());
                             pstmtEntries.setInt(
                                     SQLStr.columnListInEntries.length, wordId);
-                            rowAffected = pstmtEntries.executeUpdate();
+                            affectedRow = pstmtEntries.executeUpdate();
                             rs = pstmtEntries.getGeneratedKeys();
                             if (rs != null && !rs.isClosed() && rs.next()) {
                                 entryId = rs.getInt(1);
@@ -305,7 +304,7 @@ abstract class LocalDict extends Dict {
                         // }}} into entries table //
 
                             // into examples table {{{ //
-                            if (entryId > 0 && rowAffected == 1) {
+                            if (entryId > 0 && affectedRow == 1) {
                                 for(String example : entry.getExamples()) {
                                     pstmtExamples = setPstmtExamples(
                                             pstmtExamples, example);
@@ -321,8 +320,8 @@ abstract class LocalDict extends Dict {
                 }
 
                 con.commit();
-                Utils.info("Added a word (" + word.getSpell() + ") to <"
-                        + this.getName() + "> database");
+                Utils.info("Added a word (" + word.getSpell() + ") to {"
+                        + this.getName() + "} database");
             } catch (SQLException e) {
                 // rollback {{{ //
                 try {
@@ -352,7 +351,6 @@ abstract class LocalDict extends Dict {
                     }
                     if (con != null)
                         con.setAutoCommit(true);
-                        con.close();
                 } catch (SQLException e) {
                     Database.printSQLException(e);
                 }
@@ -361,6 +359,33 @@ abstract class LocalDict extends Dict {
         }
     }
     // }}} add a word //
+
+    // delete a word {{{ //
+    public void deleteWord(String wordSpell) throws SQLException {
+        Connection con = this.db.getCurrentConUseDb();
+        int affectedRow = 0;
+
+        // delete word from locale database by wordSpell
+        try (Statement stmt = con.createStatement();) {
+            String query = SQLStr.deleteWord(this.shortName, wordSpell);
+            affectedRow = stmt.executeUpdate(query);
+
+            if(affectedRow > 0) {
+                Utils.info(
+                        String.format("Deleted word (%s) from {%s} database",
+                                wordSpell, this.getName()));
+            } else {
+                Utils.warning(String.format(
+                        "There is no word (%s) in {%s} database. "
+                                + "Please check word spell.",
+                        wordSpell, this.getName()));
+            }
+        } catch (SQLException e) {
+            Database.printSQLException(e);
+        }
+
+    };
+    // }}} delete a word //
 
     // }}} operater in dictionary //
     // public void insertValuesIntoFrequenies(Word word) {

@@ -101,8 +101,8 @@ REFERENCES  dict_types (dict_type_id);
 # Create FOREIGN KEY within a specific dict
 ########################
 ALTER TABLE mit10k_words ADD CONSTRAINT mit10k_fk_words_frequencies FOREIGN KEY (fre_id) REFERENCES  mit10k_frequencies (fre_id);
-ALTER TABLE mit10k_entries ADD CONSTRAINT mit10k_fk_entries_words FOREIGN KEY (word_id) REFERENCES  mit10k_words (word_id);
-ALTER TABLE mit10k_examples ADD CONSTRAINT mit10k_fk_examples_entries FOREIGN KEY (entry_id) REFERENCES  mit10k_entries (entry_id);
+ALTER TABLE mit10k_entries ADD CONSTRAINT mit10k_fk_entries_words FOREIGN KEY (word_id) REFERENCES  mit10k_words (word_id) ON DELETE CASCADE;
+ALTER TABLE mit10k_examples ADD CONSTRAINT mit10k_fk_examples_entries FOREIGN KEY (entry_id) REFERENCES  mit10k_entries (entry_id) ON DELETE CASCADE;
 
 ########################
 # Create index within a specific dict

@@ -181,6 +181,7 @@ public class AppTest {
 
     // MITDict operate {{{ //
     // Add {{{ //
+    @Ignore
     @Test
     public void testMITDictAdd() throws IOException, SQLException {
         CollinsOnlineDict collins = new CollinsOnlineDict();
@@ -225,6 +226,25 @@ public class AppTest {
         assertEquals(wordLocal.getSource(), wordCollins.getSource());
     }
     // }}} Query //
+    // delete {{{ //
+    @Test
+    public void testMITDictDelete() throws IOException, SQLException {
+        MITDict mitDict = new MITDict();
+        CollinsOnlineDict collins = new CollinsOnlineDict();
+        Word water = collins.queryWord("water");
+        mitDict.addWord(water);
+        Word queryWater = mitDict.queryWord("water");
+        assertFalse("word Should not be empty", queryWater.isEmypty());
+        mitDict.deleteWord("water");
+        queryWater = mitDict.queryWord("water");
+        assertTrue("word Should not be deleted, so empty", queryWater.isEmypty());
+
+        mitDict.deleteWord("water");
+        mitDict.deleteWord("water");
+        // String word = "ace";
+    }
+
+    // }}} delete //
     // }}} MITDict operate //
 
 

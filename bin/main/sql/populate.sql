@@ -90,3 +90,10 @@ VALUES('MIT 10K Englinsh Dictionary', 1, 'mit10k');
 
 INSERT INTO dicts(dict_name, dict_type_id)
 VALUES('Collins Online English Dictionary', 2);
+
+##########################
+# delete a word
+##########################
+DELETE  mit10k_examples,mit10k_entries, mit10k_words
+FROM mit10k_words, mit10k_entries, mit10k_examples
+WHERE (mit10k_words.word_id = mit10k_entries.word_id AND mit10k_entries.entry_id = mit10k_examples.entry_id AND mit10k_words.word_spell = 'ace')
