@@ -16,7 +16,6 @@ abstract class LocalDict extends Dict {
     private static Database db = App.getDb();
     // shortName is the short name of Dict.name
     // It is used to be prefix of each tables of respective dictionary.
-    private String shortName;
 
     public LocalDict(String name, String shortName, String description) {
         super(name, shortName, description, DictType.Local);

@@ -36,13 +36,15 @@ abstract class Dict {
      - DictType type;
 
      + String getName()
+     + String getShortName()
      + String getDescription()
      + DictType getType()
      + void setName(String name)
+     + void setShortName(String shortName)
      + void setDescription(String description)
      + void setType(DictType type)
 
-    {abstract} Word query(String wordSpell);
+    {abstract} Word queryWord(String wordSpell);
 }
 
 enum  DictType {
@@ -58,7 +60,6 @@ abstract class LocalDict {
     - Instant atime;
     - Instant mtime;
     - {static} Database db;
-    - String shortName;
 
     + LocalDict(String name, String description, String shortname)
 
@@ -71,30 +72,28 @@ abstract class LocalDict {
     + void dropTables()
     + boolean hasTables()
 
-    + void queryWord(String wordSpell)
+    + Word queryWord(String wordSpell)
     + void addWord(Word word)
     + void deleteWord(Word word)
     + void updateWord(Word word)
+    + Word random();
     + int size()
 
-    Word queryWord(String wordSpell);
-    void addWord(Word word);
-    void deleteWord(String wordSpell);
-    void updateWord(Word word);
-    int size();
-    Word random();
+    {abstract} void build();
+}
 
-    {abstract} Boolean generate();
+class DefaultLocalDict {
+    - {static} String name = "Default local dictionary";
+    - {static} String shortName = "def";
+    - {static} String description = "the default local dictionary"
 }
 
 class MITDict {
-    Boolean add(Word word) ;
-    Boolean delete(String wordSpell);
-    Word query(String wordSpell);
-    Word random();
-    Boolean update(Word word);
-    int size();
-    Boolean generate();
+    - {static} String name = "MIT Englinsh Dictionary";
+    - {static} String shortName = "mit";
+    - {static} String description = "Word list is from MIT..."
+
+    + void build();
 }
 
 class CollinsOnlineDict {
