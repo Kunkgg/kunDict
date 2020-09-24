@@ -15,19 +15,18 @@ import java.util.Properties;
 
 public class Database {
 
+    private String propertiesFileName = "./src/main/resources/database.config";
     private String dbms;
     private String dbName;
     private String userName;
     private String password;
     private String urlString;
-    private String propertiesFileName = "./src/main/resources/database.config";
-
-    private Connection currentCon;
-
     private String driver;
     private String serverName;
     private int portNumber;
     private Properties prop;
+    private Connection currentCon;
+
 
     public Database() throws FileNotFoundException,
             IOException, InvalidPropertiesFormatException {

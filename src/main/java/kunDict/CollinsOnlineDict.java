@@ -6,7 +6,7 @@ public class CollinsOnlineDict extends OnlineDict {
     private static String name = "Collins Online English Dictionary";
     private static String shortName = "collins";
     private static String description = "English to English";
-    private String queryUrlBase = "https://www.collinsdictionary.com/"
+    private static String queryUrlBase = "https://www.collinsdictionary.com/"
                                     + "us/dictionary/english/";
 
     public CollinsOnlineDict(){
@@ -31,8 +31,4 @@ public class CollinsOnlineDict extends OnlineDict {
 
         return word;
     };
-
-    public String getQueryUrlBase() {
-        return this.queryUrlBase;
-    }
 }

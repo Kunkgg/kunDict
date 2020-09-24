@@ -97,7 +97,12 @@ class MITDict {
 }
 
 class CollinsOnlineDict {
-    Word query(String wordSpell);
+    - {static} String name = "Collins Online English Dictionary";
+    - {static} String shortName = "collins";
+    - {static} String description = "English to English"
+    - {static} String queryUrlBase = "...url"
+
+    + Word queryWord(String wordSpell);
 }
 
 class Word {
@@ -142,17 +147,16 @@ class Printer {
 
 class Extractor {
     - String input;
-    - String[] ability;
 
-    + {static} Word collins()
+    + {static} Word collinsOnline()
     + {static} Word getWord(String text)
     + {static} String[] getAbility()
     + {static} Boolean ifCan(String ability)
 }
 
 class Request {
-    - String proxyHost
-    - int proxyPort
+    - {static} String proxyHost
+    - {static} int proxyPort
     - HttpClient client
     - HttpRequest.Builder requestBuilder
     - HttpResponse.BodyHandler bodyHandler
@@ -180,16 +184,52 @@ class Request {
     + String getUrl()
 }
 
-class Database
+class Database {
+    - String propertiesFileName = ".../database.config";
+    - String dbms;
+    - String dbName;
+    - String userName;
+    - String password;
+    - String urlString;
+    - String driver;
+    - String serverName;
+    - int portNumber;
+    - Properties prop;
+    - Connection currentCon;
+
+    + void getConnectionUseDbName()
+    + void useDbName()
+    + void getConnection()
+    + void closeConnection()
+    + boolean isConnected()
+    + Connection getCurrentConUseDbName()
+    + Connection getCurrentCon()
+
+    + void createTable(String creatTableStr)
+    + void addForeignKey(String addForeignKeyStr)
+    + void dropTable(String dropTableStr)
+    + void createDatabase()
+
+    + {static} void printSQLException(SQLException e)
+    + {static} bolean ignoreSQLException(String sqlState)
+    + {static} void getWarningsFromResultSet(ResultSet rs)
+    + {static} void getWarningsFromStatement(ResultSet rs)
+    + {static} printWarnings(SQLWarning warning)
+
+    + void setProperties()
+}
 
 Dict <|.. LocalDict
 Dict <|.. OnlineDict
+LocalDict <|.. DefaultLocalDict
 LocalDict <|.. MITDict
 OnlineDict <|.. CollinsOnlineDict
 Word *-- Pronounce
 Word *-- SenseEntry : sensenEntrylist
 MITDict o-- Word
-Database -- MITDict
+DefaultLocalDict o-- Word
+Database -- App
+App -- LocalDict
 CollinsOnlineDict <-- Request
 Request <-- Extractor
 Extractor <-- Word
