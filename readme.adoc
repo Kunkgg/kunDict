@@ -25,35 +25,65 @@ endif::asciidoctor[]
 
 ["plantuml"]
 ----
+class App {
+    - {static} Database db;
+}
 
 abstract class Dict {
-     + String name;
-     + String description;
-     + DictType type;
+     - String name;
+     - String shortName;
+     - String description;
+     - DictType type;
+
+     + String getName()
+     + String getDescription()
+     + DictType getType()
+     + void setName(String name)
+     + void setDescription(String description)
+     + void setType(DictType type)
 
     {abstract} Word query(String wordSpell);
+}
+
+enum  DictType {
+    Online
+    Local
 }
 
 abstract class OnlineDict {
-     + String name;
-     + String description;
-     + DictType type;
-
-    {abstract} Word query(String wordSpell);
+     - DictType type = this.setType(DictType.Online);
 }
 
-abstract class LocaleDict {
-     + String name;
-     + String description;
-     + DictType type;
-     - LocalDateTime lastModify;
+abstract class LocalDict {
+    - Instant atime;
+    - Instant mtime;
+    - {static} Database db;
+    - String shortName;
 
-    {abstract} Boolean add(Word word);
-    {abstract} Boolean delete(String wordSpell);
-    {abstract} Word query(String wordSpell);
-    {abstract} Word random();
-    {abstract} Boolean update(Word word);
-    {abstract} int size();
+    + LocalDict(String name, String description, String shortname)
+
+    + Instant getAtime()
+    + Instant getMtime()
+    + void updateAtime()
+    + void updateMtime()
+
+    + void initializeTables()
+    + void dropTables()
+    + boolean hasTables()
+
+    + void queryWord(String wordSpell)
+    + void addWord(Word word)
+    + void deleteWord(Word word)
+    + void updateWord(Word word)
+    + int size()
+
+    Word queryWord(String wordSpell);
+    void addWord(Word word);
+    void deleteWord(String wordSpell);
+    void updateWord(Word word);
+    int size();
+    Word random();
+
     {abstract} Boolean generate();
 }
 
@@ -153,9 +183,9 @@ class Request {
 
 class Database
 
-Dict <|.. LocaleDict
+Dict <|.. LocalDict
 Dict <|.. OnlineDict
-LocaleDict <|.. MITDict
+LocalDict <|.. MITDict
 OnlineDict <|.. CollinsOnlineDict
 Word *-- Pronounce
 Word *-- SenseEntry : sensenEntrylist

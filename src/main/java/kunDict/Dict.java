@@ -5,11 +5,14 @@ import java.sql.SQLException;
 
 abstract class Dict {
     private String name;
+    private String shortName;
     private String description;
     private DictType type;
 
-    public Dict(String name, String description, DictType type) {
+    public Dict(String name, String shortName,
+            String description, DictType type) {
         this.name = name;
+        this.shortName = shortName;
         this.description = description;
         this.type = type;
     }
@@ -18,6 +21,10 @@ abstract class Dict {
     }
 
     // getter and setter {{{ //
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -28,6 +35,10 @@ abstract class Dict {
 
     public void setType(DictType type) {
         this.type = type;
+    }
+
+    public String getShortName() {
+        return this.shortName;
     }
 
     public String getName() {

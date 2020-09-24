@@ -35,7 +35,6 @@ public class AppTest {
     }
 
     // App database {{{ //
-    @Ignore
     @Test
     public void testAppInitializeTables() throws IOException, SQLException {
         app.initializeTables();
@@ -200,9 +199,7 @@ public class AppTest {
     @Ignore
     @Test
     public void testDatabaseGetConnection() throws IOException, SQLException {
-        String dbName = "dict";
-        Database db = new Database(dbName);
-        db.getConnection();
+        Database db = new Database();
         assertNotNull("con should be a instance of class Connection",
                 db.getCurrentCon());
         db.closeConnection();
@@ -217,8 +214,6 @@ public class AppTest {
         assertFalse("Should NOT have tables", mitDict.hasTables());
     }
 
-    @Ignore
-    @Test
     public void testDictInitializeTables() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
         // assertTrue("Should have tables", mitDict.hasTables());
@@ -239,7 +234,6 @@ public class AppTest {
 
     // MITDict operate {{{ //
     // Add {{{ //
-    @Ignore
     @Test
     public void testMITDictAdd() throws IOException, SQLException {
         CollinsOnlineDict collins = new CollinsOnlineDict();
@@ -260,12 +254,11 @@ public class AppTest {
 
     // }}} Add //
     // Query {{{ //
-    @Ignore
     @Test
     public void testMITDictQuery() throws IOException, SQLException {
         MITDict mitDict = new MITDict();
 
-        String word = "ace";
+        String word = "water";
         System.out.println("### Local ###");
         Word wordLocal = mitDict.queryWord(word);
         Formatter fmtLocal = new Formatter(wordLocal);
@@ -285,7 +278,6 @@ public class AppTest {
     }
     // }}} Query //
     // delete {{{ //
-    @Ignore
     @Test
     public void testMITDictDelete() throws IOException, SQLException {
         MITDict mitDict = new MITDict();

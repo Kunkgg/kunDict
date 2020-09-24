@@ -145,8 +145,7 @@ public class Database {
     public void createDatabase() {
         if (this.dbms.equals("mysql")) {
             try (Statement stmt = this.currentCon.createStatement()) {
-                String createDatabaseStr = "CREATE DATABASE IF NOT EXISTS "
-                        + this.dbName;
+                String createDatabaseStr = SQLStr.createDb(this.dbName);
                 stmt.executeUpdate(createDatabaseStr);
                 Utils.info("Created database " + this.dbName);
             } catch (SQLException e) {
@@ -226,7 +225,11 @@ public class Database {
 
         this.dbms = this.prop.getProperty("dbms");
         this.driver = this.prop.getProperty("driver");
-        this.dbName = this.prop.getProperty("dbName");
+        if (this.prop.getProperty("test").equals("true")) {
+            this.dbName = this.prop.getProperty("dbName") + "_test";
+        } else {
+            this.dbName = this.prop.getProperty("dbName");
+        }
         this.userName = this.prop.getProperty("userName");
         this.password = this.prop.getProperty("password");
         this.serverName = this.prop.getProperty("serverName");

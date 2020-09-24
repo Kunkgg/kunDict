@@ -3,14 +3,15 @@ package kunDict;
 
 public class CollinsOnlineDict extends OnlineDict {
 
-    public CollinsOnlineDict(){
-        this.setName("Collins Online English Dictionary");
-        this.setDescription("English to English");
-        this.setType(DictType.Online);
-    }
-
+    private static String name = "Collins Online English Dictionary";
+    private static String shortName = "collins";
+    private static String description = "English to English";
     private String queryUrlBase = "https://www.collinsdictionary.com/"
                                     + "us/dictionary/english/";
+
+    public CollinsOnlineDict(){
+        super(name, shortName, description);
+    }
 
     public Word queryWord(String wordSpell) {
         String url = queryUrlBase + wordSpell;

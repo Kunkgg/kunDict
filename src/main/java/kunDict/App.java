@@ -14,27 +14,26 @@ import java.util.Arrays;
 
 
 public class App {
-    private Database db;
+    private static Database db;
 
     public App() throws IOException, SQLException{
-        Database db = new Database();
-        this.setDb(db);
+        App.db = new Database();
     }
 
     // getter and setter {{{ //
-    public Database getDb() {
-        return this.db;
+    public static Database getDb() {
+        return App.db;
     }
 
     public void setDb(Database db) {
-        this.db = db;
+        App.db = db;
     }
     // }}} getter and setter //
 
     public void initializeTables() throws IOException, SQLException {
-        this.db.getConnection();
-        this.db.createDatabase();
-        this.db.useDbName();
+        db.getConnection();
+        db.createDatabase();
+        db.useDbName();
 
         if (!hasTables()) {
             db.createTable(SQLStr.createTableDicts());
@@ -48,7 +47,7 @@ public class App {
 
     public boolean hasTables() throws IOException, SQLException {
         Boolean result = false;
-        Connection con = this.db.getCurrentConUseDbName();
+        Connection con = db.getCurrentConUseDbName();
 
         try (Statement stmt = con.createStatement();) {
             String query = SQLStr.hasTables("dict");

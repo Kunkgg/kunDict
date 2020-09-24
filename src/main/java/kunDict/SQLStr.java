@@ -258,6 +258,12 @@ public class SQLStr {
     }
     // }}} Delete tables for each dictionary //
 
+    // Create database for App {{{ //
+    public static String createDb(String dbName) {
+        return "CREATE DATABASE IF NOT EXISTS " + dbName;
+    }
+    // }}} Create database for App //
+
     // Create tables for App {{{ //
     public static String createTableDicts() {
         return "CREATE TABLE dicts"

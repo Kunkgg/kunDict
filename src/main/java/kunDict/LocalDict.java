@@ -1,7 +1,6 @@
 package kunDict;
 
 import java.io.IOException;
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,79 +11,69 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 abstract class LocalDict extends Dict {
-    private Instant timestamp;
-    private Database db;
+    private Instant atime;
+    private Instant mtime;
+    private static Database db = App.getDb();
     // shortName is the short name of Dict.name
     // It is used to be prefix of each tables of respective dictionary.
     private String shortName;
 
-    public LocalDict(String name, String description)
-            throws IOException, SQLException{
-        super(name, description, DictType.Local);
-
-        this.db = new Database();
+    public LocalDict(String name, String shortName, String description) {
+        super(name, shortName, description, DictType.Local);
     }
 
     public LocalDict() {
     }
 
     // getter and setter {{{ //
-    public Instant getTimestamp() {
-        return this.timestamp;
+    public Instant getAtime() {
+        return this.atime;
     }
 
-    private void updateTimestamp() {
-        this.timestamp = Instant.now();
+    public Instant getMtime() {
+        return this.mtime;
     }
 
-    public Database getDb() {
-        return this.db;
+    private void updateAtime() {
+        this.atime = Instant.now();
     }
 
-    public String getShortName() {
-        return this.shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
-    public void setDb(Database db) {
-        this.db = db;
+    private void updateMtime() {
+        this.mtime = Instant.now();
     }
 
     // }}} getter and setter //
 
     // manage each dict {{{ //
     public void initializeTables() throws IOException, SQLException {
-        this.db.getConnectionUseDbName();
+        db.getConnectionUseDbName();
 
         if (!hasTables()) {
-            this.db.createTable(SQLStr.createTableWords(this.shortName));
-            this.db.createTable(SQLStr.createTableFrequencies(this.shortName));
-            this.db.createTable(SQLStr.createTableEntries(this.shortName));
-            this.db.createTable(SQLStr.createTableExamples(this.shortName));
-            this.db.addForeignKey(SQLStr.addForeignKeyFreId(this.shortName));
-            this.db.addForeignKey(SQLStr.addForeignKeyWordId(this.shortName));
-            this.db.addForeignKey(SQLStr.addForeignKeyEntryId(this.shortName));
+            db.createTable(SQLStr.createTableWords(this.getShortName()));
+            db.createTable(SQLStr.createTableFrequencies(this.getShortName()));
+            db.createTable(SQLStr.createTableEntries(this.getShortName()));
+            db.createTable(SQLStr.createTableExamples(this.getShortName()));
+            db.addForeignKey(SQLStr.addForeignKeyFreId(this.getShortName()));
+            db.addForeignKey(SQLStr.addForeignKeyWordId(this.getShortName()));
+            db.addForeignKey(SQLStr.addForeignKeyEntryId(this.getShortName()));
         }
 
-        Utils.info(this.shortName + " dictionary INITED");
+        Utils.info(this.getShortName() + " dictionary INITED");
     }
 
     public void dropTables() throws IOException, SQLException {
-        this.db.getConnectionUseDbName();
-        this.db.dropTable(SQLStr.dropTableInDict(this.shortName));
+        db.getConnectionUseDbName();
+        db.dropTable(SQLStr.dropTableInDict(this.getShortName()));
 
-        Utils.info(this.shortName + " dictionary tables DELETED");
+        Utils.info(this.getShortName() + " dictionary tables DELETED");
     }
 
     public boolean hasTables() throws IOException, SQLException {
         Boolean result = false;
-        Connection con = this.db.getCurrentConUseDbName();
+        Connection con = db.getCurrentConUseDbName();
 
         try (Statement stmt = con.createStatement();) {
-            String query = SQLStr.hasTables(this.shortName);
+            String query = SQLStr.hasTables(this.getShortName());
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
@@ -96,7 +85,7 @@ abstract class LocalDict extends Dict {
             }
             for (int i = 0; i < designedTables.size(); i++) {
                 designedTables.set(i,
-                        this.shortName + "_" + designedTables.get(i));
+                        this.getShortName() + "_" + designedTables.get(i));
             }
             result = existedTables.containsAll(designedTables);
 
@@ -104,9 +93,9 @@ abstract class LocalDict extends Dict {
             Database.printSQLException(e);
         }
         if (result) {
-            Utils.info(this.shortName + " dictionary tables existed");
+            Utils.info(this.getShortName() + " dictionary tables existed");
         } else {
-            Utils.info(this.shortName + " dictionary tables NOT existed");
+            Utils.info(this.getShortName() + " dictionary tables NOT existed");
         }
 
         return result;
@@ -121,11 +110,11 @@ abstract class LocalDict extends Dict {
     // Query a word {{{ //
     public Word queryWord(String wordSpell) throws IOException, SQLException {
         Word word = null;
-        Connection con = this.db.getCurrentConUseDbName();
+        Connection con = db.getCurrentConUseDbName();
 
         // query from locale database
         try (Statement stmt = con.createStatement();) {
-            String query = SQLStr.queryWord(this.shortName, wordSpell);
+            String query = SQLStr.queryWord(this.getShortName(), wordSpell);
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
@@ -219,7 +208,7 @@ abstract class LocalDict extends Dict {
             Utils.warning("Could't add a empty word to database.");
         } else {
             // initial variables {{{ //
-            Connection con = this.db.getCurrentConUseDbName();
+            Connection con = db.getCurrentConUseDbName();
             PreparedStatement pstmtFrequencies = null;
             PreparedStatement pstmtWords = null;
             PreparedStatement pstmtEntries = null;
@@ -236,16 +225,16 @@ abstract class LocalDict extends Dict {
 
                 // initial prepareStatement {{{ //
                 pstmtFrequencies = con.prepareStatement(
-                        SQLStr.insertValueIntoFrequenies(this.shortName),
+                        SQLStr.insertValueIntoFrequenies(this.getShortName()),
                         Statement.RETURN_GENERATED_KEYS);
                 pstmtWords = con.prepareStatement(
-                        SQLStr.insertValueIntoWords(this.shortName),
+                        SQLStr.insertValueIntoWords(this.getShortName()),
                         Statement.RETURN_GENERATED_KEYS);
                 pstmtEntries = con.prepareStatement(
-                        SQLStr.insertValueIntoEntries(this.shortName),
+                        SQLStr.insertValueIntoEntries(this.getShortName()),
                         Statement.RETURN_GENERATED_KEYS);
                 pstmtExamples = con.prepareStatement(
-                        SQLStr.insertValueIntoExamples(this.shortName),
+                        SQLStr.insertValueIntoExamples(this.getShortName()),
                         Statement.RETURN_GENERATED_KEYS);
                 // }}} initial prepareStatement //
 
@@ -260,7 +249,7 @@ abstract class LocalDict extends Dict {
                         Utils.info("Querying freId from database ...");
                         Statement stmt = con.createStatement();
                         rs = stmt.executeQuery(
-                                SQLStr.queryFreId(this.shortName,
+                                SQLStr.queryFreId(this.getShortName(),
                                     word.getFrequency().getBand()));
                     }
                 }
@@ -364,12 +353,12 @@ abstract class LocalDict extends Dict {
 
     // delete a word {{{ //
     public void deleteWord(String wordSpell) throws SQLException {
-        Connection con = this.db.getCurrentConUseDbName();
+        Connection con = db.getCurrentConUseDbName();
         int affectedRow = 0;
 
         // delete word from locale database by wordSpell
         try (Statement stmt = con.createStatement();) {
-            String query = SQLStr.deleteWord(this.shortName, wordSpell);
+            String query = SQLStr.deleteWord(this.getShortName(), wordSpell);
             affectedRow = stmt.executeUpdate(query);
 
             if(affectedRow > 0) {
@@ -393,23 +382,24 @@ abstract class LocalDict extends Dict {
     public void updateWord(Word word) throws SQLException {
         if (!word.isEmypty()) {
             Utils.info(String.format(
-                    "Trying to update word (%s) in {%s} database...",
+                    "==> Trying to update word (%s) in {%s} database...",
                     word.getSpell(), this.getName()));
             deleteWord(word.getSpell());
             addWord(word);
             Utils.info(String.format(
-                    "Updated word (%s) in {%s} database",
+                    "<== Updated word (%s) in {%s} database",
                     word.getSpell(), this.getName()));
         }
     }
     // }}} update //
 
+    // size {{{ //
     public int size() throws SQLException {
-        Connection con = this.db.getCurrentConUseDbName();
+        Connection con = db.getCurrentConUseDbName();
         int size = 0;
 
         try (Statement stmt = con.createStatement();) {
-            String query = SQLStr.querySize(this.shortName);
+            String query = SQLStr.querySize(this.getShortName());
 
             ResultSet rs = stmt.executeQuery(query);
             if (rs.next())
@@ -423,9 +413,10 @@ abstract class LocalDict extends Dict {
         }
         return size;
     }
+    // }}} size //
 
     // }}} operater in dictionary //
 
     // abstract Word random();
-    // abstract Boolean generate();
+    abstract void build();
 }
