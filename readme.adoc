@@ -107,23 +107,40 @@ class CollinsOnlineDict {
 
 class Word {
     - String spell;
-    - String[] forms;
-    - String frequency;
+    - ArrayList<String> forms;
+    - Frequency frequency;
     - Pronounce pronounce;
-    - SenseEntry[] senseEntrylist;
-    - LocalDateTime lastModify;
+    - ArrayList<SenseEntry> senseEntryList;
+    - String source = "";
+    - Instant mtime;
+    - Instant atime;
+    - int acounter = -1;
 
-    + String toString();
+    + String toString()
+    + boolean equals(Object otherObj)
+    + boolean isEmpty()
+
     + String getSpell();
     + Pronounce getPronounce();
     + String getfrequency();
-    + String[] getforms();
-    + SenseEntry[] getSenseEntry();
+    + ArrayList<String> getforms();
+    + ArrayList<SenseEntry> getSenseEntries()
+    + Instant getMtime()
+    + Instant getAtime()
+    + Instant getSource()
+
     + void setSpell();
     + void setPronounce();
     + void setfrequency();
     + void setforms();
-    + void setSenseEntry();
+    + void setSenseEntries();
+    + void setSource()
+    + void updateMtime()
+    + void updateAtime()
+
+    + void combine(SenseEntry other)
+    + {static} ArrayList<SenseEntry> noDuplicatedSense(ArrayList<SenseEntry>
+    senseEntryList)
 }
 
 class Pronounce {

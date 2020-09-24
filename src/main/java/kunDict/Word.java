@@ -15,10 +15,11 @@ public class Word implements Serializable{
     private ArrayList<SenseEntry> senseEntryList;
     private String source = "";
     // timestamp for last modify
-    private Instant timestamp;
+    private Instant mtime;
+    // timestamp for last access
+    private Instant atime;
     // counter query
-    private int counter = -1;
-
+    private int acounter = -1;
 
     public Word(String spell, Pronounce pronounce, Frequency frequency,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
@@ -34,7 +35,7 @@ public class Word implements Serializable{
 
     public Word(String spell, Pronounce pronounce, Frequency frequency,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
-            String source, int counter, Instant timestamp) {
+            String source, int counter, Instant mtime) {
 
         this.spell = spell;
         this.pronounce = pronounce;
@@ -42,10 +43,11 @@ public class Word implements Serializable{
         this.forms = forms;
         this.senseEntryList = senseEntryList;
         this.source = source;
-        this.counter = counter;
-        this.timestamp = timestamp;
+        this.acounter = counter;
+        this.mtime = mtime;
     }
 
+    @Override
     public String toString() {
         return String.format(
                 "[%s]%n%s, %s, %s, %s, length of examples: %d%nFirst entry:%n%s",
@@ -55,6 +57,7 @@ public class Word implements Serializable{
                 this.senseEntryList.get(0).toString());
     }
 
+    @Override
     public boolean equals(Object otherObj) {
         if (this == otherObj) return true;
         if (otherObj == null) return false;
@@ -98,52 +101,60 @@ public class Word implements Serializable{
         return this.senseEntryList;
     }
 
-    public Instant getTimestamp() {
-        return this.timestamp;
+    public Instant getMtime() {
+        return this.mtime;
+    }
+
+    public Instant getAtime() {
+        return this.atime;
     }
 
     public String getSource() {
         return this.source;
     }
 
-    public int getCounter() {
-        return this.counter;
+    public int getAcounter() {
+        return this.acounter;
     }
     // }}} getter //
 
     // setter {{{ //
-    private void setTimestamp() {
-        this.timestamp = Instant.now();
+    private void updateMtime() {
+        this.mtime = Instant.now();
+    }
+
+    private void updateAtime() {
+        this.atime = Instant.now();
     }
 
     public void setSpell(String spell) {
         this.spell = spell;
-        setTimestamp();
+        updateMtime();
     }
 
     public void setPronounce(Pronounce pronounce) {
         this.pronounce = pronounce;
-        setTimestamp();
+        updateMtime();
     }
 
     public void setFrequency(Frequency frequency) {
         this.frequency = frequency;
-        setTimestamp();
+        updateMtime();
     }
 
     public void setForms(ArrayList<String> forms) {
         this.forms = forms;
-        setTimestamp();
+        updateMtime();
     }
 
     public void setSenesEntries(ArrayList<SenseEntry> senseEntryList) {
         this.senseEntryList = senseEntryList;
-        setTimestamp();
+        updateMtime();
     }
 
     public void setSource(String source) {
         this.source = source;
-        setTimestamp();
+        updateMtime();
     }
     // }}} setter //
 }

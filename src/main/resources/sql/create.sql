@@ -15,7 +15,8 @@ CREATE TABLE dicts
   dict_type_id           int       NULL ,
   dict_dbName            char(50)  NULL UNIQUE,
   dict_size              int       DEFAULT 0,
-  dict_timestamp         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  dict_mtime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  dict_atime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (dict_id)
 ) ENGINE=InnoDB;
 
@@ -46,7 +47,8 @@ CREATE TABLE mit10k_words
   word_pron_sound        char(255) NULL ,
   fre_id                 int       NULL ,
   word_counter           int       DEFAULT 0,
-  word_timestamp         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  word_mtime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  word_atime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (word_id)
 ) ENGINE=InnoDB;
 
