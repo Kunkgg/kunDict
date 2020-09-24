@@ -251,7 +251,7 @@ Word *-- SenseEntry : sensenEntrylist
 MITDict o-- Word
 DefaultLocalDict o-- Word
 Database -- App
-App -- LocalDict
+App -- Dict
 CollinsOnlineDict <-- Request
 Request <-- Extractor
 Extractor <-- Word

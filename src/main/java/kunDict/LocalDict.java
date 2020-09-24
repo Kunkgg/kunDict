@@ -121,8 +121,9 @@ abstract class LocalDict extends Dict {
             String source = null;
             Pronounce pron = null;
             Frequency fre = null;
-            int counter = -1;
-            Instant timestamp = null;
+            int acounter = -1;
+            Instant mtime = null;
+            Instant atime = null;
             ArrayList<String> forms = null;
 
             ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
@@ -138,8 +139,9 @@ abstract class LocalDict extends Dict {
                     fre = new Frequency(freBand, freDescription);
                     forms = Utils.convertStringToArrayList(
                             rs.getString("word_forms"));
-                    counter = rs.getInt("word_counter");
-                    timestamp = rs.getTimestamp("word_timestamp").toInstant();
+                    acounter = rs.getInt("word_acounter");
+                    mtime = rs.getTimestamp("word_mtime").toInstant();
+                    atime = rs.getTimestamp("word_atime").toInstant();
                 }
 
                 SenseEntry senseEntry = new SenseEntry();
@@ -153,7 +155,7 @@ abstract class LocalDict extends Dict {
 
             senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList,
-                    source, counter, timestamp);
+                    source, acounter, mtime, atime);
         // }}} process the ResultSet //
         } catch (SQLException e) {
             Database.printSQLException(e);

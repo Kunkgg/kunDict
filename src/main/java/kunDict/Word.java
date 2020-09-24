@@ -35,7 +35,7 @@ public class Word implements Serializable{
 
     public Word(String spell, Pronounce pronounce, Frequency frequency,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
-            String source, int counter, Instant mtime) {
+            String source, int acounter, Instant mtime, Instant atime) {
 
         this.spell = spell;
         this.pronounce = pronounce;
@@ -43,8 +43,9 @@ public class Word implements Serializable{
         this.forms = forms;
         this.senseEntryList = senseEntryList;
         this.source = source;
-        this.acounter = counter;
+        this.acounter = acounter;
         this.mtime = mtime;
+        this.atime = atime;
     }
 
     @Override

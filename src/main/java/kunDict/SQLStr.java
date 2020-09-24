@@ -1,22 +1,22 @@
 package kunDict;
 
 public class SQLStr {
-    // errer code {{{ //
+    // SQLException code {{{ //
     static final int ERRORCODE_DUPLICATE_ENTRY = 1062;
     // X0Y32: Jar file already exists in schema
     static final String SQLSTATE_JAR_FILE_EXISTED = "X0Y32";
     // 42Y55: Table already exists in schema
     static final String SQLSTATE_TABLE_EXISTED = "X0Y32";
 
-    // }}} errer code //
+    // }}} SQLException code //
     // static fields {{{ //
     static final String[] tableListInDict = { "words", "frequencies",
             "entries", "examples" };
 
     static final String[] columnListInDict = { "word_spell", "word_source",
             "word_forms", "word_pron_soundmark", "word_pron_sound",
-            "word_counter", "word_timestamp", "fre_band", "fre_description",
-            "entry_wordClass", "entry_sense", "example_text" };
+            "word_acounter", "word_mtime", "fre_band", "fre_description",
+            "entry_wordClass", "entry_sense", "example_text", "word_atime"};
 
     static final String[] columnListInFrequencies = { "fre_band",
             "fre_description" };
@@ -171,8 +171,9 @@ public class SQLStr {
               + "word_pron_soundmark    char(50)  NULL ,"
               + "word_pron_sound        char(255) NULL ,"
               + "fre_id                 int       NULL ,"
-              + "word_counter           int       DEFAULT 0,"
-              + "word_timestamp         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+              + "word_mtime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+              + "word_atime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+              + "word_acounter          int       DEFAULT 0,"
               + "PRIMARY KEY (word_id)"
             + ") ENGINE=InnoDB;";
     }
@@ -270,10 +271,11 @@ public class SQLStr {
             + "("
             + "  dict_id                int       NOT NULL AUTO_INCREMENT,"
             + "  dict_name              char(50)  NOT NULL UNIQUE,"
+            + "  dict_shortName         char(50)  NULL UNIQUE,"
             + "  dict_type_id           int       NULL ,"
-            + "  dict_dbName            char(50)  NULL UNIQUE,"
             + "  dict_size              int       DEFAULT 0,"
-            + "  dict_timestamp         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "  dict_mtime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "  dict_atime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
             + "  PRIMARY KEY (dict_id)"
             + ") ENGINE=InnoDB;";
     }
