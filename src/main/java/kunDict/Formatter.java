@@ -39,7 +39,7 @@ public class Formatter {
         System.out.println("############################################");
     }
 
-    public static String toAnki(Word word) {
+    public String toAnki() {
         return "toAnki";
     }
 }

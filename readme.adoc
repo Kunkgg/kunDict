@@ -138,7 +138,12 @@ class SenseEntry {
 }
 
 class Formatter {
-    + {static} String toAnki(Word word)
+    - Word word
+
+    + Wrod getWord()
+    + void setWord(Word word)
+    + void printText()
+    + String toAnki()
 }
 
 class Printer {
