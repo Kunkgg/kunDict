@@ -10,6 +10,7 @@ public class DefaultLocalDict extends LocalDict {
 
     public DefaultLocalDict() throws IOException, SQLException{
         super(name, shortName, description);
+        this.initializeTables();
     }
 
     public void build() {

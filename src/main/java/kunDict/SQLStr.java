@@ -13,7 +13,7 @@ public class SQLStr {
     static final String[] tableListInDict = { "words", "frequencies",
             "entries", "examples" };
 
-    static final String[] columnListInDict = { "word_spell", "word_source",
+    static final String[] columnListInQueryWord = { "word_spell", "word_source",
             "word_forms", "word_pron_soundmark", "word_pron_sound",
             "word_acounter", "word_mtime", "fre_band", "fre_description",
             "entry_wordClass", "entry_sense", "example_text", "word_atime"};
@@ -30,6 +30,12 @@ public class SQLStr {
             "entry_id" };
 
     static final String[] tableListApp = {"dicts", "dict_types"};
+
+    // static final String[] columnListInDicts = { "dict_name", "dict_shortName",
+    //         "dict_type_id", "dict_size",  "dict_mtime", "dict_atime" };
+    static final String[] columnListInDicts = { "dict_name", "dict_shortName",
+            "dict_type_id", "dict_size"};
+
     // }}} static fields //
 
     public static String commaJoin(String... columns) {
@@ -50,7 +56,7 @@ public class SQLStr {
 
     // operate word in a dictionary {{{ //
     public static String queryWord(String shortName, String wordSpell) {
-        String columns = commaJoin(columnListInDict);
+        String columns = commaJoin(columnListInQueryWord);
 
         String tables = tableStrDictQueryWord(shortName, tableListInDict);
         String wheres = whereStrDictQueryWord(shortName, wordSpell);
@@ -274,8 +280,8 @@ public class SQLStr {
             + "  dict_shortName         char(50)  NULL UNIQUE,"
             + "  dict_type_id           int       NULL ,"
             + "  dict_size              int       DEFAULT 0,"
-            + "  dict_mtime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-            + "  dict_atime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "  dict_mtime             TIMESTAMP NULL,"
+            + "  dict_atime             TIMESTAMP NULL,"
             + "  PRIMARY KEY (dict_id)"
             + ") ENGINE=InnoDB;";
     }
@@ -300,4 +306,31 @@ public class SQLStr {
                 + "VALUES(\'" + dictType + "\');";
     }
     // }}} Create tables for App //
+
+// register dicts table for App {{{ //
+    public static String insertValueIntoDicts() {
+        String columns = commaJoin(columnListInDicts);
+        String placeholder = getPlaceholder(columnListInDicts);
+        String result = String.format("INSERT INTO dicts(%s) VALUES(%s)",
+                 columns, placeholder);
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String queryDictTypeId(String dictType) {
+        String result = String.format("SELECT dict_type_id FROM dict_types "
+                        + "WHERE dict_type = \'%s\'", dictType);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String clearDicts() {
+        String result = "DELETE FROM dicts";
+
+        Utils.debug(result);
+        return result;
+    }
+
+// }}} register dicts table for App //
 }

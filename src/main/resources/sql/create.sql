@@ -12,11 +12,11 @@ CREATE TABLE dicts
 (
   dict_id                int       NOT NULL AUTO_INCREMENT,
   dict_name              char(50)  NOT NULL UNIQUE,
+  dict_shortName         char(50)  NULL UNIQUE,
   dict_type_id           int       NULL ,
-  dict_dbName            char(50)  NULL UNIQUE,
   dict_size              int       DEFAULT 0,
-  dict_mtime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  dict_atime             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  dict_mtime             TIMESTAMP NULL,
+  dict_atime             TIMESTAMP NULL,
   PRIMARY KEY (dict_id)
 ) ENGINE=InnoDB;
 

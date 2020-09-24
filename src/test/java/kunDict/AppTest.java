@@ -31,7 +31,6 @@ public class AppTest {
 
     public AppTest() throws IOException, SQLException{
         this.app = new App();
-        testFlag = true;
     }
 
     // App database {{{ //
@@ -232,35 +231,35 @@ public class AppTest {
     }
     // }}} dict database //
 
-    // MITDict operate {{{ //
+    // DefaultLocalDict operate {{{ //
     // Add {{{ //
     @Test
-    public void testMITDictAdd() throws IOException, SQLException {
+    public void testDefaultLocalDictAdd() throws IOException, SQLException {
         CollinsOnlineDict collins = new CollinsOnlineDict();
         Word water = collins.queryWord("water");
-        MITDict mitDict = new MITDict();
-        mitDict.addWord(water);
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        defDict.addWord(water);
         Word hibernate = collins.queryWord("hibernate");
-        mitDict.addWord(hibernate);
+        defDict.addWord(hibernate);
         Word duplicate = collins.queryWord("duplicate");
-        mitDict.addWord(duplicate);
+        defDict.addWord(duplicate);
         Word thes = collins.queryWord("thes");
-        mitDict.addWord(thes);
+        defDict.addWord(thes);
         Word casual = collins.queryWord("casual");
-        mitDict.addWord(casual);
+        defDict.addWord(casual);
         Word ace = collins.queryWord("ace");
-        mitDict.addWord(ace);
+        defDict.addWord(ace);
     }
 
     // }}} Add //
     // Query {{{ //
     @Test
-    public void testMITDictQuery() throws IOException, SQLException {
-        MITDict mitDict = new MITDict();
+    public void testDefaultLocalDictQuery() throws IOException, SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
 
         String word = "water";
         System.out.println("### Local ###");
-        Word wordLocal = mitDict.queryWord(word);
+        Word wordLocal = defDict.queryWord(word);
         Formatter fmtLocal = new Formatter(wordLocal);
         fmtLocal.printText();
         System.out.println("### Online ###");
@@ -279,48 +278,53 @@ public class AppTest {
     // }}} Query //
     // delete {{{ //
     @Test
-    public void testMITDictDelete() throws IOException, SQLException {
-        MITDict mitDict = new MITDict();
+    public void testDefaultLocalDictDelete() throws IOException, SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
         CollinsOnlineDict collins = new CollinsOnlineDict();
         Word water = collins.queryWord("water");
-        mitDict.addWord(water);
-        Word queryWater = mitDict.queryWord("water");
+        defDict.addWord(water);
+        Word queryWater = defDict.queryWord("water");
         assertFalse("word Should not be empty", queryWater.isEmypty());
-        mitDict.deleteWord("water");
-        queryWater = mitDict.queryWord("water");
+        defDict.deleteWord("water");
+        queryWater = defDict.queryWord("water");
         assertTrue("word Should not be deleted, so empty", queryWater.isEmypty());
 
-        mitDict.deleteWord("water");
-        mitDict.deleteWord("water");
+        defDict.deleteWord("water");
+        defDict.deleteWord("water");
         // String word = "ace";
     }
     // }}} delete //
     // update {{{ //
     @Test
-    public void testMITDictUpdate() throws IOException, SQLException {
-        MITDict mitDict = new MITDict();
+    public void testDefaultLocalUpdate() throws IOException, SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
         CollinsOnlineDict collins = new CollinsOnlineDict();
         Word word = collins.queryWord("ace");
         word.setPronounce(new Pronounce("test for update", "test url"));
-        mitDict.updateWord(word);
-        word = mitDict.queryWord("ace");
+        defDict.updateWord(word);
+        word = defDict.queryWord("ace");
         assertEquals("test for update", word.getPronounce().getSoundmark());
         assertEquals("test url", word.getPronounce().getSound());
-
-        // String word = "ace";
     }
     // }}} update //
     // size {{{ //
     @Test
-    public void testMITDictSize() throws IOException, SQLException {
-        MITDict mitDict = new MITDict();
-        mitDict.initializeTables();
-        int size = mitDict.size();
+    public void testDefaultLocalSize() throws IOException, SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        defDict.initializeTables();
+        int size = defDict.size();
         assertTrue("size of dictionary should be greater or equal than zero",
                 size >= 0);
 
-        Utils.test(String.format("{%s} size: %d", mitDict.getName(), size));
+        Utils.test(String.format("{%s} size: %d", defDict.getName(), size));
     }
     // }}} size //
     // }}} MITDict operate //
+
+    // register dicts {{{ //
+    @Test
+    public void testRegisterDicts() throws IOException, SQLException {
+        app.registerDicts();
+    }
+    // }}} register dicts //
 }

@@ -11,13 +11,16 @@ import java.sql.BatchUpdateException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.sql.PreparedStatement;
 
 public class App {
     private static Database db;
+    private ArrayList<Dict> registeredDicts = new ArrayList<>();
 
-    public App() throws IOException, SQLException{
+    public App() throws IOException, SQLException {
         App.db = new Database();
+        this.registeredDicts = new ArrayList<>();
+        // this.registerDicts();
     }
 
     // getter and setter {{{ //
@@ -95,10 +98,104 @@ public class App {
         }
     }
 
-
     // TODO: check app database status <21-09-20, gk07> //
     // public boolean checkForeignKey(){}
     // public boolean checkTableValuse(){}
+
+    public void registerDicts() throws IOException, SQLException {
+        DefaultLocalDict defaultDict = new DefaultLocalDict();
+        CollinsOnlineDict collinsDict = new CollinsOnlineDict();
+
+        this.clearDicts();
+
+        this.registerDict(defaultDict);
+        this.registeredDicts.add(defaultDict);
+        this.registerDict(collinsDict);
+        this.registeredDicts.add(collinsDict);
+    }
+
+    // register dict {{{ //
+    public void registerDict(Dict dict) throws SQLException {
+        LocalDict localDict = null;
+        String name = dict.getName();
+        String shortName = dict.getShortName();
+        DictType type = dict.getType();
+        int size = (type.equals(DictType.Local)) ? 0 : -1;
+        Connection con = db.getCurrentConUseDbName();
+        PreparedStatement pstmtDicts = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        int affectedRow = 0;
+        int dictTypeId = 0;
+
+        if (type.equals(DictType.Local)) {
+            localDict = (LocalDict) dict;
+            size = localDict.size();
+        }
+        try {
+            con.setAutoCommit(false);
+            stmt = con.createStatement();
+            pstmtDicts = con.prepareStatement(SQLStr.insertValueIntoDicts(),
+                    Statement.RETURN_GENERATED_KEYS);
+            rs = stmt.executeQuery(SQLStr.queryDictTypeId(type.toString()));
+
+            if (rs != null && !rs.isClosed() && rs.next()) {
+                dictTypeId = rs.getInt(1);
+                rs.close();
+                Utils.info("Got dict_type_id: " + dictTypeId);
+            }
+
+            if (dictTypeId > 0) {
+                pstmtDicts.setString(1, name);
+                pstmtDicts.setString(2, shortName);
+                pstmtDicts.setInt(3, dictTypeId);
+                pstmtDicts.setInt(4, size);
+            }
+            affectedRow = pstmtDicts.executeUpdate();
+            rs = pstmtDicts.getGeneratedKeys();
+            if (affectedRow == 1) {
+                Utils.info("Registered a dictionary {" + name
+                        + "} to App database");
+            }
+
+        } catch (SQLException e) {
+            if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
+                Utils.warning("Duplicated dictionary, please try check.");
+            }
+
+            Database.printSQLException(e);
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (pstmtDicts != null) {
+                pstmtDicts.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null)
+                con.setAutoCommit(true);
+        }
+    }
+
+    public void clearDicts() throws SQLException {
+        Connection con = db.getCurrentConUseDbName();
+
+        try(Statement stmt = con.createStatement();) {
+            int affectedRow = stmt.executeUpdate(SQLStr.clearDicts());
+            if (affectedRow > 0) {
+                Utils.info("Cleared dicts table");
+            } else if (affectedRow == 0) {
+                Utils.info("Don't need clear, dicts tables is empty");
+            } else {
+                Utils.warning("Failed to clear dicts table");
+            }
+        } catch (SQLException e) {
+            Utils.warning("Failed to clear dicts table");
+            Database.printSQLException(e);
+        }
+    }
+    // }}} register dict //
 
     public static void main(String[] args) {
 
