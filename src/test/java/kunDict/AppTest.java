@@ -62,9 +62,8 @@ public class AppTest {
         String url = "https://www.collinsdictionary.com/us/dictionary/english/water";
         String fileName = "water.html";
         Request req = new Request(url);
-        req.bodyHandler = HttpResponse.BodyHandlers
-                .ofFile(Paths.get(fileName));
-        HttpResponse<String> response = req.get(true, 0);
+        req.setBodyHandler(HttpResponse.BodyHandlers.ofFile(Paths.get(fileName)));
+        HttpResponse<String> response = req.get();
 
         // System.out.println(response.body().substring(0, 500));
         assertEquals(200, response.statusCode());
