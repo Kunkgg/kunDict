@@ -34,11 +34,12 @@ public class AppTest {
     }
 
     // App database {{{ //
-    @Test
-    public void testAppInitializeTables() throws IOException, SQLException {
-        app.initializeTables();
-        assertTrue("Should have tables", app.hasTables());
-    }
+    // @Ignore
+    // @Test
+    // public void testAppInitializeTables() throws IOException, SQLException {
+    //     app.initializeTables();
+    //     assertTrue("Should have tables", app.hasTables());
+    // }
 
     // @Test
     // public void testAppHasTables() throws IOException, SQLException {
@@ -233,6 +234,7 @@ public class AppTest {
 
     // DefaultLocalDict operate {{{ //
     // Add {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalDictAdd() throws IOException, SQLException {
         CollinsOnlineDict collins = new CollinsOnlineDict();
@@ -253,6 +255,7 @@ public class AppTest {
 
     // }}} Add //
     // Query {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalDictQuery() throws IOException, SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();
@@ -277,6 +280,7 @@ public class AppTest {
     }
     // }}} Query //
     // delete {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalDictDelete() throws IOException, SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();
@@ -295,6 +299,7 @@ public class AppTest {
     }
     // }}} delete //
     // update {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalUpdate() throws IOException, SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();
@@ -308,6 +313,7 @@ public class AppTest {
     }
     // }}} update //
     // size {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalSize() throws IOException, SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();
@@ -322,9 +328,18 @@ public class AppTest {
     // }}} MITDict operate //
 
     // register dicts {{{ //
-    @Test
-    public void testRegisterDicts() throws IOException, SQLException {
-        app.registerDicts();
-    }
+    // @Ignore
+    // @Test
+    // public void testRegisterDicts() throws IOException, SQLException {
+    //     app.registerDicts();
+    // }
     // }}} register dicts //
+    // app main {{{ //
+    @Test
+    public void testMain() throws IOException, SQLException {
+        App.main();
+        App.main("duplicate");
+        App.main("huddle");
+    }
+    // }}} app main //
 }

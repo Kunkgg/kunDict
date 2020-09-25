@@ -13,6 +13,7 @@ public class CollinsOnlineDict extends OnlineDict {
         super(name, shortName, description);
     }
 
+    @Override
     public Word queryWord(String wordSpell) {
         String url = queryUrlBase + wordSpell;
         Utils.debug("URL: " + url);

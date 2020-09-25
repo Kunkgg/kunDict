@@ -15,12 +15,12 @@ import java.sql.PreparedStatement;
 
 public class App {
     private static Database db;
-    private ArrayList<Dict> registeredDicts = new ArrayList<>();
+    private ArrayList<LocalDict> registeredLocalDicts = new ArrayList<>();
+    private ArrayList<OnlineDict> registeredOnlineDicts = new ArrayList<>();
 
     public App() throws IOException, SQLException {
         App.db = new Database();
-        this.registeredDicts = new ArrayList<>();
-        // this.registerDicts();
+        this.registerDicts();
     }
 
     // getter and setter {{{ //
@@ -31,8 +31,29 @@ public class App {
     public void setDb(Database db) {
         App.db = db;
     }
+
+    public ArrayList<Dict> getRegisteredDicts() {
+        ArrayList<Dict> localDictsClone =
+            (ArrayList<Dict>) this.registeredLocalDicts.clone();
+        ArrayList<Dict> onlineDictsClone =
+            (ArrayList<Dict>) this.registeredOnlineDicts.clone();
+
+        localDictsClone.addAll(onlineDictsClone);
+
+        return localDictsClone;
+    }
+
+    public ArrayList<LocalDict> getRegisteredLocalDicts(){
+        return this.registeredLocalDicts;
+    }
+
+    public ArrayList<OnlineDict> getRegisteredOnlineDicts() {
+        return this.registeredOnlineDicts;
+    }
+
     // }}} getter and setter //
 
+    // initialize app tables {{{ //
     public void initializeTables() throws IOException, SQLException {
         db.getConnection();
         db.createDatabase();
@@ -97,6 +118,7 @@ public class App {
             con.setAutoCommit(true);
         }
     }
+    // }}} initialize app tables //
 
     // TODO: check app database status <21-09-20, gk07> //
     // public boolean checkForeignKey(){}
@@ -106,12 +128,10 @@ public class App {
         DefaultLocalDict defaultDict = new DefaultLocalDict();
         CollinsOnlineDict collinsDict = new CollinsOnlineDict();
 
-        this.clearDicts();
+        this.clearRegisteredDicts();
 
         this.registerDict(defaultDict);
-        this.registeredDicts.add(defaultDict);
         this.registerDict(collinsDict);
-        this.registeredDicts.add(collinsDict);
     }
 
     // register dict {{{ //
@@ -131,7 +151,16 @@ public class App {
         if (type.equals(DictType.Local)) {
             localDict = (LocalDict) dict;
             size = localDict.size();
+            if(!this.registeredLocalDicts.contains(localDict)){
+                this.registeredLocalDicts.add(localDict);
+            }
+        } else {
+            OnlineDict onlineDict = (OnlineDict) dict;
+            if(!this.registeredOnlineDicts.contains(onlineDict)){
+                this.registeredOnlineDicts.add(onlineDict);
+            }
         }
+
         try {
             con.setAutoCommit(false);
             stmt = con.createStatement();
@@ -142,7 +171,7 @@ public class App {
             if (rs != null && !rs.isClosed() && rs.next()) {
                 dictTypeId = rs.getInt(1);
                 rs.close();
-                Utils.info("Got dict_type_id: " + dictTypeId);
+                Utils.debug("Got dict_type_id: " + dictTypeId);
             }
 
             if (dictTypeId > 0) {
@@ -178,7 +207,7 @@ public class App {
         }
     }
 
-    public void clearDicts() throws SQLException {
+    public void clearRegisteredDicts() throws SQLException {
         Connection con = db.getCurrentConUseDbName();
 
         try(Statement stmt = con.createStatement();) {
@@ -194,10 +223,47 @@ public class App {
             Utils.warning("Failed to clear dicts table");
             Database.printSQLException(e);
         }
+
+        this.registeredLocalDicts.clear();
+        this.registeredOnlineDicts.clear();
     }
     // }}} register dict //
 
-    public static void main(String[] args) {
+    public static void main(String... args) throws IOException, SQLException {
+        App app = new App();
+        Word word = null;
+        String hitedDict = null;
+        LocalDict defaultDict = app.getRegisteredLocalDicts().get(0);
+        String wordSpell = null;
+        if (args != null && args.length > 0) {
+        ArrayList<Dict> registeredDicts = app.getRegisteredDicts();
+        Utils.info("There are " + registeredDicts.size() + " registered dictionarys");
+        Utils.debug("RegisteredDicts: " + registeredDicts);
 
+        wordSpell = String.join(" ", args);
+
+        for(Dict dict : registeredDicts) {
+            Utils.info(String.format("Searching (%s) in dictionary {%s}",
+                        wordSpell, dict.getName()));
+            word = dict.queryWord(wordSpell);
+            if (word != null && !word.isEmypty()) {
+                hitedDict = dict.getName();
+                break;
+            }
+        }
+
+        if (word != null && !word.isEmypty()) {
+            Utils.info("==> Get result from " + hitedDict);
+            Formatter f = new Formatter(word);
+            f.printText();
+            if (!hitedDict.equals(defaultDict.getName())) {
+                defaultDict.addWord(word);
+            }
+        } else {
+            Utils.warning("Can't anything");
+        }
+    } else {
+            Utils.warning("Nothing is inputed");
     }
+}
 }

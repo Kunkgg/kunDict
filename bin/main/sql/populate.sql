@@ -85,7 +85,7 @@ VALUES('Local');
 ##########################
 # insert dicts table
 ##########################
-INSERT INTO dicts(dict_name, dict_type_id, dict_dbName)
+INSERT INTO dicts(dict_name, dict_shorName, dict_type_id, dict_size, dict_dbName, dict_mtime, dict_atime)
 VALUES('MIT 10K Englinsh Dictionary', 1, 'mit10k');
 
 INSERT INTO dicts(dict_name, dict_type_id)

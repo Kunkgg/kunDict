@@ -9,5 +9,5 @@ abstract class OnlineDict extends Dict {
     public OnlineDict(){
     }
 
-    // abstract Word queryWord(String wordSpell);
+    abstract Word queryWord(String wordSpell);
 }
