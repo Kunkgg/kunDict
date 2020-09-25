@@ -15,7 +15,7 @@ import java.util.Properties;
 
 public class Database {
 
-    private String propertiesFileName = "./src/main/resources/database.config";
+    private String propertiesFileName = "/home/gk07/Repos/kunDict/src/main/resources/database.config";
     private String dbms;
     private String dbName;
     private String userName;
