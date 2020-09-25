@@ -55,6 +55,7 @@ public class SQLStr {
     }
 
     // operate word in a dictionary {{{ //
+    // query word {{{ //
     public static String queryWord(String shortName, String wordSpell) {
         String columns = commaJoin(columnListInQueryWord);
 
@@ -63,6 +64,7 @@ public class SQLStr {
         String query = "SELECT " + columns + " FROM " + tables
             + " WHERE (" + wheres + ")";
 
+        Utils.debug(query);
         return query;
     }
 
@@ -90,11 +92,17 @@ public class SQLStr {
                             "words", "entries", "word_id");
         conditions[2] = joinConditionStrDict(shortName,
                             "entries", "examples", "entry_id");
-        conditions[3] = shortName + "_words.word_spell = " + "\'"
-            + wordSpell + "\'";
+
+        String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
+                shortName, wordSpell);
+
+        String matchWordForms = String.format("%s_words.word_forms LIKE \'%%%s%%\'",
+                shortName, wordSpell);
+        conditions[3] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
 
         return String.join(" AND ", conditions);
     }
+    // }}} query word //
 
     // delete {{{ //
     public static String deleteWord(String shortName, String wordSpell) {

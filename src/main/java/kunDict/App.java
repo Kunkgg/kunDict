@@ -260,7 +260,7 @@ public class App {
                 defaultDict.addWord(word);
             }
         } else {
-            Utils.warning("Can't anything");
+            Utils.warning("Can't find anything");
         }
     } else {
             Utils.warning("Nothing is inputed");

@@ -42,12 +42,14 @@ public class Extractor {
 
     public Word collinsOnline() {
         // extract a word from collins website through Jsoup {{{ //
+        Word word = null;
         Document doc = Jsoup.parse(this.input);
 
         // Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
         Elements dicts = doc.select("div.dictentry");
         Element dict = dicts.first();
         Utils.debug("dicts size: " + dicts.size());
+        if (dicts.size() > 0) {
 
         String source = "Collins Online English Dictionary";
         String spell = dict.select("h2.h2_entry span.orth").text();
@@ -87,6 +89,8 @@ public class Extractor {
         }
         // }}} extract a word from collins website through Jsoup //
 
-        return new Word(spell, pronounce, fre, forms, senseEntryList, source);
+        word =  new Word(spell, pronounce, fre, forms, senseEntryList, source);
+        }
+        return word;
 }
 }
