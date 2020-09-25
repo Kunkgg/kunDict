@@ -64,7 +64,7 @@ public class AppTest {
         Request req = new Request(url);
         req.bodyHandler = HttpResponse.BodyHandlers
                 .ofFile(Paths.get(fileName));
-        HttpResponse<String> response = req.get(true);
+        HttpResponse<String> response = req.get(true, 0);
 
         // System.out.println(response.body().substring(0, 500));
         assertEquals(200, response.statusCode());

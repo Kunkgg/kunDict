@@ -32,20 +32,24 @@ public class Request {
         this.bodyHandler = BodyHandlers.ofString();
     }
 
-    public HttpResponse<String> get(boolean redirect) {
+    public HttpResponse<String> get(boolean redirect, int redirectCount) {
+        int maxRedirect = 5;
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = null;
         try {
             response = client.send(request, bodyHandler);
             int statusCode = response.statusCode();
             Utils.debug("status code: " + statusCode);
-            if (redirect && 300 <= statusCode && statusCode < 400) {
+            if (redirect && 300 <= statusCode && statusCode < 400
+                    && redirectCount < maxRedirect) {
+                redirectCount++;
                 HttpHeaders headers = response.headers();
                 Optional<String> location = headers.firstValue("location");
+                Utils.debug("redirect count: " + redirectCount);
                 Utils.debug("redirect location: " + location.get());
 
                 Request redirectRequest = new Request(location.get());
-                response = redirectRequest.get(true);
+                response = redirectRequest.get(true, redirectCount);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
