@@ -21,7 +21,7 @@ public class CollinsOnlineDict extends OnlineDict {
         Request req = new Request(url);
         Word word = null;
         try {
-            String html = req.get().body();
+            String html = req.get(true).body();
             Extractor extractor = new Extractor(html);
             word = extractor.collinsOnline();
 

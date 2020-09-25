@@ -1,14 +1,15 @@
 package kunDict;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.io.IOException;
-import java.lang.InterruptedException;
+import java.util.Optional;
 
 /**
  * Request
@@ -31,12 +32,21 @@ public class Request {
         this.bodyHandler = BodyHandlers.ofString();
     }
 
-    public HttpResponse<String> get() {
+    public HttpResponse<String> get(boolean redirect) {
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = null;
         try {
             response = client.send(request, bodyHandler);
-            Utils.debug("status code: " + response.statusCode());
+            int statusCode = response.statusCode();
+            Utils.debug("status code: " + statusCode);
+            if (redirect && 300 <= statusCode && statusCode < 400) {
+                HttpHeaders headers = response.headers();
+                Optional<String> location = headers.firstValue("location");
+                Utils.debug("redirect location: " + location.get());
+
+                Request redirectRequest = new Request(location.get());
+                response = redirectRequest.get(true);
+            }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             Utils.warning("Http request failed.");
