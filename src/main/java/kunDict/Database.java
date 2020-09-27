@@ -1,6 +1,5 @@
 package kunDict;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,7 +14,6 @@ import java.util.Properties;
 
 public class Database {
 
-    private String propertiesFileName = "/home/gk07/Repos/kunDict/src/main/resources/database.config";
     private String dbms;
     private String dbName;
     private String userName;
@@ -24,14 +22,12 @@ public class Database {
     private String driver;
     private String serverName;
     private int portNumber;
-    private Properties prop;
     private Connection currentCon;
 
 
     public Database() throws FileNotFoundException,
             IOException, InvalidPropertiesFormatException {
-        super();
-        this.setProperties();
+        this.loadConfigs();
     }
 
     public Database(String dbName) throws FileNotFoundException,
@@ -215,34 +211,20 @@ public class Database {
     // }}} static methods //
 
     // load database config from property file {{{ //
-    private void setProperties() throws FileNotFoundException,
-            IOException, InvalidPropertiesFormatException {
-        this.prop = new Properties();
-        FileInputStream fis = new FileInputStream(this.propertiesFileName);
-        prop.load(fis);
-        fis.close();
+    private void loadConfigs() {
 
-        this.dbms = this.prop.getProperty("dbms");
-        this.driver = this.prop.getProperty("driver");
-        if (this.prop.getProperty("test").equals("true")) {
-            this.dbName = this.prop.getProperty("dbName") + "_test";
+        this.dbms = App.configs.getProperty("dbms");
+        this.driver = App.configs.getProperty("driver");
+        if (App.configs.getProperty("testMode").equals("true")) {
+            this.dbName = App.configs.getProperty("dbName") + "_test";
         } else {
-            this.dbName = this.prop.getProperty("dbName");
+            this.dbName = App.configs.getProperty("dbName");
         }
-        this.userName = this.prop.getProperty("userName");
-        this.password = this.prop.getProperty("password");
-        this.serverName = this.prop.getProperty("serverName");
+        this.userName = App.configs.getProperty("userName");
+        this.password = App.configs.getProperty("password");
+        this.serverName = App.configs.getProperty("serverName");
         this.portNumber = Integer
-                .parseInt(this.prop.getProperty("portNumber"));
-
-        Utils.config("Set the following properties:");
-        Utils.config("config file: " + this.propertiesFileName);
-        Utils.config("dbms: " + dbms);
-        Utils.config("driver: " + driver);
-        Utils.config("dbName: " + dbName);
-        Utils.config("userName: " + userName);
-        Utils.config("serverName: " + serverName);
-        Utils.config("portNumber: " + portNumber);
+                .parseInt(App.configs.getProperty("portNumber"));
     }
     // }}} load database config from property file //
 
@@ -267,9 +249,7 @@ public class Database {
         return this.urlString;
     }
 
-    public String getPropertiesFileName() {
-        return this.propertiesFileName;
-    }
+
 
     public String getDriver() {
         return this.driver;
@@ -282,9 +262,7 @@ public class Database {
     public int getPortNumber() {
         return this.portNumber;
     }
-    public Properties getProrP() {
-        return this.prop;
-    }
+
 
 // }}} getter //
 
@@ -309,10 +287,6 @@ public class Database {
         this.urlString = urlString;
     }
 
-    public void setPropertiesFileName(String propertiesFileName) {
-        this.propertiesFileName = propertiesFileName;
-    }
-
     public void setDriver(String driver) {
         this.driver = driver;
     }
@@ -323,10 +297,6 @@ public class Database {
 
     public void setPortNumber(int portNumber) {
         this.portNumber = portNumber;
-    }
-
-    public void setProp(Properties prop) {
-        this.prop = prop;
     }
 
     public void setCurrentCon(Connection currentCon){

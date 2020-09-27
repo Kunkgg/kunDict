@@ -3,33 +3,76 @@
  */
 package kunDict;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.BatchUpdateException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.sql.PreparedStatement;
+import java.util.Properties;
+import java.util.InvalidPropertiesFormatException;
 
 public class App {
-    private static Database db;
+    public static Database db;
+    public static Properties configs;
+    private String configFileName = "/home/gk07/Repos/kunDict/src/main/resources/default.config";
     private ArrayList<LocalDict> registeredLocalDicts = new ArrayList<>();
     private ArrayList<OnlineDict> registeredOnlineDicts = new ArrayList<>();
 
     public App() throws IOException, SQLException {
+        this.loadConfigs();
         App.db = new Database();
         this.registerDicts();
     }
 
-    // getter and setter {{{ //
-    public static Database getDb() {
-        return App.db;
+    private void loadConfigs() throws FileNotFoundException,
+            IOException, InvalidPropertiesFormatException {
+        App.configs = new Properties();
+        FileInputStream fis = new FileInputStream(this.configFileName);
+        App.configs.load(fis);
+        fis.close();
+
+        String testMode = App.configs.getProperty("testMode");
+        String configMsg = App.configs.getProperty("configMsg");
+        String infoMsg = App.configs.getProperty("infoMsg");
+        String warningMsg = App.configs.getProperty("warningMsg");
+        String debugMsg = App.configs.getProperty("debugMsg");
+        String dbms = App.configs.getProperty("dbms");
+        String driver = App.configs.getProperty("driver");
+        String dbName = App.configs.getProperty("dbName");
+        String userName = App.configs.getProperty("userName");
+        String password = App.configs.getProperty("password");
+        String serverName = App.configs.getProperty("serverName");
+        String portNumber = App.configs.getProperty("portNumber");
+
+        Utils.config("Loaded the following configs:");
+        Utils.config("config file: " + this.configFileName);
+        Utils.config("testMode: " + testMode);
+        Utils.config("configMsg: " + configMsg);
+        Utils.config("infoMsg: " + infoMsg);
+        Utils.config("warningMsg: " + warningMsg);
+        Utils.config("debugMsg: " + debugMsg);
+        Utils.config("dbms: " + dbms);
+        Utils.config("driver: " + driver);
+        Utils.config("dbName: " + dbName);
+        Utils.config("userName: " + userName);
+        Utils.config("password: " + password);
+        Utils.config("serverName: " + serverName);
+        Utils.config("portNumber: " + portNumber);
     }
 
-    public void setDb(Database db) {
-        App.db = db;
+    // getter and setter {{{ //
+    public String getConfigFileName() {
+        return this.configFileName;
+    }
+
+    public void setConfigFileName(String configFileName) {
+        this.configFileName = configFileName;
     }
 
     public ArrayList<Dict> getRegisteredDicts() {

@@ -13,7 +13,7 @@ import java.util.Arrays;
 abstract class LocalDict extends Dict {
     private Instant atime;
     private Instant mtime;
-    private static Database db = App.getDb();
+    private static Database db = App.db;
     // shortName is the short name of Dict.name
     // It is used to be prefix of each tables of respective dictionary.
 
