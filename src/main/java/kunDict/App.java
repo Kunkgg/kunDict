@@ -17,9 +17,12 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.InvalidPropertiesFormatException;
 
+// TODO: query wordSpell pre-process <27-09-20, gk07> //
 // TODO: cli <27-09-20, gk07> //
+// TODO: update atime, mtime and acounter <27-09-20, gk07> //
 // TODO: tui <27-09-20, gk07> //
 // TODO: mit word list dictionary <27-09-20, gk07> //
+// TODO: migration to sqlite dbms <27-09-20, gk07> //
 // TODO: convert to anki <27-09-20, gk07> //
 
 public class App {
