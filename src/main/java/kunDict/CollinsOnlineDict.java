@@ -1,5 +1,6 @@
 package kunDict;
 
+import java.net.URISyntaxException;
 
 public class CollinsOnlineDict extends OnlineDict {
 
@@ -15,21 +16,20 @@ public class CollinsOnlineDict extends OnlineDict {
 
     @Override
     public Word queryWord(String wordSpell) {
-        String url = queryUrlBase + wordSpell;
+        String url = queryUrlBase + preProcessWordSpell(wordSpell);
         Utils.debug("URL: " + url);
-
-        Request req = new Request(url);
         Word word = null;
+
         try {
+            Request req = new Request(url);
             String html = req.get().body();
             Extractor extractor = new Extractor(html);
             word = extractor.collinsOnline();
-
-        } catch(NullPointerException e){
-            e.printStackTrace();
-            Utils.warning("Http response is null.");
+        } catch (URISyntaxException e) {
+            Utils.warning("Syntax error. Please check the spell of word.");
         }
 
         return word;
     };
+
 }

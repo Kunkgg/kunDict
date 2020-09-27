@@ -297,7 +297,7 @@ public class App {
         Utils.info("There are " + registeredDicts.size() + " registered dictionarys");
         Utils.debug("RegisteredDicts: " + registeredDicts);
 
-        wordSpell = String.join(" ", args);
+        wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
 
         for(Dict dict : registeredDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",

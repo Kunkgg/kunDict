@@ -54,6 +54,15 @@ abstract class Dict {
     }
     // }}} getter and setter //
 
+    public static String preProcessWordSpell(String wordSpell) {
+        String[] filter = { "{", "}", "<", ">", "!", "@", "#", "$", "%", "^",
+                "&", "*", "(", ")", "[", "]", "+", "=", "_", "|", "\\" };
+        for (String c : filter) {
+            wordSpell = wordSpell.replace(c, " ");
+        }
+        return wordSpell.strip();
+    }
+
     abstract Word queryWord(String wordSpell) throws IOException, SQLException;
 }
 

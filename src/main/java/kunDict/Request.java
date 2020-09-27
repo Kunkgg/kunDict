@@ -10,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.HttpTimeoutException;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -90,7 +91,7 @@ public class Request {
 
     // }}} getter //
 
-    public Request(String url) {
+    public Request(String url) throws URISyntaxException {
         this.loadConfigs();
         this.url = url;
         this.initializeClient();
@@ -121,7 +122,7 @@ public class Request {
         }
     }
 
-    public void setUrlIntoRequestBuilder() {
+    public void setUrlIntoRequestBuilder() throws URISyntaxException {
         this.requestBuilder = HttpRequest.newBuilder(URI.create(this.url));
     };
 
@@ -150,7 +151,10 @@ public class Request {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             Utils.warning("Http request failed.");
+        } catch(URISyntaxException e) {
+            Utils.warning("Syntax error. Please check the spell of word.");
         }
+
 
         return response;
     }

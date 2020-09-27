@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.net.URISyntaxException;
 
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -58,7 +59,7 @@ public class AppTest {
     // Request {{{ //
     @Ignore
     @Test
-    public void testRequest() {
+    public void testRequest() throws URISyntaxException {
         String url = "https://www.collinsdictionary.com/us/dictionary/english/water";
         String fileName = "water.html";
         Request req = new Request(url);
