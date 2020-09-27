@@ -17,6 +17,11 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.InvalidPropertiesFormatException;
 
+// TODO: cli <27-09-20, gk07> //
+// TODO: tui <27-09-20, gk07> //
+// TODO: mit word list dictionary <27-09-20, gk07> //
+// TODO: convert to anki <27-09-20, gk07> //
+
 public class App {
     public static Database db;
     public static Properties configs;
@@ -76,14 +81,20 @@ public class App {
     }
 
     public ArrayList<Dict> getRegisteredDicts() {
-        ArrayList<Dict> localDictsClone =
-            (ArrayList<Dict>) this.registeredLocalDicts.clone();
-        ArrayList<Dict> onlineDictsClone =
-            (ArrayList<Dict>) this.registeredOnlineDicts.clone();
+        ArrayList<Dict> dicts = new ArrayList<>();
+        for(LocalDict localDict : this.registeredLocalDicts) {
+            if(localDict instanceof Dict) {
+                dicts.add((Dict) localDict);
+            }
+        }
 
-        localDictsClone.addAll(onlineDictsClone);
+        for(OnlineDict onlineDict : this.registeredOnlineDicts) {
+            if(onlineDict instanceof Dict) {
+                dicts.add((Dict) onlineDict);
+            }
+        }
 
-        return localDictsClone;
+        return dicts;
     }
 
     public ArrayList<LocalDict> getRegisteredLocalDicts(){
