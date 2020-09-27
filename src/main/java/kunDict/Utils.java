@@ -1,15 +1,24 @@
 package kunDict;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 
 /**
  * Utils
  */
 public class Utils {
-    private static boolean info = true;
-    private static boolean warning = true;
-    private static boolean debug = true;
+
+    private static boolean configMsg = testString(App.configs.getProperty("configMsg"));
+    private static boolean infoMsg = testString(App.configs.getProperty("infoMsg"));
+    private static boolean warningMsg = testString(App.configs.getProperty("warningMsg"));
+    private static boolean debugMsg = testString(App.configs.getProperty("debugMsg"));
+
+    public static boolean testString(String str) {
+        String[] trueValues = {"true", "True", "1"};
+        List<String> trueList = Arrays.asList(trueValues);
+        return trueList.contains(str);
+    }
 
     /**
      * convertStringToArrayList
@@ -25,25 +34,27 @@ public class Utils {
     }
 
     public static void info(String... str) {
-        if (info) {
+        if (infoMsg) {
         System.out.println("[INFO] " + String.join(", ", str));
         }
     }
 
     public static void warning(String... str) {
-        if (warning) {
+        if (warningMsg) {
         System.out.println("[WARNING] " + String.join(", ", str));
         }
     }
 
     public static void debug(String... str) {
-        if (debug) {
+        if (debugMsg) {
         System.out.println("[DEBUG] " + String.join(", ", str));
         }
     }
 
     public static void config(String... str) {
+        if (configMsg) {
         System.out.println("[CONFIG] " + String.join(", ", str));
+        }
     }
 
     public static void err(String... str) {
