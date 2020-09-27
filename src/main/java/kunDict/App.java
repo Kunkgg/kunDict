@@ -298,7 +298,7 @@ public class App {
         if (word != null && !word.isEmypty()) {
             Utils.info("==> Get result from " + hitedDict);
             Formatter f = new Formatter(word);
-            f.printText();
+            f.printColorText();
             if (!hitedDict.equals(defaultDict.getName())) {
                 defaultDict.addWord(word);
             }
