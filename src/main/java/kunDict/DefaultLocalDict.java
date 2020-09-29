@@ -8,7 +8,7 @@ public class DefaultLocalDict extends LocalDict {
     private static String shortName = "def";
     private static String description = "the default local dictionary";
 
-    public DefaultLocalDict() throws IOException, SQLException{
+    public DefaultLocalDict() throws SQLException{
         super(name, shortName, description);
         this.initializeTables();
     }

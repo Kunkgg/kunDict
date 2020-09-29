@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Word
  */
 // public class Word implements Serializable{
-public class Word {
+public class Word implements Cloneable {
     private String spell;
     private ArrayList<String> forms;
     private Frequency frequency;
@@ -47,6 +47,11 @@ public class Word {
         this.acounter = acounter;
         this.mtime = mtime;
         this.atime = atime;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return (Word) super.clone();
     }
 
     @Override
@@ -127,6 +132,14 @@ public class Word {
 
     private void updateAtime() {
         this.atime = Instant.now();
+    }
+
+    public void setAtime(Instant atime) {
+        this.atime = atime;
+    }
+
+    public void setAcounter(int acounter) {
+        this.acounter = acounter;
     }
 
     public void setSpell(String spell) {

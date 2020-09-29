@@ -44,7 +44,7 @@ abstract class LocalDict extends Dict {
     // }}} getter and setter //
 
     // manage each dict {{{ //
-    public void initializeTables() throws IOException, SQLException {
+    public void initializeTables() throws SQLException {
         db.getConnectionUseDbName();
 
         if (!hasTables()) {
@@ -67,7 +67,7 @@ abstract class LocalDict extends Dict {
         Utils.info(this.getShortName() + " dictionary tables DELETED");
     }
 
-    public boolean hasTables() throws IOException, SQLException {
+    public boolean hasTables() throws SQLException {
         Boolean result = false;
         Connection con = db.getCurrentConUseDbName();
 
@@ -107,7 +107,7 @@ abstract class LocalDict extends Dict {
 
     // operater in dictionary {{{ //
     // Query a word {{{ //
-    public Word queryWord(String wordSpell) throws IOException, SQLException {
+    public Word queryWord(String wordSpell) throws SQLException {
         Word word = null;
         Connection con = db.getCurrentConUseDbName();
 
@@ -156,6 +156,7 @@ abstract class LocalDict extends Dict {
             senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList,
                     source, acounter, mtime, atime);
+            updateWordAccess(word);
         // }}} process the ResultSet //
         } catch (SQLException e) {
             Database.printSQLException(e);
@@ -165,7 +166,7 @@ abstract class LocalDict extends Dict {
     };
     // }}} Query a word //
 
-    public void updateWordAccess(Word word) throws IOException, SQLException {
+    public void updateWordAccess(Word word) throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update access info of an empty word.");
         } else {
@@ -190,7 +191,7 @@ abstract class LocalDict extends Dict {
         }
     }
 
-    public void updateWordModify(Word word) throws IOException, SQLException {
+    public void updateWordModify(Word word) throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update modify info of an empty word.");
         } else {
@@ -432,14 +433,22 @@ abstract class LocalDict extends Dict {
     // update {{{ //
     public void updateWord(Word word) throws SQLException {
         if (!word.isEmypty()) {
+            Word oldWord = queryWord(word.getSpell());
+
             Utils.info(String.format(
                     "==> Trying to update word (%s) in {%s} database...",
                     word.getSpell(), this.getName()));
+
             deleteWord(word.getSpell());
+
+            word.setAtime(oldWord.getAtime());
+            word.setAcounter(oldWord.getAcounter());
+
             addWord(word);
             Utils.info(String.format(
                     "<== Updated word (%s) in {%s} database",
                     word.getSpell(), this.getName()));
+            // updateWordModify(word);
         }
     }
     // }}} update //
