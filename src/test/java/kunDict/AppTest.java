@@ -294,30 +294,28 @@ public class AppTest {
         queryWater = defDict.queryWord("water");
         assertTrue("word Should not be deleted, so empty", queryWater.isEmypty());
 
-        defDict.deleteWord("water");
-        defDict.deleteWord("water");
         // String word = "ace";
     }
     // }}} delete //
     // update {{{ //
-    @Ignore
     @Test
     public void testDefaultLocalUpdate() throws CloneNotSupportedException,
            SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();
         CollinsOnlineDict collins = new CollinsOnlineDict();
-        Word word = collins.queryWord("ace");
-        Word wordClone = (Word) word.clone();
+        Word word1 = collins.queryWord("ace");
+        Word word2 = collins.queryWord("ace");
 
-        word.setPronounce(new Pronounce("test for update", "test url"));
-        defDict.updateWord(word);
-        // word = defDict.queryWord("ace");
-        assertEquals("test for update", word.getPronounce().getSoundmark());
-        assertEquals("test url", word.getPronounce().getSound());
-        defDict.updateWord(wordClone);
+
+        word1.setPronounce(new Pronounce("test for update", "test url"));
+        defDict.updateWord(word1);
+        assertEquals("test for update", word1.getPronounce().getSoundmark());
+        assertEquals("test url", word1.getPronounce().getSound());
+        defDict.updateWord(word2);
     }
     // }}} update //
     // update word access {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalUpdateWordAccess() throws SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();

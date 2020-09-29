@@ -20,7 +20,7 @@ public class Word implements Cloneable {
     // timestamp for last access
     private Instant atime;
     // counter query
-    private int acounter = -1;
+    private int acounter = 0;
 
     public Word(String spell, Pronounce pronounce, Frequency frequency,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,

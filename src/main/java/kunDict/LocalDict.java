@@ -2,6 +2,7 @@ package kunDict;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -234,6 +235,13 @@ abstract class LocalDict extends Dict {
         pstmt.setString(3, word.getForms().toString());
         pstmt.setString(4, word.getPronounce().getSoundmark());
         pstmt.setString(5, word.getPronounce().getSound());
+        Instant atime =
+            (word.getAtime() == null) ? Instant.now() : word.getAtime();
+        Instant mtime =
+            (word.getMtime() == null) ? Instant.now() : word.getMtime();
+        pstmt.setTimestamp(6, Timestamp.from(atime));
+        pstmt.setInt(7, word.getAcounter());
+        pstmt.setTimestamp(8, Timestamp.from(mtime));
 
         return pstmt;
     }
@@ -433,22 +441,26 @@ abstract class LocalDict extends Dict {
     // update {{{ //
     public void updateWord(Word word) throws SQLException {
         if (!word.isEmypty()) {
-            Word oldWord = queryWord(word.getSpell());
 
             Utils.info(String.format(
                     "==> Trying to update word (%s) in {%s} database...",
                     word.getSpell(), this.getName()));
 
-            deleteWord(word.getSpell());
+            Word oldWord = queryWord(word.getSpell());
+            if (!oldWord.isEmypty()) {
+                Utils.debug("oldWord acounter: " + oldWord.getAcounter());
+                Utils.debug("oldWord atime: " + oldWord.getAtime());
 
-            word.setAtime(oldWord.getAtime());
-            word.setAcounter(oldWord.getAcounter());
+                word.setAtime(oldWord.getAtime());
+                word.setAcounter(oldWord.getAcounter());
+                deleteWord(oldWord.getSpell());
+            }
 
             addWord(word);
             Utils.info(String.format(
                     "<== Updated word (%s) in {%s} database",
                     word.getSpell(), this.getName()));
-            // updateWordModify(word);
+            updateWordModify(word);
         }
     }
     // }}} update //

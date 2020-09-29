@@ -22,7 +22,8 @@ public class SQLStr {
             "fre_description" };
 
     static final String[] columnListInWords = { "word_spell", "word_source",
-            "word_forms", "word_pron_soundmark", "word_pron_sound", "fre_id" };
+            "word_forms", "word_pron_soundmark", "word_pron_sound",
+            "word_atime", "word_acounter", "word_mtime","fre_id"};
     static final String[] columnListInEntries = { "entry_wordClass",
             "entry_sense", "word_id" };
 
