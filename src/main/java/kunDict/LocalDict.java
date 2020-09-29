@@ -165,6 +165,56 @@ abstract class LocalDict extends Dict {
     };
     // }}} Query a word //
 
+    public void updateWordAccess(Word word) throws IOException, SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update access info of an empty word.");
+        } else {
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            Statement stmt = con.createStatement();
+            affectedRow = stmt.executeUpdate(
+                    SQLStr.updateWordAccess(
+                        this.getShortName(),
+                        wordSpell,
+                        word.getAcounter() + 1));
+            if (affectedRow > 0) {
+                Utils.info(String.format(
+                            "Updated the access info of word(%s)",
+                            wordSpell));
+            } else {
+                Utils.warning(String.format(
+                            "Couldn't Update the access info of word(%s)",
+                            wordSpell));
+            }
+        }
+    }
+
+    public void updateWordModify(Word word) throws IOException, SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update modify info of an empty word.");
+        } else {
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            Statement stmt = con.createStatement();
+            affectedRow = stmt.executeUpdate(
+                    SQLStr.updateWordModify(
+                        this.getShortName(),
+                        wordSpell));
+            if (affectedRow > 0) {
+                Utils.info(String.format(
+                            "Updated the modify info of word(%s)",
+                            wordSpell));
+            } else {
+                Utils.warning(String.format(
+                            "Couldn't Update the modify info of word(%s)",
+                            wordSpell));
+            }
+        }
+
+    }
+
     // add a word {{{ //
 
     // set prepareStatement {{{ //
@@ -206,7 +256,7 @@ abstract class LocalDict extends Dict {
 
     public void addWord(Word word) throws SQLException {
         if (word.isEmypty()) {
-            Utils.warning("Could't add a empty word to database.");
+            Utils.warning("Couldn't add an empty word to database.");
         } else {
             // initial variables {{{ //
             Connection con = db.getCurrentConUseDbName();
@@ -415,6 +465,8 @@ abstract class LocalDict extends Dict {
         return size;
     }
     // }}} size //
+
+
 
     // }}} operater in dictionary //
 

@@ -17,13 +17,14 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.InvalidPropertiesFormatException;
 
+// TODO: update atime, mtime and acounter <27-09-20, gk07> //
 // TODO: query wordSpell pre-process <27-09-20, gk07> //
 // TODO: cli <27-09-20, gk07> //
-// TODO: update atime, mtime and acounter <27-09-20, gk07> //
 // TODO: tui <27-09-20, gk07> //
 // TODO: mit word list dictionary <27-09-20, gk07> //
 // TODO: migration to sqlite dbms <27-09-20, gk07> //
 // TODO: convert to anki <27-09-20, gk07> //
+// TODO: add more online dictionarys <29-09-20, gk07> //
 
 public class App {
     public static Database db;
@@ -37,6 +38,8 @@ public class App {
         App.db = new Database();
         this.registerDicts();
     }
+
+    // load configs {{{ //
 
     private void loadConfigs() throws FileNotFoundException,
             IOException, InvalidPropertiesFormatException {
@@ -73,6 +76,7 @@ public class App {
         Utils.config("serverName: " + serverName);
         Utils.config("portNumber: " + portNumber);
     }
+    // }}} load configs //
 
     // getter and setter {{{ //
     public String getConfigFileName() {

@@ -104,6 +104,32 @@ public class SQLStr {
     }
     // }}} query word //
 
+    // update word {{{ //
+    public static String updateWordAccess(String shortName,
+            String wordSpell, int acounter) {
+        String result = null;
+        result = String.format("UPDATE LOW_PRIORITY %s_words "
+            + "SET word_atime = CURRENT_TIMESTAMP(), "
+            + "word_acounter = %d "
+            + "WHERE word_spell = \'%s\'", shortName, acounter, wordSpell);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String updateWordModify(String shortName,
+            String wordSpell) {
+        String result = null;
+        result = String.format("UPDATE LOW_PRIORITY %s_words "
+            + "SET word_mtime = CURRENT_TIMESTAMP() "
+            + "WHERE word_spell = \'%s\'", shortName, wordSpell);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    // }}} update word //
+
     // delete {{{ //
     public static String deleteWord(String shortName, String wordSpell) {
         String result = String.format(

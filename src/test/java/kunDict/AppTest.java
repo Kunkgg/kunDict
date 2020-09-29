@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Instant;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -312,6 +313,32 @@ public class AppTest {
         assertEquals("test url", word.getPronounce().getSound());
     }
     // }}} update //
+    // update word access {{{ //
+    @Test
+    public void testDefaultLocalUpdateWordAccess() throws IOException, SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        int acounter0 = word.getAcounter();
+        defDict.updateWordAccess(word);
+        word = defDict.queryWord("ace");
+        int acounter1 = word.getAcounter();
+
+        assertEquals("acounter should plus 1", acounter0 + 1, acounter1);
+    }
+
+    @Test
+    public void testDefaultLocalUpdateWordModify() throws IOException, SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        Instant mtime0 = word.getMtime();
+        defDict.updateWordModify(word);
+        word = defDict.queryWord("ace");
+        Instant mtime1 = word.getMtime();
+
+        assertTrue("mtime should updated", mtime0.compareTo(mtime1) < 0);
+    }
+
+    // }}} update word access //
     // size {{{ //
     @Ignore
     @Test
@@ -335,6 +362,7 @@ public class AppTest {
     // }
     // }}} register dicts //
     // app main {{{ //
+    @Ignore
     @Test
     public void testMain() throws IOException, SQLException {
         App.main();
