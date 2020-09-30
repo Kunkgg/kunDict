@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.InvalidPropertiesFormatException;
 
+// TODO: change database table, unqie(word_id, word_source) <30-09-20, gk07> //
 // TODO: cli <27-09-20, gk07> //
 // TODO: tui <27-09-20, gk07> //
 // TODO: mit word list dictionary <27-09-20, gk07> //
