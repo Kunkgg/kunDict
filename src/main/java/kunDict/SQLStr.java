@@ -1,5 +1,7 @@
 package kunDict;
 
+import java.util.ArrayList;
+
 public class SQLStr {
     // SQLException code {{{ //
     static final int ERRORCODE_DUPLICATE_ENTRY = 1062;
@@ -106,13 +108,16 @@ public class SQLStr {
     // }}} query word //
 
     // update word {{{ //
+    public static String selectWordCondition(String wordSpell) {
+        return String.format(" WHERE word_spell = \'%s\'", wordSpell);
+    }
     public static String updateWordAccess(String shortName,
             String wordSpell, int acounter) {
         String result = null;
-        result = String.format("UPDATE LOW_PRIORITY %s_words "
+        result = String.format("UPDATE %s_words "
             + "SET word_atime = CURRENT_TIMESTAMP(), "
-            + "word_acounter = %d "
-            + "WHERE word_spell = \'%s\'", shortName, acounter, wordSpell);
+            + "word_acounter = %d ", shortName, acounter)
+            + selectWordCondition(wordSpell);
 
         Utils.debug(result);
         return result;
@@ -121,9 +126,21 @@ public class SQLStr {
     public static String updateWordModify(String shortName,
             String wordSpell) {
         String result = null;
-        result = String.format("UPDATE LOW_PRIORITY %s_words "
-            + "SET word_mtime = CURRENT_TIMESTAMP() "
-            + "WHERE word_spell = \'%s\'", shortName, wordSpell);
+        result = String.format("UPDATE %s_words "
+            + "SET word_mtime = CURRENT_TIMESTAMP() ", shortName)
+            + selectWordCondition(wordSpell);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String updateWordForms(String shortName,
+            String wordSpell, ArrayList<String> wordForms) {
+        String result = null;
+        result = String.format("UPDATE %s_words "
+            + "SET word_mtime = CURRENT_TIMESTAMP(), "
+            + "word_forms = \'%s\' ", shortName, wordForms.toString())
+            + selectWordCondition(wordSpell);
 
         Utils.debug(result);
         return result;

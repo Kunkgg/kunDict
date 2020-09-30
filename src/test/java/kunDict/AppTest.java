@@ -5,22 +5,24 @@ package kunDict;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.time.Instant;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.net.URISyntaxException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -190,6 +192,8 @@ public class AppTest {
 
     // }}} Word class serialize //
 
+    // word clone {{{ //
+    @Ignore
     @Test
     public void testWordClone()
         throws CloneNotSupportedException, SQLException{
@@ -208,6 +212,7 @@ public class AppTest {
 
     }
 
+    // }}} word clone //
 
     // dict database {{{ //
     @Ignore
@@ -317,7 +322,7 @@ public class AppTest {
         // String word = "ace";
     }
     // }}} delete //
-    // update {{{ //
+    // update whole word {{{ //
     @Ignore
     @Test
     public void testDefaultLocalUpdate() throws CloneNotSupportedException,
@@ -335,7 +340,7 @@ public class AppTest {
 
         defDict.updateWord(word2);
     }
-    // }}} update //
+    // }}} update whole word //
     // update word access {{{ //
     @Ignore
     @Test
@@ -348,7 +353,9 @@ public class AppTest {
 
         assertEquals("acounter should plus 1", acounter0 + 1, acounter1);
     }
+    // }}} update word access //
 
+    // update word mofity {{{ //
     @Ignore
     @Test
     public void testDefaultLocalUpdateWordModify() throws SQLException {
@@ -361,8 +368,30 @@ public class AppTest {
 
         assertTrue("mtime should updated", mtime0.compareTo(mtime1) < 0);
     }
+    // }}} update word mofity //
 
-    // }}} update word access //
+
+    // update word forms {{{ //
+    @Test
+    public void testDefaultLocalUpdateWordForms() throws SQLException {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        ArrayList<String> forms0 = word.getForms();
+        ArrayList<String> clonedForms = Utils.cloneArrayListString(forms0);
+        clonedForms.set(0, "test form");
+
+        defDict.updateWordForms(word, clonedForms);
+        word = defDict.queryWord("ace");
+        ArrayList<String> forms1 = word.getForms();
+
+        assertEquals("forms should be updated", forms1.get(0), "test form");
+        ArrayList<String> a = new ArrayList<>(Arrays.asList("aces"));
+        defDict.updateWordForms(word, a);
+        word = defDict.queryWord("ace");
+        assertEquals("forms should be recovered",
+                word.getForms().get(0), "aces");
+    }
+    // }}} update word forms //
     // size {{{ //
     @Ignore
     @Test

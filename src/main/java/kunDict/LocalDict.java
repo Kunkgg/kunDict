@@ -198,7 +198,6 @@ abstract class LocalDict extends Dict {
         }
     }
     // }}} update atime //
-
     // update mtime {{{ //
     public void updateWordModify(Word word) throws SQLException {
         if (word.isEmypty()) {
@@ -224,6 +223,39 @@ abstract class LocalDict extends Dict {
         }
     }
     // }}} update mtime //
+    // update word forms {{{ //
+        public void updateWordForms(Word word, ArrayList<String> wordForms)
+                throws SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update forms of an empty word.");
+        } else {
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            Statement stmt = con.createStatement();
+            affectedRow = stmt.executeUpdate(
+                    SQLStr.updateWordForms(
+                        this.getShortName(),
+                        wordSpell,
+                        wordForms));
+            if (affectedRow > 0) {
+                Utils.info(String.format(
+                            "Updated the forms<%s> of word(%s)",
+                            wordForms.toString(),
+                            wordSpell));
+            } else {
+                Utils.warning(String.format(
+                            "Couldn't Update the forms<%s> of word(%s)",
+                            wordForms.toString(),
+                            wordSpell));
+            }
+        }
+    }
+    // }}} update word forms //
+
+
+
+
 
     // }}} update word fields //
 
