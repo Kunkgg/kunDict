@@ -131,6 +131,7 @@ abstract class LocalDict extends Dict {
             int count = 0;
             while (rs.next()) {
                 if (count == 0) {
+                    wordSpell = rs.getString("word_spell");
                     source = rs.getString("word_source");
                     String soundmark = rs.getString("word_pron_soundmark");
                     String sound = rs.getString("word_pron_sound");

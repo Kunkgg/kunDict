@@ -97,7 +97,7 @@ public class SQLStr {
         String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
                 shortName, wordSpell);
 
-        String matchWordForms = String.format("%s_words.word_forms LIKE \'%%%s%%\'",
+        String matchWordForms = String.format("%s_words.word_forms LIKE \'%s%%\'",
                 shortName, wordSpell);
         conditions[3] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
 
