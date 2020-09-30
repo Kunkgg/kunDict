@@ -224,8 +224,8 @@ abstract class LocalDict extends Dict {
     }
     // }}} update mtime //
     // update word forms {{{ //
-        public void updateWordForms(Word word, ArrayList<String> wordForms)
-                throws SQLException {
+    public void updateWordForms(Word word, ArrayList<String> wordForms)
+            throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update forms of an empty word.");
         } else {
@@ -233,53 +233,106 @@ abstract class LocalDict extends Dict {
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             Statement stmt = con.createStatement();
-            affectedRow = stmt.executeUpdate(
-                    SQLStr.updateWordForms(
-                        this.getShortName(),
-                        wordSpell,
-                        wordForms));
+            affectedRow = stmt.executeUpdate(SQLStr.updateWordForms(
+                    this.getShortName(), wordSpell, wordForms));
             if (affectedRow > 0) {
-                Utils.info(String.format(
-                            "Updated the forms<%s> of word(%s)",
-                            wordForms.toString(),
-                            wordSpell));
+                Utils.info(String.format("Updated the forms<%s> of word(%s)",
+                        wordForms.toString(), wordSpell));
             } else {
                 Utils.warning(String.format(
-                            "Couldn't Update the forms<%s> of word(%s)",
-                            wordForms.toString(),
-                            wordSpell));
+                        "Couldn't Update the forms<%s> of word(%s)",
+                        wordForms.toString(), wordSpell));
             }
         }
     }
+
     // }}} update word forms //
     // update word frequency {{{ //
-        // public void updateWordFrequency(Word word, Frequency wordFrequency)
-        //         throws SQLException {
-        // if (word.isEmypty()) {
-        //     Utils.warning("Couldn't update forms of an empty word.");
-        // } else {
-        //     String wordSpell = word.getSpell();
-        //     int affectedRow = 0;
-        //     Connection con = db.getCurrentConUseDbName();
-        //     Statement stmt = con.createStatement();
-        //     affectedRow = stmt.executeUpdate(
-        //             SQLStr.updateWordForms(
-        //                 this.getShortName(),
-        //                 wordSpell,
-        //                 wordForms));
-        //     if (affectedRow > 0) {
-        //         Utils.info(String.format(
-        //                     "Updated the forms<%s> of word(%s)",
-        //                     wordForms.toString(),
-        //                     wordSpell));
-        //     } else {
-        //         Utils.warning(String.format(
-        //                     "Couldn't Update the forms<%s> of word(%s)",
-        //                     wordForms.toString(),
-        //                     wordSpell));
-        //     }
-        // }
-    // }
+    public void updateWordFrequency(Word word, Frequency wordFrequency)
+            throws SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update frequency of an empty word.");
+        } else {
+            // initialize {{{ //
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            PreparedStatement pstmtFrequencies = null;
+            Statement stmt = con.createStatement();
+            ResultSet rs = null;
+            int freId = 0;
+            // }}} initialize //
+
+            try {
+                con.setAutoCommit(false);
+                pstmtFrequencies = con.prepareStatement(
+                        SQLStr.insertValueIntoFrequenies(this.getShortName()),
+                        Statement.RETURN_GENERATED_KEYS);
+                // try to get fre_id {{{ //
+                pstmtFrequencies = setPstmtFrequencies(pstmtFrequencies, word);
+                try {
+                    affectedRow = pstmtFrequencies.executeUpdate();
+                    rs = pstmtFrequencies.getGeneratedKeys();
+                } catch (SQLException e) {
+
+                    if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
+                        Utils.warning("Duplicated fre_band");
+                        Utils.info("Querying freId from database ...");
+                        rs = stmt.executeQuery(SQLStr.queryFreId(
+                                this.getShortName(), wordFrequency.getBand()));
+                    }
+                }
+
+                if (rs != null && !rs.isClosed() && rs.next()) {
+                    freId = rs.getInt(1);
+                    rs.close();
+                }
+                // }}} try to get fre_id //
+                if (freId > 0) {
+
+                    // update fre_id in words table {{{ //
+                    affectedRow = stmt.executeUpdate(SQLStr.updateWordFreID(
+                            this.getShortName(), wordSpell, freId));
+                    if (affectedRow > 0) {
+                        Utils.info(String.format(
+                                "Updated the frequency<%s> of word(%s)",
+                                wordFrequency.toString(), wordSpell));
+                    } else {
+                        Utils.warning(String.format(
+                                "Couldn't Update the frequency<%s> of word(%s)",
+                                wordFrequency.toString(), wordSpell));
+                    }
+                    // }}} update fre_id in words table //
+                }
+                con.commit();
+
+            } catch (SQLException e) {
+                // rollback {{{ //
+                try {
+                    if (con != null)
+                        con.rollback();
+                } catch (SQLException ex) {
+                    Database.printSQLException(ex);
+                }
+                Database.printSQLException(e);
+                // }}} rollback //
+            } finally {
+                // finally close everything{{{ //
+                try {
+                    if (rs != null)
+                        rs.close();
+                    if (pstmtFrequencies != null) {
+                        pstmtFrequencies.close();
+                    }
+                    if (con != null)
+                        con.setAutoCommit(true);
+                } catch (SQLException e) {
+                    Database.printSQLException(e);
+                }
+                // }}} finally close everything //
+            }
+        }
+    }
 
     // }}} update word frequency //
     // update word pronounce {{{ //
@@ -312,7 +365,6 @@ abstract class LocalDict extends Dict {
     }
 
     // }}} update word pronounce //
-
     // update word source {{{ //
         public void updateWordSource(Word word, String source)
                 throws SQLException {
@@ -343,6 +395,9 @@ abstract class LocalDict extends Dict {
     }
 
     // }}} update word source //
+    // update word senseEntryList {{{ //
+
+    // }}} update word senseEntryList //
 
 
 

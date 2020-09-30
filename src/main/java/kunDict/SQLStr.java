@@ -175,6 +175,20 @@ public class SQLStr {
             Utils.debug(result);
             return result;
         }
+
+    public static String updateWordFreID(String shortName,
+                String wordSpell, int freId) {
+            String result = null;
+            result = String.format("UPDATE %s_words "
+                + "SET word_mtime = CURRENT_TIMESTAMP(), "
+                + "fre_id = %d ",
+                shortName,
+                freId)
+                + selectWordCondition(wordSpell);
+
+            Utils.debug(result);
+            return result;
+        }
     // }}} update word //
 
     // delete {{{ //

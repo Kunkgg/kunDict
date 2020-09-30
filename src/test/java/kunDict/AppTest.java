@@ -370,7 +370,6 @@ public class AppTest {
     }
     // }}} update word mofity //
 
-
     // update word forms {{{ //
     @Ignore
     @Test
@@ -424,6 +423,7 @@ public class AppTest {
     // }}} update word pronounce //
 
     // update word source {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalUpdateWordSource()
         throws SQLException,CloneNotSupportedException  {
@@ -442,6 +442,38 @@ public class AppTest {
         assertEquals("source should be recovered", word.getSource(), source0);
     }
     // }}} update word source //
+
+    // update word frequency {{{ //
+    @Test
+    public void testDefaultLocalUpdateWordFrequency()
+        throws SQLException,CloneNotSupportedException  {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        Frequency frequency0 = word.getFrequency();
+        Frequency clonedFrequency = frequency0.clone();
+        String band0 = frequency0.getBand();
+        String testBand = "1";
+        String testDescription = "test frequency";
+        clonedFrequency.setBand(testBand);
+        clonedFrequency.setDescription(testDescription);
+
+        defDict.updateWordFrequency(word, clonedFrequency);
+        word = defDict.queryWord("ace");
+        Frequency frequency1 = word.getFrequency();
+
+        assertEquals("frequency should be updated",
+                frequency1.getBand(),testBand);
+        defDict.updateWordFrequency(word, frequency0);
+        word = defDict.queryWord("ace");
+        assertEquals("frequency should be recovered",
+                word.getFrequency().getBand(), band0);
+    }
+    // }}} update word frequency //
+
+    // update word senseEntryList {{{ //
+
+    // }}} update word senseEntryList //
+
     // size {{{ //
     @Ignore
     @Test
