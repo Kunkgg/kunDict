@@ -64,4 +64,21 @@ public class Utils {
     public static void test(String... str) {
         System.err.println("[TEST] " + String.join(", ", str));
     }
+
+
+    public static ArrayList<String> cloneArrayListString(ArrayList<String> arrayListString) {
+        Object clonedFormsObj = arrayListString.clone();
+        ArrayList<String> clonedList = new ArrayList<>();
+        if (clonedFormsObj instanceof ArrayList<?>) {
+            ArrayList<?> clonedFormsObjList = (ArrayList<?>) clonedFormsObj;
+            for(Object clonedFormObj : clonedFormsObjList) {
+                if (clonedFormObj instanceof String) {
+                    String clonedForm = (String) clonedFormObj;
+                    clonedList.add(clonedForm);
+                }
+            }
+        }
+
+        return clonedList;
+    }
 }

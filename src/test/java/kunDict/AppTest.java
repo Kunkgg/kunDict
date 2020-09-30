@@ -6,6 +6,7 @@ package kunDict;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
@@ -189,6 +190,25 @@ public class AppTest {
 
     // }}} Word class serialize //
 
+    @Test
+    public void testWordClone()
+        throws CloneNotSupportedException, SQLException{
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+
+        Word wordCloned = word.clone();
+
+        assertEquals("Cloned word should be equal", word, wordCloned);
+
+        wordCloned.setPronounce(new Pronounce("test for update", "test url"));
+        assertEquals("test for update", wordCloned.getPronounce().getSoundmark());
+        assertEquals("test url", wordCloned.getPronounce().getSound());
+        assertNotEquals("After set, cloned should not equal",
+                word, wordCloned);
+
+    }
+
+
     // dict database {{{ //
     @Ignore
     @Test
@@ -298,6 +318,7 @@ public class AppTest {
     }
     // }}} delete //
     // update {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalUpdate() throws CloneNotSupportedException,
            SQLException {

@@ -168,6 +168,8 @@ abstract class LocalDict extends Dict {
     };
     // }}} Query a word //
 
+    // update word fields {{{ //
+    // update atime {{{ //
     public void updateWordAccess(Word word) throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update access info of an empty word.");
@@ -192,7 +194,9 @@ abstract class LocalDict extends Dict {
             }
         }
     }
+    // }}} update atime //
 
+    // update mtime {{{ //
     public void updateWordModify(Word word) throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update modify info of an empty word.");
@@ -215,8 +219,10 @@ abstract class LocalDict extends Dict {
                             wordSpell));
             }
         }
-
     }
+    // }}} update mtime //
+
+    // }}} update word fields //
 
     // add a word {{{ //
 

@@ -22,6 +22,7 @@ public class Word implements Cloneable {
     // counter query
     private int acounter = 0;
 
+    // constructors {{{ //
     public Word(String spell, Pronounce pronounce, Frequency frequency,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
             String source) {
@@ -48,11 +49,38 @@ public class Word implements Cloneable {
         this.mtime = mtime;
         this.atime = atime;
     }
+    // }}} constructors //
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return (Word) super.clone();
+    public Word clone() throws CloneNotSupportedException {
+        Word cloned = (Word) super.clone();
+
+        ArrayList<String> clonedForms = Utils.cloneArrayListString(
+                cloned.getForms());
+        Frequency clonedFrequency = cloned.getFrequency().clone();
+        Pronounce clonedPronounce = cloned.getPronounce().clone();
+
+        Object clonedSenseEntryListObj = cloned.getSenesEntries().clone();
+        ArrayList<SenseEntry> clonedSenseEntryList = new ArrayList<>();
+        if (clonedSenseEntryListObj instanceof ArrayList<?>) {
+            ArrayList<?> temp = (ArrayList<?>) clonedSenseEntryListObj;
+            for(Object clonedSenseEntry : temp) {
+                if(clonedSenseEntry instanceof SenseEntry) {
+                    SenseEntry entry = (SenseEntry) clonedSenseEntry;
+                    clonedSenseEntryList.add(entry.clone());
+                }
+            }
+        }
+
+        cloned.setForms(clonedForms);
+        cloned.setFrequency(clonedFrequency);
+        cloned.setPronounce(clonedPronounce);
+        cloned.setSenesEntries(clonedSenseEntryList);
+
+        return cloned;
     }
+
+
 
     @Override
     public String toString() {
@@ -177,7 +205,7 @@ public class Word implements Cloneable {
 /**
  * Pronounce
  */
-class Pronounce {
+class Pronounce implements Cloneable{
     private String soundmark;
     private String sound;
 
@@ -204,6 +232,9 @@ class Pronounce {
         return true;
     }
 
+    public Pronounce clone() throws CloneNotSupportedException {
+        return (Pronounce) super.clone();
+    }
     // getter and setter {{{ //
     public String getSoundmark() {
         return this.soundmark;
@@ -226,7 +257,7 @@ class Pronounce {
 /**
  * SenseEntry
  */
-class SenseEntry {
+class SenseEntry implements Cloneable {
     private String wordClass;
     private String sense;
     private ArrayList<String> examples = new ArrayList<>();
@@ -249,6 +280,14 @@ class SenseEntry {
         if (!this.examples.equals(other.getExamples())) return false;
 
         return true;
+    }
+
+    public SenseEntry clone() throws CloneNotSupportedException {
+        SenseEntry cloned = (SenseEntry) super.clone();
+        ArrayList<String> clonedExamples = Utils.cloneArrayListString(cloned.getExamples());
+        cloned.setExamples(clonedExamples);
+
+        return cloned;
     }
 
     /**
@@ -326,7 +365,7 @@ class SenseEntry {
 /**
  * Frequency
  */
-class Frequency {
+class Frequency implements Cloneable {
     private String band;
     private String description;
 
@@ -351,6 +390,10 @@ class Frequency {
         if (!this.description.equals(other.getDescription())) return false;
 
         return true;
+    }
+
+    public Frequency clone() throws CloneNotSupportedException {
+        return (Frequency) super.clone();
     }
 
     // getter and setter {{{ //
