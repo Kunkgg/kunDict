@@ -1,6 +1,5 @@
 package kunDict;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 abstract class Dict {
@@ -63,7 +62,7 @@ abstract class Dict {
         return wordSpell.strip();
     }
 
-    abstract Word queryWord(String wordSpell) throws IOException, SQLException;
+    abstract Word queryWord(String wordSpell) throws SQLException;
 }
 
 enum  DictType {

@@ -60,6 +60,7 @@ public class App {
         String password = App.configs.getProperty("password");
         String serverName = App.configs.getProperty("serverName");
         String portNumber = App.configs.getProperty("portNumber");
+        String updateWordAccess = App.configs.getProperty("updateWordAccess");
 
         Utils.config("Loaded the following configs:");
         Utils.config("config file: " + this.configFileName);
@@ -75,6 +76,7 @@ public class App {
         Utils.config("password: " + password);
         Utils.config("serverName: " + serverName);
         Utils.config("portNumber: " + portNumber);
+        Utils.config("updateWordAccess: " + updateWordAccess);
     }
     // }}} load configs //
 

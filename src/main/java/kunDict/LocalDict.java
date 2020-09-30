@@ -15,6 +15,8 @@ abstract class LocalDict extends Dict {
     private Instant atime;
     private Instant mtime;
     private static Database db = App.db;
+    private static boolean updateWordAccess = Utils.testString(
+            App.configs.getProperty("updateWordAccess"));
     // shortName is the short name of Dict.name
     // It is used to be prefix of each tables of respective dictionary.
 
@@ -108,7 +110,8 @@ abstract class LocalDict extends Dict {
 
     // operater in dictionary {{{ //
     // Query a word {{{ //
-    public Word queryWord(String wordSpell) throws SQLException {
+    public Word queryWord(String wordSpell)
+            throws SQLException {
         Word word = null;
         Connection con = db.getCurrentConUseDbName();
 
@@ -158,7 +161,7 @@ abstract class LocalDict extends Dict {
             senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList,
                     source, acounter, mtime, atime);
-            updateWordAccess(word);
+            if (LocalDict.updateWordAccess) updateWordAccess(word);
         // }}} process the ResultSet //
         } catch (SQLException e) {
             Database.printSQLException(e);
