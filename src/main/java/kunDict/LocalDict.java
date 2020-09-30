@@ -366,7 +366,7 @@ abstract class LocalDict extends Dict {
 
     // }}} update word pronounce //
     // update word source {{{ //
-        public void updateWordSource(Word word, String source)
+        public void updateWordSource(Word word, String wordSource)
                 throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update source of an empty word.");
@@ -379,16 +379,16 @@ abstract class LocalDict extends Dict {
                     SQLStr.updateWordSource(
                         this.getShortName(),
                         wordSpell,
-                        source));
+                        wordSource));
             if (affectedRow > 0) {
                 Utils.info(String.format(
                             "Updated the source<%s> of word(%s)",
-                            source,
+                            wordSource,
                             wordSpell));
             } else {
                 Utils.warning(String.format(
                             "Couldn't Update the source<%s> of word(%s)",
-                            source,
+                            wordSource,
                             wordSpell));
             }
         }
@@ -396,12 +396,125 @@ abstract class LocalDict extends Dict {
 
     // }}} update word source //
     // update word senseEntryList {{{ //
+    public void updateWordSenseEntries(Word word,
+            ArrayList<SenseEntry> wordSenseEntryList, boolean appendMode)
+            throws SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update senseEntryies of an empty word.");
+        } else {
+            // initialize {{{ //
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            PreparedStatement pstmtEntries = null;
+            PreparedStatement pstmtExamples = null;
+            Statement stmt = con.createStatement();
+            ResultSet rs = null;
+            int wordId = 0;
+            int entryId = 0;
+            // }}} initialize //
 
+            try {
+                con.setAutoCommit(false);
+                pstmtEntries = con.prepareStatement(
+                        SQLStr.insertValueIntoEntries(this.getShortName()),
+                        Statement.RETURN_GENERATED_KEYS);
+                pstmtExamples = con.prepareStatement(
+                        SQLStr.insertValueIntoExamples(this.getShortName()),
+                        Statement.RETURN_GENERATED_KEYS);
+                // try to get word_id {{{ //
+                rs = stmt.executeQuery(SQLStr.queryWordId(
+                        this.getShortName(), wordSpell));
+                if (rs != null && !rs.isClosed() && rs.next()) {
+                    wordId = rs.getInt(1);
+                    rs.close();
+                }
+
+                // }}} try to get word_id //
+                if (wordId > 0) {
+                    // delete old senseEntries from database {{{ //
+                    if(!appendMode) {
+                        affectedRow = stmt.executeUpdate(
+                            SQLStr.deleteWordSenseEntries(this.getShortName(),
+                            wordId));
+                        if(affectedRow > 0) {
+                            Utils.info(String.format(
+                                "Deleted all %d senseEntries of word(%s)",
+                                affectedRow, wordSpell));
+                            affectedRow = 0;
+                        } else {
+                            Utils.warning(String.format(
+                                "Couldn't deleted any senseEntries of word(%s)",
+                                affectedRow, wordSpell));
+                        }
+                    }
+                    // }}} delete old senseEntries from database //
+                    // into entries table {{{ //
+                    for(SenseEntry entry : wordSenseEntryList) {
+                        pstmtEntries = setPstmtEntries(pstmtEntries,
+                                entry.getWordClass(), entry.getSense(), wordId);
+                        affectedRow = pstmtEntries.executeUpdate();
+                        rs = pstmtEntries.getGeneratedKeys();
+                        if (rs != null && !rs.isClosed() && rs.next()) {
+                            entryId = rs.getInt(1);
+                            rs.close();
+                        }
+                    // }}} into entries table //
+
+                        // into examples table {{{ //
+                        if (entryId > 0 && affectedRow == 1) {
+                            for(String example : entry.getExamples()) {
+                                pstmtExamples = setPstmtExamples(
+                                        pstmtExamples, example, entryId);
+                                pstmtExamples.executeUpdate();
+                            }
+                        }
+                        // }}} into examples table //
+                }
+                }
+
+            con.commit();
+
+            Utils.info(String.format(
+                        "Updated the senseEntries of word(%s)",
+                        wordSpell));
+
+            } catch (SQLException e) {
+                // rollback {{{ //
+                Utils.warning(String.format(
+                            "Couldn't updated the senseEntries of word(%s)",
+                            wordSpell));
+                try {
+                    if (con != null)
+                        con.rollback();
+                } catch (SQLException ex) {
+                    Database.printSQLException(ex);
+                }
+                Database.printSQLException(e);
+                // }}} rollback //
+            } finally {
+                // finally close everything{{{ //
+                try {
+                    if (rs != null)
+                        rs.close();
+                    if (pstmtEntries != null) {
+                        pstmtEntries.close();
+                    }
+                    if (pstmtExamples != null) {
+                        pstmtExamples.close();
+                    }
+                    if (con != null)
+                        con.setAutoCommit(true);
+                } catch (SQLException e) {
+                    Database.printSQLException(e);
+                }
+                // }}} finally close everything //
+            }
+        }
+    }
+            PreparedStatement pstmtEntries = null;
+            PreparedStatement pstmtExamples = null;
     // }}} update word senseEntryList //
-
-
-
-
     // }}} update word fields //
 
     // add a word {{{ //
@@ -549,7 +662,7 @@ abstract class LocalDict extends Dict {
                                     pstmtExamples.executeUpdate();
                                 }
                             }
-                            // }}} into examples tabl //
+                            // }}} into examples table //
                         }
                     }
                 }

@@ -246,6 +246,23 @@ public class SQLStr {
         return result;
     }
 
+    public static String queryWordId(String shortName, String wordSpell){
+        String result = String.format(
+                "SELECT word_id FROM %s_words ",
+                shortName)
+            + selectWordCondition(wordSpell);
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String deleteWordSenseEntries(String shortName, int wordId) {
+        String result = String.format(
+                "DELETE FROM %s_entries WHERE word_id = %d;",
+                shortName, wordId);
+        Utils.debug(result);
+        return result;
+    }
+
     // }}} Add //
 
     // query size of a local dictionary database {{{ //

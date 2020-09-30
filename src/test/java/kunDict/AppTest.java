@@ -444,6 +444,7 @@ public class AppTest {
     // }}} update word source //
 
     // update word frequency {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalUpdateWordFrequency()
         throws SQLException,CloneNotSupportedException  {
@@ -471,6 +472,40 @@ public class AppTest {
     // }}} update word frequency //
 
     // update word senseEntryList {{{ //
+    @Test
+    public void testDefaultLocalUpdateWordSenseEntries()
+        throws SQLException,CloneNotSupportedException  {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        ArrayList<SenseEntry> senseEntries0 = word.getSenesEntries();
+        String sense0 = senseEntries0.get(0).getSense();
+        ArrayList<SenseEntry> testSenseEntries = new ArrayList<>();
+        SenseEntry testSenseEntry = new SenseEntry();
+        String testSense = "test sense";
+        String testWordClass = "test wordClass";
+        String testExample = "This is a test example.";
+        ArrayList<String> testExamples = new ArrayList<>();
+        testExamples.add(testExample);
+        testSenseEntry.setSense(testSense);
+        testSenseEntry.setWordClass(testWordClass);
+        testSenseEntry.setExamples(testExamples);
+        testSenseEntries.add(testSenseEntry);
+
+        defDict.updateWordSenseEntries(word, testSenseEntries, false);
+        word = defDict.queryWord("ace");
+        ArrayList<SenseEntry> senseEntries1 = word.getSenesEntries();
+
+        assertEquals("senseEntries should be updated",
+                senseEntries1.get(0).getSense(), testSense);
+        assertEquals("senseEntries should be updated",
+                senseEntries1.get(0).getWordClass(), testWordClass);
+        assertEquals("senseEntries should be updated",
+                senseEntries1.get(0).getExamples().get(0), testExample);
+        defDict.updateWordSenseEntries(word, senseEntries0, false);
+        word = defDict.queryWord("ace");
+        assertEquals("senseEntries should be recovered",
+                word.getSenesEntries().get(0).getSense(), sense0);
+    }
 
     // }}} update word senseEntryList //
 
