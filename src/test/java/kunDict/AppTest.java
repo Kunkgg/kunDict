@@ -311,6 +311,7 @@ public class AppTest {
         defDict.updateWord(word1);
         assertEquals("test for update", word1.getPronounce().getSoundmark());
         assertEquals("test url", word1.getPronounce().getSound());
+
         defDict.updateWord(word2);
     }
     // }}} update //

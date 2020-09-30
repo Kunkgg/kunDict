@@ -229,7 +229,7 @@ abstract class LocalDict extends Dict {
         return pstmt;
     }
 
-    private PreparedStatement setPstmtWords(PreparedStatement pstmt, Word word)
+    private PreparedStatement setPstmtWords(PreparedStatement pstmt, Word word, int freId)
             throws SQLException {
         pstmt.setString(1, word.getSpell());
         pstmt.setString(2, word.getSource());
@@ -243,21 +243,24 @@ abstract class LocalDict extends Dict {
         pstmt.setTimestamp(6, Timestamp.from(atime));
         pstmt.setInt(7, word.getAcounter());
         pstmt.setTimestamp(8, Timestamp.from(mtime));
+        pstmt.setInt(SQLStr.columnListInWords.length, freId);
 
         return pstmt;
     }
 
     private PreparedStatement setPstmtEntries(PreparedStatement pstmt,
-            String entry_wordClass, String entry_sense) throws SQLException {
+            String entry_wordClass, String entry_sense, int wordId) throws SQLException {
         pstmt.setString(1, entry_wordClass);
         pstmt.setString(2, entry_sense);
+        pstmt.setInt(SQLStr.columnListInEntries.length, wordId);
 
         return pstmt;
     };
 
     private PreparedStatement setPstmtExamples(PreparedStatement pstmt,
-            String example_text) throws SQLException {
+            String example_text, int entryId) throws SQLException {
         pstmt.setString(1, example_text);
+        pstmt.setInt(SQLStr.columnListInExamples.length, entryId);
 
         return pstmt;
     };
@@ -322,8 +325,7 @@ abstract class LocalDict extends Dict {
 
                 if (freId > 0) {
                     // into words table {{{ //
-                    pstmtWords = setPstmtWords(pstmtWords, word);
-                    pstmtWords.setInt(SQLStr.columnListInWords.length, freId);
+                    pstmtWords = setPstmtWords(pstmtWords, word, freId);
                     try {
                         affectedRow = pstmtWords.executeUpdate();
                         rs = pstmtWords.getGeneratedKeys();
@@ -344,9 +346,7 @@ abstract class LocalDict extends Dict {
                         // into entries table {{{ //
                         for(SenseEntry entry : word.getSenesEntries()) {
                             pstmtEntries = setPstmtEntries(pstmtEntries,
-                                    entry.getWordClass(), entry.getSense());
-                            pstmtEntries.setInt(
-                                    SQLStr.columnListInEntries.length, wordId);
+                                    entry.getWordClass(), entry.getSense(), wordId);
                             affectedRow = pstmtEntries.executeUpdate();
                             rs = pstmtEntries.getGeneratedKeys();
                             if (rs != null && !rs.isClosed() && rs.next()) {
@@ -359,10 +359,7 @@ abstract class LocalDict extends Dict {
                             if (entryId > 0 && affectedRow == 1) {
                                 for(String example : entry.getExamples()) {
                                     pstmtExamples = setPstmtExamples(
-                                            pstmtExamples, example);
-                                    pstmtExamples.setInt(
-                                        SQLStr.columnListInExamples.length,
-                                        entryId);
+                                            pstmtExamples, example, entryId);
                                     pstmtExamples.executeUpdate();
                                 }
                             }
