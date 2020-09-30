@@ -146,6 +146,35 @@ public class SQLStr {
         return result;
     }
 
+    public static String updateWordPronounce(String shortName,
+            String wordSpell, Pronounce pronounce) {
+        String result = null;
+        result = String.format("UPDATE %s_words "
+            + "SET word_mtime = CURRENT_TIMESTAMP(), "
+            + "word_pron_soundmark = \'%s\', "
+            + "word_pron_sound = \'%s\' ",
+            shortName,
+            pronounce.getSoundmark(),
+            pronounce.getSound())
+            + selectWordCondition(wordSpell);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String updateWordSource(String shortName,
+                String wordSpell, String source) {
+            String result = null;
+            result = String.format("UPDATE %s_words "
+                + "SET word_mtime = CURRENT_TIMESTAMP(), "
+                + "word_source = \'%s\' ",
+                shortName,
+                source)
+                + selectWordCondition(wordSpell);
+
+            Utils.debug(result);
+            return result;
+        }
     // }}} update word //
 
     // delete {{{ //

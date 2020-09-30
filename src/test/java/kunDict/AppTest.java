@@ -372,6 +372,7 @@ public class AppTest {
 
 
     // update word forms {{{ //
+    @Ignore
     @Test
     public void testDefaultLocalUpdateWordForms() throws SQLException {
         DefaultLocalDict defDict = new DefaultLocalDict();
@@ -392,6 +393,55 @@ public class AppTest {
                 word.getForms().get(0), "aces");
     }
     // }}} update word forms //
+
+    // update word pronounce {{{ //
+    @Ignore
+    @Test
+    public void testDefaultLocalUpdateWordPronounce()
+        throws SQLException,CloneNotSupportedException  {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        Pronounce pronounce0 = word.getPronounce();
+        String soundmark0 = pronounce0.getSoundmark();
+        String sound0 = pronounce0.getSound();
+        Pronounce clonedPron = pronounce0.clone();
+        clonedPron.setSound("test sound");
+        clonedPron.setSoundmark("test soundmark");
+
+        defDict.updateWordPronounce(word, clonedPron);
+        word = defDict.queryWord("ace");
+        Pronounce pronounce1 = word.getPronounce();
+
+        assertEquals("pronounce should be updated",
+                pronounce1.getSoundmark(), "test soundmark");
+        defDict.updateWordPronounce(word, pronounce0);
+        word = defDict.queryWord("ace");
+        assertEquals("pronounce should be recovered",
+                word.getPronounce().getSoundmark(), soundmark0);
+        assertEquals("pronounce should be recovered",
+                word.getPronounce().getSound(), sound0);
+    }
+    // }}} update word pronounce //
+
+    // update word source {{{ //
+    @Test
+    public void testDefaultLocalUpdateWordSource()
+        throws SQLException,CloneNotSupportedException  {
+        DefaultLocalDict defDict = new DefaultLocalDict();
+        Word word = defDict.queryWord("ace");
+        String source0 = word.getSource();
+        String testSource = "test source";
+
+        defDict.updateWordSource(word, testSource);
+        word = defDict.queryWord("ace");
+        String source1 = word.getSource();
+
+        assertEquals("source should be updated", source1, testSource);
+        defDict.updateWordSource(word, source0);
+        word = defDict.queryWord("ace");
+        assertEquals("source should be recovered", word.getSource(), source0);
+    }
+    // }}} update word source //
     // size {{{ //
     @Ignore
     @Test

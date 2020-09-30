@@ -252,7 +252,97 @@ abstract class LocalDict extends Dict {
         }
     }
     // }}} update word forms //
+    // update word frequency {{{ //
+        // public void updateWordFrequency(Word word, Frequency wordFrequency)
+        //         throws SQLException {
+        // if (word.isEmypty()) {
+        //     Utils.warning("Couldn't update forms of an empty word.");
+        // } else {
+        //     String wordSpell = word.getSpell();
+        //     int affectedRow = 0;
+        //     Connection con = db.getCurrentConUseDbName();
+        //     Statement stmt = con.createStatement();
+        //     affectedRow = stmt.executeUpdate(
+        //             SQLStr.updateWordForms(
+        //                 this.getShortName(),
+        //                 wordSpell,
+        //                 wordForms));
+        //     if (affectedRow > 0) {
+        //         Utils.info(String.format(
+        //                     "Updated the forms<%s> of word(%s)",
+        //                     wordForms.toString(),
+        //                     wordSpell));
+        //     } else {
+        //         Utils.warning(String.format(
+        //                     "Couldn't Update the forms<%s> of word(%s)",
+        //                     wordForms.toString(),
+        //                     wordSpell));
+        //     }
+        // }
+    // }
 
+    // }}} update word frequency //
+    // update word pronounce {{{ //
+        public void updateWordPronounce(Word word, Pronounce pronounce)
+                throws SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update pronounce of an empty word.");
+        } else {
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            Statement stmt = con.createStatement();
+            affectedRow = stmt.executeUpdate(
+                    SQLStr.updateWordPronounce(
+                        this.getShortName(),
+                        wordSpell,
+                        pronounce));
+            if (affectedRow > 0) {
+                Utils.info(String.format(
+                            "Updated the pronounce<%s> of word(%s)",
+                            pronounce.toString(),
+                            wordSpell));
+            } else {
+                Utils.warning(String.format(
+                            "Couldn't Update the pronounce<%s> of word(%s)",
+                            pronounce.toString(),
+                            wordSpell));
+            }
+        }
+    }
+
+    // }}} update word pronounce //
+
+    // update word source {{{ //
+        public void updateWordSource(Word word, String source)
+                throws SQLException {
+        if (word.isEmypty()) {
+            Utils.warning("Couldn't update source of an empty word.");
+        } else {
+            String wordSpell = word.getSpell();
+            int affectedRow = 0;
+            Connection con = db.getCurrentConUseDbName();
+            Statement stmt = con.createStatement();
+            affectedRow = stmt.executeUpdate(
+                    SQLStr.updateWordSource(
+                        this.getShortName(),
+                        wordSpell,
+                        source));
+            if (affectedRow > 0) {
+                Utils.info(String.format(
+                            "Updated the source<%s> of word(%s)",
+                            source,
+                            wordSpell));
+            } else {
+                Utils.warning(String.format(
+                            "Couldn't Update the source<%s> of word(%s)",
+                            source,
+                            wordSpell));
+            }
+        }
+    }
+
+    // }}} update word source //
 
 
 
