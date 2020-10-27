@@ -200,6 +200,35 @@ public class App {
         this.registerDict(collinsDict);
     }
 
+    public Word queryWordByFirst(String wordSpell) throws SQLException {
+        Word word = null;
+        String hitedDict = null;
+        LocalDict defaultDict = this.getRegisteredLocalDicts().get(0);
+
+        ArrayList<Dict> registeredDicts = this.getRegisteredDicts();
+        Utils.info("There are " + registeredDicts.size()
+                + " registered dictionarys");
+        Utils.debug("RegisteredDicts: " + registeredDicts);
+
+        for(Dict dict : registeredDicts) {
+            Utils.info(String.format("Searching (%s) in dictionary {%s}",
+                        wordSpell, dict.getName()));
+            word = dict.queryWord(wordSpell);
+            if (word != null && !word.isEmypty()) {
+                hitedDict = dict.getName();
+
+                Utils.info("==> Get result from " + hitedDict);
+                if (!hitedDict.equals(defaultDict.getName())) {
+                    defaultDict.addWord(word);
+                }
+                break;
+            }
+        }
+
+        return word;
+    }
+
+
     // register dict {{{ //
     /**
      * registerDict
@@ -307,33 +336,15 @@ public class App {
     public static void main(String... args) throws IOException, SQLException {
         App app = new App();
         Word word = null;
-        String hitedDict = null;
-        LocalDict defaultDict = app.getRegisteredLocalDicts().get(0);
         String wordSpell = null;
+
         if (args != null && args.length > 0) {
-        ArrayList<Dict> registeredDicts = app.getRegisteredDicts();
-        Utils.info("There are " + registeredDicts.size() + " registered dictionarys");
-        Utils.debug("RegisteredDicts: " + registeredDicts);
-
-        wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
-
-        for(Dict dict : registeredDicts) {
-            Utils.info(String.format("Searching (%s) in dictionary {%s}",
-                        wordSpell, dict.getName()));
-            word = dict.queryWord(wordSpell);
-            if (word != null && !word.isEmypty()) {
-                hitedDict = dict.getName();
-                break;
-            }
-        }
+            wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
+            word = app.queryWordByFirst(wordSpell);
 
         if (word != null && !word.isEmypty()) {
-            Utils.info("==> Get result from " + hitedDict);
             Formatter fmt = new Formatter(word);
             fmt.printColorText();
-            if (!hitedDict.equals(defaultDict.getName())) {
-                defaultDict.addWord(word);
-            }
         } else {
             Utils.warning("Can't find anything");
         }
