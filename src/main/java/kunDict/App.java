@@ -33,6 +33,7 @@ public class App {
     private String configFileName = "/home/gk07/Repos/kunDict/src/main/resources/default.config";
     private ArrayList<LocalDict> registeredLocalDicts = new ArrayList<>();
     private ArrayList<OnlineDict> registeredOnlineDicts = new ArrayList<>();
+    private String tablesPreffix = "dict";
 
     public App() throws IOException, SQLException {
         this.loadConfigs();
@@ -138,7 +139,7 @@ public class App {
         Connection con = db.getCurrentConUseDbName();
 
         try (Statement stmt = con.createStatement();) {
-            String query = SQLStr.hasTables("dict");
+            String query = SQLStr.hasTables(this.tablesPreffix);
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
