@@ -26,7 +26,25 @@ endif::asciidoctor[]
 ["plantuml"]
 ----
 class App {
-    - {static} Database db;
+    - String configFileName;
+    - ArrayList<LocalDict> registeredLocalDicts;
+    - ArrayList<OnlineDict> registeredOnlineDicts;
+
+    + {static} Database db;
+    + {static} Properties configs;
+
+    - void loadConfigs()
+    + String getConfigFileName()
+    + void setConfigFileName(String configFileName)
+    + ArrayList<Dict> getRegisteredDicts()
+    + ArrayList<LocalDict> getRegisteredLocalDicts()
+    + ArrayList<OnlineDict> getRegisteredOnlineDicts()
+
+    + void initializeTables()
+    + boolean hasTables()
+    + void insertValuesIntoDictTypes()
+    + void registerDicts()
+    + void registerDict()
 }
 
 abstract class Dict {
