@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.InvalidPropertiesFormatException;
 
+// TODO: Instaed registerDict() of database native trigger <27-10-20, gk07> //
 // TODO: change database table, unqie(word_id, word_source) <30-09-20, gk07> //
 // TODO: change database frequencies table, add column fre_explain <04-10-20, gk07> //
 // TODO: cli <27-09-20, gk07> //
@@ -200,6 +201,15 @@ public class App {
     }
 
     // register dict {{{ //
+    /**
+     * registerDict
+     * insert the name, shortName, dict_type_id, dict_size,
+     * dict_mtime, dict_atime of a register dict into table(dicts)
+     * If the size of dict is less than 0, express that dict is DictType.Online
+     * This method is implemented by transaction.
+     * It's not elegant. The better way is database native trigger.
+     */
+// TODO: Instaed registerDict() of database native trigger <27-10-20, gk07> //
     public void registerDict(Dict dict) throws SQLException {
         LocalDict localDict = null;
         String name = dict.getName();
@@ -319,8 +329,8 @@ public class App {
 
         if (word != null && !word.isEmypty()) {
             Utils.info("==> Get result from " + hitedDict);
-            Formatter f = new Formatter(word);
-            f.printColorText();
+            Formatter fmt = new Formatter(word);
+            fmt.printColorText();
             if (!hitedDict.equals(defaultDict.getName())) {
                 defaultDict.addWord(word);
             }
