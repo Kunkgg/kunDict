@@ -35,34 +35,34 @@ public class Utils {
 
     public static void info(String... str) {
         if (infoMsg) {
-        System.out.println("[INFO] " + String.join(", ", str));
+        System.out.println("[INFO ] " + String.join(", ", str));
         }
     }
 
     public static void warning(String... str) {
         if (warningMsg) {
-        System.out.println("[WARNING] " + String.join(", ", str));
+        ColorTerm.yellowPrintln("[WARN ] " + String.join(", ", str));
         }
     }
 
     public static void debug(String... str) {
         if (debugMsg) {
-        System.out.println("[DEBUG] " + String.join(", ", str));
+        ColorTerm.blackPrintln("[DEBUG] " + String.join(", ", str));
         }
     }
 
     public static void config(String... str) {
         if (configMsg) {
-        System.out.println("[CONFIG] " + String.join(", ", str));
+        ColorTerm.cyanPrint("[CONF ] " + String.join(", ", str));
         }
     }
 
     public static void err(String... str) {
-        System.err.println("[ERROR] " + String.join(", ", str));
+        ColorTerm.redBoldPrintln("[ERROR] " + String.join(", ", str));
     }
 
     public static void test(String... str) {
-        System.err.println("[TEST] " + String.join(", ", str));
+        System.err.println("[TEST ] " + String.join(", ", str));
     }
 
 

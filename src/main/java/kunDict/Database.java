@@ -49,7 +49,7 @@ public class Database {
         if ( this.isConnected()) {
             this.urlString = this.urlString + this.dbName;
             this.currentCon.setCatalog(this.dbName);
-            Utils.info("Using database: " + this.dbName);
+            Utils.debug("Using database: " + this.dbName);
         }
     }
 

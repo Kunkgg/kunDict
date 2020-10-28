@@ -86,7 +86,7 @@ enum Color {
     }
 }
 
-class ColorTerm {
+public class ColorTerm {
     public static void greenBoldPrintln(String str) {
         System.out.print(Color.GREEN_BOLD);
         System.out.println(str);
@@ -113,6 +113,18 @@ class ColorTerm {
 
     public static void blackPrintln(String str) {
         System.out.print(Color.BLACK);
+        System.out.println(str);
+        System.out.print(Color.RESET);
+    }
+
+    public static void redBoldPrintln(String str) {
+        System.out.print(Color.RED_BOLD);
+        System.out.println(str);
+        System.out.print(Color.RESET);
+    }
+
+    public static void yellowPrintln(String str) {
+        System.out.print(Color.YELLOW);
         System.out.println(str);
         System.out.print(Color.RESET);
     }
