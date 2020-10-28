@@ -80,8 +80,6 @@ public class Word implements Cloneable {
         return cloned;
     }
 
-
-
     @Override
     public String toString() {
         return String.format(
@@ -98,14 +96,13 @@ public class Word implements Cloneable {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Word other = (Word) otherObj;
-        if (!this.spell.equals(other.getSpell())) return false;
-        if (!this.forms.equals(other.getForms())) return false;
-        if (!this.frequency.equals(other.getFrequency())) return false;
-        if (!this.pronounce.equals(other.getPronounce())) return false;
-        if (!this.senseEntryList.equals(other.getSenesEntries())) return false;
-        if (!this.source.equals(other.getSource())) return false;
 
-        return true;
+        return (this.spell.equals(other.getSpell()) &&
+                this.forms.equals(other.getForms()) &&
+                this.frequency.equals(other.getFrequency()) &&
+                this.pronounce.equals(other.getPronounce()) &&
+                this.senseEntryList.equals(other.getSenesEntries()) &&
+                this.source.equals(other.getSource()));
     }
 
     public boolean isEmypty() {
@@ -226,10 +223,9 @@ class Pronounce implements Cloneable{
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Pronounce other = (Pronounce) otherObj;
-        if (!this.soundmark.equals(other.getSoundmark())) return false;
-        if (!this.sound.equals(other.getSound())) return false;
 
-        return true;
+        return (this.soundmark.equals(other.getSoundmark()) &&
+                this.sound.equals(other.getSound()));
     }
 
     public Pronounce clone() throws CloneNotSupportedException {
@@ -275,11 +271,10 @@ class SenseEntry implements Cloneable {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         SenseEntry other = (SenseEntry) otherObj;
-        if (!this.wordClass.equals(other.getWordClass())) return false;
-        if (!this.sense.equals(other.getSense())) return false;
-        if (!this.examples.equals(other.getExamples())) return false;
 
-        return true;
+        return (this.wordClass.equals(other.getWordClass()) &&
+                this.sense.equals(other.getSense()) &&
+                this.examples.equals(other.getExamples()));
     }
 
     public SenseEntry clone() throws CloneNotSupportedException {
@@ -386,10 +381,9 @@ class Frequency implements Cloneable {
         if (otherObj == null) return false;
         if (this.getClass() != otherObj.getClass()) return false;
         Frequency other = (Frequency) otherObj;
-        if (!this.band.equals(other.getBand())) return false;
-        if (!this.description.equals(other.getDescription())) return false;
 
-        return true;
+        return (this.band.equals(other.getBand()) &&
+                this.description.equals(other.getDescription()));
     }
 
     public Frequency clone() throws CloneNotSupportedException {
