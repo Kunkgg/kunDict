@@ -520,7 +520,10 @@ abstract class LocalDict extends Dict {
     // set prepareStatement {{{ //
     private PreparedStatement setPstmtFrequencies(PreparedStatement pstmt,
             Word word) throws SQLException {
-        pstmt.setInt(1, Integer.parseInt(word.getFrequency().getBand()));
+
+        String band = word.getFrequency().getBand();
+        band = band.equals("") ? "1" : band;
+        pstmt.setInt(1, Integer.parseInt(band));
         pstmt.setString(2, word.getFrequency().getDescription());
 
         return pstmt;
