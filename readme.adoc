@@ -73,15 +73,18 @@ enum  DictType {
 }
 
 abstract class OnlineDict {
-     - DictType type = this.setType(DictType.Online);
+     + OnlineDict(String name, String shortName, String description)
+
+     {abstract} Word queryWord(String wordSpell)
 }
 
 abstract class LocalDict {
     - Instant atime;
     - Instant mtime;
-    - {static} Database db;
+    - {static} Database db = App.db;
+    - {static} boolean updateWordAccess;
 
-    + LocalDict(String name, String description, String shortname)
+    + LocalDict(String name, String shortName, String description)
 
     + Instant getAtime()
     + Instant getMtime()
@@ -94,9 +97,17 @@ abstract class LocalDict {
 
     + Word queryWord(String wordSpell)
     + void addWord(Word word)
-    + void deleteWord(Word word)
+    + void deleteWord(String wordSpell)
     + void updateWord(Word word)
-    + Word random();
+
+    + void updateWordAccess(Word word)
+    + void updateWordModify(Word word)
+    + void updateWordforms(Word word, ArrayList<stirng> wordForms)
+    + void updateWordFrequency(Word word, Frequency wordFrequency)
+    + void updateWordPronounce(Word word, Pronounce pronounce)
+    + void updateWordSource(Word word, String wordSource)
+    + void updateWordSenseEntries(Word word, ArrayList<SenseEntry> wordSenseEntryList, boolean appendMode)
+
     + int size()
 
     {abstract} void build();
@@ -106,6 +117,8 @@ class DefaultLocalDict {
     - {static} String name = "Default local dictionary";
     - {static} String shortName = "def";
     - {static} String description = "the default local dictionary"
+
+    + void build()
 }
 
 class MITDict {
@@ -134,8 +147,9 @@ class Word {
     - String source = "";
     - Instant mtime;
     - Instant atime;
-    - int acounter = -1;
+    - int acounter = 0;
 
+    + Word clone()
     + String toString()
     + boolean equals(Object otherObj)
     + boolean isEmpty()
@@ -164,14 +178,35 @@ class Word {
 }
 
 class Pronounce {
-    + String soundmark;
-    + String[] sound;
+    - String soundmark;
+    - String[] sound;
+
+    + Pronounce clone()
+    + String toString()
+    + boolean equals()
 }
 
 class SenseEntry {
-    + String wordClass;
-    + String sense;
-    + String[] examples;
+    - String wordClass;
+    - String sense;
+    - ArrayList<String> examples;
+
+    + SenseEntry clone()
+    + String toString()
+    + boolean equals()
+    + void combine(SenseEntry other)
+    + {static} ArrayList<SenseEntry> noDuplicatedSense(ArrayList<SenseEntry>
+    senseEntryList)
+}
+
+class Frequency {
+    - String band;
+    - String description;
+
+    + Frequency clone()
+    + String toString()
+    + boolean equals()
+
 }
 
 class Formatter {
@@ -180,6 +215,7 @@ class Formatter {
     + Wrod getWord()
     + void setWord(Word word)
     + void printText()
+    + void printColorText()
     + String toAnki()
 }
 
@@ -191,43 +227,29 @@ class Extractor {
     - String input;
 
     + {static} Word collinsOnline()
-    + {static} Word getWord(String text)
-    + {static} String[] getAbility()
-    + {static} Boolean ifCan(String ability)
 }
 
 class Request {
-    - {static} String proxyHost
-    - {static} int proxyPort
-    - HttpClient client
-    - HttpRequest.Builder requestBuilder
-    - HttpResponse.BodyHandler bodyHandler
-    - String url
+    - String proxyHost;
+    - int proxyPort = -1;
+    - boolean redirect = true;
+    - int maxRedirect = 5;
+    - int redirectCounter = 0;
+    - Duration timeout = Duration.ofSeconds(5);
+    - HttpClient client;
+    - HttpRequest.Builder requestBuilder;
+    - HttpResponse.BodyHandler bodyHandler;
+    - String url;
+
+    + void loadConfigs()
+    + void initializeClient()
+    + void setUrlIntoRequestBuilder()
 
     + HttpResponse<String> get()
-    + HttpResponse<String> head()
-    + HttpResponse<String> post()
-    + HttpResponse<String> delete()
-    + HttpResponse<String> put()
-    + HttpResponse<String> option()
 
-    + void setUrl()
-    + void setClient()
-    + void setRequestBuilder()
-    + void setBodyHandler()
-    + void setProxyHost()
-    + void setProxyPort()
-
-    + String getProxyHost()
-    + int getProxyPort()
-    + HttpClient getClient()
-    + HttpRequest.Builder getRequestBuilder()
-    + HttpResponse.BodyHandler getBodyHandler()
-    + String getUrl()
 }
 
 class Database {
-    - String propertiesFileName = ".../database.config";
     - String dbms;
     - String dbName;
     - String userName;
@@ -236,7 +258,6 @@ class Database {
     - String driver;
     - String serverName;
     - int portNumber;
-    - Properties prop;
     - Connection currentCon;
 
     + void getConnectionUseDbName()
@@ -251,14 +272,13 @@ class Database {
     + void addForeignKey(String addForeignKeyStr)
     + void dropTable(String dropTableStr)
     + void createDatabase()
+    + void loadConfigs()
 
     + {static} void printSQLException(SQLException e)
     + {static} bolean ignoreSQLException(String sqlState)
     + {static} void getWarningsFromResultSet(ResultSet rs)
     + {static} void getWarningsFromStatement(ResultSet rs)
     + {static} printWarnings(SQLWarning warning)
-
-    + void setProperties()
 }
 
 Dict <|.. LocalDict

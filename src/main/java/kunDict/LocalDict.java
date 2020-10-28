@@ -17,8 +17,6 @@ abstract class LocalDict extends Dict {
     private static Database db = App.db;
     private static boolean updateWordAccess = Utils.testString(
             App.configs.getProperty("updateWordAccess"));
-    // shortName is the short name of Dict.name
-    // It is used to be prefix of each tables of respective dictionary.
 
     public LocalDict(String name, String shortName, String description) {
         super(name, shortName, description, DictType.Local);
@@ -748,6 +746,7 @@ abstract class LocalDict extends Dict {
                 Utils.debug("oldWord acounter: " + oldWord.getAcounter());
                 Utils.debug("oldWord atime: " + oldWord.getAtime());
 
+                // Reserve the access time and Acounter of the oldWord
                 word.setAtime(oldWord.getAtime());
                 word.setAcounter(oldWord.getAcounter());
                 deleteWord(oldWord.getSpell());
@@ -783,8 +782,6 @@ abstract class LocalDict extends Dict {
         return size;
     }
     // }}} size //
-
-
 
     // }}} operater in dictionary //
 

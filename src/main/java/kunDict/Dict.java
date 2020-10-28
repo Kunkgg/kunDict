@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 abstract class Dict {
     private String name;
+    // field shortName is the short name of Dict.name
+    // It is used to be prefix of each tables of respective dictionary.
     private String shortName;
     private String description;
     private DictType type;

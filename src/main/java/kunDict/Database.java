@@ -249,8 +249,6 @@ public class Database {
         return this.urlString;
     }
 
-
-
     public String getDriver() {
         return this.driver;
     }
