@@ -27,11 +27,14 @@ import java.util.InvalidPropertiesFormatException;
 // TODO: convert to anki <27-09-20, gk07> //
 // TODO: add more online dictionarys <29-09-20, gk07> //
 // TODO: add more update methods for operate class Word fields <30-09-20, gk07> //
+// TODO: add api <29-10-20, gk07> //
 
 public class App {
     public static Database db;
     public static Properties configs;
-    private String configFileName = "/home/gk07/Repos/kunDict/src/main/resources/default.config";
+    public static String workdir = System.getProperty("user.dir");
+    private String configFileName = workdir +
+                        "/src/main/resources/default.config";
     private ArrayList<LocalDict> registeredLocalDicts = new ArrayList<>();
     private ArrayList<OnlineDict> registeredOnlineDicts = new ArrayList<>();
     private String tablesPreffix = "dict";
