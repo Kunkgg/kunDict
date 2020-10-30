@@ -32,9 +32,8 @@ import java.util.InvalidPropertiesFormatException;
 public class App {
     public static Database db;
     public static Properties configs;
-    public static String workdir = System.getProperty("user.dir");
-    private String configFileName = workdir +
-                        "/src/main/resources/default.config";
+    public static String homeDir = System.getProperty("user.home");
+    private String configFileName = homeDir + "/.config/kunDict/default.conf";
     private ArrayList<LocalDict> registeredLocalDicts = new ArrayList<>();
     private ArrayList<OnlineDict> registeredOnlineDicts = new ArrayList<>();
     private String tablesPreffix = "dict";
