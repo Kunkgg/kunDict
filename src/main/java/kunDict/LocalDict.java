@@ -159,7 +159,8 @@ abstract class LocalDict extends Dict {
             senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
             word = new Word(wordSpell, pron, fre, forms, senseEntryList,
                     source, acounter, mtime, atime);
-            if (LocalDict.updateWordAccess) updateWordAccess(word);
+            if (LocalDict.updateWordAccess && !word.isEmypty())
+                updateWordAccess(word);
         // }}} process the ResultSet //
         } catch (SQLException e) {
             Database.printSQLException(e);
