@@ -189,6 +189,14 @@ public class SQLStr {
             Utils.debug(result);
             return result;
         }
+
+    public static String deleteWordSenseEntries(String shortName, int wordId) {
+        String result = String.format(
+                "DELETE FROM %s_entries WHERE word_id = %d;",
+                shortName, wordId);
+        Utils.debug(result);
+        return result;
+    }
     // }}} update word //
 
     // delete {{{ //
@@ -255,13 +263,6 @@ public class SQLStr {
         return result;
     }
 
-    public static String deleteWordSenseEntries(String shortName, int wordId) {
-        String result = String.format(
-                "DELETE FROM %s_entries WHERE word_id = %d;",
-                shortName, wordId);
-        Utils.debug(result);
-        return result;
-    }
 
     // }}} Add //
 
