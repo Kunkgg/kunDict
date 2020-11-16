@@ -59,11 +59,23 @@ public class SQLStr {
 
     // operate word in a dictionary {{{ //
     // query word {{{ //
-    public static String queryWord(String shortName, String wordSpell) {
+    public static String queryWordBySpellAndSource(String shortName, String wordSpell, String wordSource) {
         String columns = commaJoin(columnListInQueryWord);
 
         String tables = tableStrDictQueryWord(shortName, tableListInDict);
-        String wheres = whereStrDictQueryWord(shortName, wordSpell);
+        String wheres = whereStrDictQueryWordBySpellAndSource(shortName, wordSpell, wordSource);
+        String query = "SELECT " + columns + " FROM " + tables
+            + " WHERE (" + wheres + ")";
+
+        Utils.debug(query);
+        return query;
+    }
+
+    public static String queryWordBySpell(String shortName, String wordSpell) {
+        String columns = commaJoin(columnListInQueryWord);
+
+        String tables = tableStrDictQueryWord(shortName, tableListInDict);
+        String wheres = whereStrDictQueryWordBySpell(shortName, wordSpell);
         String query = "SELECT " + columns + " FROM " + tables
             + " WHERE (" + wheres + ")";
 
@@ -86,7 +98,7 @@ public class SQLStr {
             + " = " + shortName + "_" + table2 + "." + foreignKey;
     }
 
-    public static String whereStrDictQueryWord(String shortName,
+    public static String whereStrDictQueryWordBySpell(String shortName,
             String wordSpell) {
         String[] conditions = new String[4];
         conditions[0] = joinConditionStrDict(shortName,
@@ -105,49 +117,73 @@ public class SQLStr {
 
         return String.join(" AND ", conditions);
     }
+
+    public static String whereStrDictQueryWordBySpellAndSource(
+            String shortName,
+            String wordSpell,
+            String wordSource) {
+        String[] conditions = new String[5];
+        conditions[0] = joinConditionStrDict(shortName,
+                            "words", "frequencies", "fre_id");
+        conditions[1] = joinConditionStrDict(shortName,
+                            "words", "entries", "word_id");
+        conditions[2] = joinConditionStrDict(shortName,
+                            "entries", "examples", "entry_id");
+
+        String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
+                shortName, wordSpell);
+
+        String matchWordForms = String.format("%s_words.word_forms LIKE \'%s%%\'",
+                shortName, wordSpell);
+        conditions[3] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
+        conditions[4] = String.format("%s_words.word_source = \'%s\'", shortName,wordSource);
+
+        return String.join(" AND ", conditions);
+    }
+
     // }}} query word //
 
     // update word {{{ //
-    public static String selectWordCondition(String wordSpell) {
-        return String.format(" WHERE word_spell = \'%s\'", wordSpell);
+    public static String selectWordCondition(String wordSpell, String wordSource) {
+        return String.format(" WHERE word_spell = \'%s\' AND word_source = \'%s\'", wordSpell, wordSource);
     }
     public static String updateWordAccess(String shortName,
-            String wordSpell, int acounter) {
+            String wordSpell, String wordSource, int acounter) {
         String result = null;
         result = String.format("UPDATE %s_words "
             + "SET word_atime = CURRENT_TIMESTAMP(), "
             + "word_acounter = %d ", shortName, acounter)
-            + selectWordCondition(wordSpell);
+            + selectWordCondition(wordSpell, wordSource);
 
         Utils.debug(result);
         return result;
     }
 
     public static String updateWordModify(String shortName,
-            String wordSpell) {
+            String wordSpell, String wordSource) {
         String result = null;
         result = String.format("UPDATE %s_words "
             + "SET word_mtime = CURRENT_TIMESTAMP() ", shortName)
-            + selectWordCondition(wordSpell);
+            + selectWordCondition(wordSpell, wordSource);
 
         Utils.debug(result);
         return result;
     }
 
     public static String updateWordForms(String shortName,
-            String wordSpell, ArrayList<String> wordForms) {
+            String wordSpell, String wordSource, ArrayList<String> wordForms) {
         String result = null;
         result = String.format("UPDATE %s_words "
             + "SET word_mtime = CURRENT_TIMESTAMP(), "
             + "word_forms = \'%s\' ", shortName, wordForms.toString())
-            + selectWordCondition(wordSpell);
+            + selectWordCondition(wordSpell, wordSource);
 
         Utils.debug(result);
         return result;
     }
 
     public static String updateWordPronounce(String shortName,
-            String wordSpell, Pronounce pronounce) {
+            String wordSpell, String wordSource, Pronounce pronounce) {
         String result = null;
         result = String.format("UPDATE %s_words "
             + "SET word_mtime = CURRENT_TIMESTAMP(), "
@@ -156,35 +192,35 @@ public class SQLStr {
             shortName,
             pronounce.getSoundmark(),
             pronounce.getSound())
-            + selectWordCondition(wordSpell);
+            + selectWordCondition(wordSpell, wordSource);
 
         Utils.debug(result);
         return result;
     }
 
     public static String updateWordSource(String shortName,
-                String wordSpell, String source) {
+                String wordSpell, String wordSource, String source) {
             String result = null;
             result = String.format("UPDATE %s_words "
                 + "SET word_mtime = CURRENT_TIMESTAMP(), "
                 + "word_source = \'%s\' ",
                 shortName,
                 source)
-                + selectWordCondition(wordSpell);
+                + selectWordCondition(wordSpell, wordSource);
 
             Utils.debug(result);
             return result;
         }
 
     public static String updateWordFreID(String shortName,
-                String wordSpell, int freId) {
+                String wordSpell, String wordSource, int freId) {
             String result = null;
             result = String.format("UPDATE %s_words "
                 + "SET word_mtime = CURRENT_TIMESTAMP(), "
                 + "fre_id = %d ",
                 shortName,
                 freId)
-                + selectWordCondition(wordSpell);
+                + selectWordCondition(wordSpell, wordSource);
 
             Utils.debug(result);
             return result;
@@ -254,11 +290,12 @@ public class SQLStr {
         return result;
     }
 
-    public static String queryWordId(String shortName, String wordSpell){
+    public static String queryWordId(String shortName,
+                            String wordSpell, String wordSource){
         String result = String.format(
                 "SELECT word_id FROM %s_words ",
                 shortName)
-            + selectWordCondition(wordSpell);
+            + selectWordCondition(wordSpell, wordSource);
         Utils.debug(result);
         return result;
     }

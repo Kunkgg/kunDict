@@ -92,5 +92,61 @@ public class Extractor {
         word =  new Word(spell, pronounce, fre, forms, senseEntryList, source);
         }
         return word;
-}
+    }
+
+    public Word longmanOnline() {
+        // extract a word from longman website through Jsoup {{{ //
+        Word word = null;
+        Document doc = Jsoup.parse(this.input);
+
+        Elements dicts = doc.select("span.dictentry");
+        Element dict = dicts.first();
+        Utils.debug("dicts size: " + dicts.size());
+        if (dicts.size() > 0) {
+
+        String source = "Longman Online English Dictionary";
+        String spell = dict.select("h1.pagetitle").text();
+        Pronounce pronounce = new Pronounce();
+        pronounce.setSoundmark(dict.select("span.PRON").text());
+        pronounce.setSound(
+                dict.select("span.speaker.brefile")
+                        .attr("data-src-mp3"));
+        Frequency fre = new Frequency();
+        fre.setBand(dict.select("span.FREQ").first().text());
+        fre.setDescription(dict.select("span.FREQ").first().attr("title"));
+        Elements formsEleCrossRef = dict.select("span.crossRef");
+        Elements formsEleW = dict.select("span.w");
+        ArrayList<String> forms = new ArrayList<>();
+        for(Element formEle : formsEleCrossRef) {
+            String form = formEle.text();
+            if (!forms.contains(form)) forms.add(form);
+        }
+        for(Element formEle : formsEleW) {
+            String form = formEle.text();
+            if (!forms.contains(form)) forms.add(form);
+        }
+
+        Elements entrys = dict.select("span.Sense");
+        ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
+
+        for (Element entry : entrys) {
+            String wordClass = entry.select("span.SIGNPOST").text();
+            if (! wordClass.equals("")) {
+
+                    SenseEntry senseEntry = new SenseEntry();
+                    senseEntry.setWordClass(wordClass);
+                    senseEntry.setSense(entry.select("span.DEF").text());
+                    for (Element example : entry.select("span.EXAMPLE")) {
+                        senseEntry.addExample(example.text());
+                    }
+                    senseEntryList.add(senseEntry);
+            }
+        }
+        // }}} extract a word from longman website through Jsoup //
+
+        word =  new Word(spell, pronounce, fre, forms, senseEntryList, source);
+        }
+        return word;
+    }
+
 }

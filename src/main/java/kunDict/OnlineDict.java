@@ -1,5 +1,7 @@
 package kunDict;
 
+import java.util.ArrayList;
+
 abstract class OnlineDict extends Dict {
 
     public OnlineDict(String name, String shortName, String description) {
@@ -9,5 +11,5 @@ abstract class OnlineDict extends Dict {
     public OnlineDict(){
     }
 
-    abstract Word queryWord(String wordSpell);
+    abstract ArrayList<Word> queryWordBySpell(String wordSpell);
 }

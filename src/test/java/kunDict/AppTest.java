@@ -103,39 +103,39 @@ public class AppTest {
                 "Collins Online English Dictionary", collins.getName());
 
         // words {{{ //
-        Word water = collins.queryWord("water");
+        Word water = collins.queryWordBySpell("water");
         Formatter fwater = new Formatter(water);
         fwater.printText();
 
-        Word duplicate = collins.queryWord("duplicate");
+        Word duplicate = collins.queryWordBySpell("duplicate");
         Formatter fduplicate = new Formatter(duplicate);
         fduplicate.printText();
 
-        Word polymorphism = collins.queryWord("polymorphism");
+        Word polymorphism = collins.queryWordBySpell("polymorphism");
         Formatter fpolymorphism = new Formatter(polymorphism);
         fpolymorphism.printText();
 
-        Word casual = collins.queryWord("casual");
+        Word casual = collins.queryWordBySpell("casual");
         Formatter fcasual = new Formatter(casual);
         fcasual.printText();
 
-        Word hibernate = collins.queryWord("hibernate");
+        Word hibernate = collins.queryWordBySpell("hibernate");
         Formatter fhibernate = new Formatter(hibernate);
         fhibernate.printText();
 
-        Word hypothesis = collins.queryWord("hypothesis");
+        Word hypothesis = collins.queryWordBySpell("hypothesis");
         Formatter fhypothesis = new Formatter(hypothesis);
         fhypothesis.printText();
 
-        Word test = collins.queryWord("test");
+        Word test = collins.queryWordBySpell("test");
         Formatter ftest = new Formatter(test);
         ftest.printText();
 
-        Word thes = collins.queryWord("thes");
+        Word thes = collins.queryWordBySpell("thes");
         Formatter fthes = new Formatter(thes);
         fthes.printText();
 
-        Word ace = collins.queryWord("ace");
+        Word ace = collins.queryWordBySpell("ace");
         Formatter face = new Formatter(ace);
         face.printText();
         // }}} words //

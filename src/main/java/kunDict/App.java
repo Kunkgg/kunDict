@@ -46,8 +46,8 @@ public class App {
 
     // load configs {{{ //
 
-    private void loadConfigs() throws FileNotFoundException,
-            IOException, InvalidPropertiesFormatException {
+    private void loadConfigs() throws FileNotFoundException, IOException,
+            InvalidPropertiesFormatException {
         App.configs = new Properties();
         FileInputStream fis = new FileInputStream(this.configFileName);
         App.configs.load(fis);
@@ -96,14 +96,14 @@ public class App {
 
     public ArrayList<Dict> getRegisteredDicts() {
         ArrayList<Dict> dicts = new ArrayList<>();
-        for(LocalDict localDict : this.registeredLocalDicts) {
-            if(localDict instanceof Dict) {
+        for (LocalDict localDict : this.registeredLocalDicts) {
+            if (localDict instanceof Dict) {
                 dicts.add((Dict) localDict);
             }
         }
 
-        for(OnlineDict onlineDict : this.registeredOnlineDicts) {
-            if(onlineDict instanceof Dict) {
+        for (OnlineDict onlineDict : this.registeredOnlineDicts) {
+            if (onlineDict instanceof Dict) {
                 dicts.add((Dict) onlineDict);
             }
         }
@@ -111,7 +111,7 @@ public class App {
         return dicts;
     }
 
-    public ArrayList<LocalDict> getRegisteredLocalDicts(){
+    public ArrayList<LocalDict> getRegisteredLocalDicts() {
         return this.registeredLocalDicts;
     }
 
@@ -195,11 +195,13 @@ public class App {
     public void registerDicts() throws IOException, SQLException {
         DefaultLocalDict defaultDict = new DefaultLocalDict();
         CollinsOnlineDict collinsDict = new CollinsOnlineDict();
+        LongmanOnlineDict longmanDict = new LongmanOnlineDict();
 
         this.clearRegisteredDicts();
 
         this.registerDict(defaultDict);
         this.registerDict(collinsDict);
+        this.registerDict(longmanDict);
     }
 
     public Word queryWordByFirst(String wordSpell) throws SQLException {
@@ -212,17 +214,23 @@ public class App {
                 + " registered dictionarys");
         Utils.debug("RegisteredDicts: " + registeredDicts);
 
-        for(Dict dict : registeredDicts) {
+        for (Dict dict : registeredDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
-                        wordSpell, dict.getName()));
-            word = dict.queryWord(wordSpell);
-            if (word != null && !word.isEmypty()) {
-                hitedDict = dict.getName();
+                    wordSpell, dict.getName()));
+            ArrayList<Word> words = dict.queryWordBySpell(wordSpell);
+            for (Word w : words) {
+                if (w != null && !w.isEmypty()) {
+                    word = w;
+                    hitedDict = dict.getName();
 
-                Utils.info("==> Get result from " + hitedDict);
-                if (!hitedDict.equals(defaultDict.getName())) {
-                    defaultDict.addWord(word);
+                    Utils.info("==> Get result from " + hitedDict);
+                    if (!hitedDict.equals(defaultDict.getName())) {
+                        defaultDict.addWord(word);
+                    }
+                    break;
                 }
+            }
+            if (word != null && !word.isEmypty()) {
                 break;
             }
         }
@@ -230,17 +238,46 @@ public class App {
         return word;
     }
 
+    public ArrayList<Word> queryWordByAll(String wordSpell)
+            throws SQLException {
+        ArrayList<Word> words = new ArrayList<>();
+        Word word = null;
+        String hitedDict = null;
+        LocalDict defaultDict = this.getRegisteredLocalDicts().get(0);
+
+        ArrayList<Dict> registeredDicts = this.getRegisteredDicts();
+        Utils.info("There are " + registeredDicts.size()
+                + " registered dictionarys");
+        Utils.debug("RegisteredDicts: " + registeredDicts);
+
+        for (Dict dict : registeredDicts) {
+            Utils.info(String.format("Searching (%s) in dictionary {%s}",
+                    wordSpell, dict.getName()));
+            words.addAll(dict.queryWordBySpell(wordSpell));
+            for (Word w : words) {
+                if (w != null && !w.isEmypty()) {
+                    word = w;
+                    hitedDict = dict.getName();
+
+                    Utils.info("==> Get result from " + hitedDict);
+                    if (!hitedDict.equals(defaultDict.getName())) {
+                        defaultDict.addWord(word);
+                    }
+                }
+            }
+        }
+
+        return words;
+    }
 
     // register dict {{{ //
     /**
-     * registerDict
-     * insert the name, shortName, dict_type_id, dict_size,
-     * dict_mtime, dict_atime of a register dict into table(dicts)
-     * If the size of dict is less than 0, express that dict is DictType.Online
-     * This method is implemented by transaction.
-     * It's not elegant. The better way is database native trigger.
+     * registerDict insert the name, shortName, dict_type_id, dict_size, dict_mtime,
+     * dict_atime of a register dict into table(dicts) If the size of dict is less
+     * than 0, express that dict is DictType.Online This method is implemented by
+     * transaction. It's not elegant. The better way is database native trigger.
      */
-// TODO: Instaed registerDict() of database native trigger <27-10-20, gk07> //
+    // TODO: Instaed registerDict() of database native trigger <27-10-20, gk07> //
     public void registerDict(Dict dict) throws SQLException {
         LocalDict localDict = null;
         String name = dict.getName();
@@ -257,12 +294,12 @@ public class App {
         if (type.equals(DictType.Local)) {
             localDict = (LocalDict) dict;
             size = localDict.size();
-            if(!this.registeredLocalDicts.contains(localDict)){
+            if (!this.registeredLocalDicts.contains(localDict)) {
                 this.registeredLocalDicts.add(localDict);
             }
         } else {
             OnlineDict onlineDict = (OnlineDict) dict;
-            if(!this.registeredOnlineDicts.contains(onlineDict)){
+            if (!this.registeredOnlineDicts.contains(onlineDict)) {
                 this.registeredOnlineDicts.add(onlineDict);
             }
         }
@@ -316,7 +353,7 @@ public class App {
     public void clearRegisteredDicts() throws SQLException {
         Connection con = db.getCurrentConUseDbName();
 
-        try(Statement stmt = con.createStatement();) {
+        try (Statement stmt = con.createStatement();) {
             int affectedRow = stmt.executeUpdate(SQLStr.clearDicts());
             if (affectedRow > 0) {
                 Utils.info("Cleared dicts table");
@@ -337,21 +374,41 @@ public class App {
 
     public static void main(String... args) throws IOException, SQLException {
         App app = new App();
-        Word word = null;
+        // Word word = null;
         String wordSpell = null;
+
+        // if (args != null && args.length > 0) {
+        // wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
+        // word = app.queryWordByFirst(wordSpell);
+
+        // if (word != null && !word.isEmypty()) {
+        // Formatter fmt = new Formatter(word);
+        // fmt.printColorText();
+        // } else {
+        // Utils.warning("Can't find anything");
+        // }
+        // } else {
+        // Utils.warning("Nothing is inputed");
+        // }
 
         if (args != null && args.length > 0) {
             wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
-            word = app.queryWordByFirst(wordSpell);
+            ArrayList<Word> words = app.queryWordByAll(wordSpell);
 
-        if (word != null && !word.isEmypty()) {
-            Formatter fmt = new Formatter(word);
-            fmt.printColorText();
+            if (words.size() > 0) {
+                for (Word word : words) {
+                    if (word != null && !word.isEmypty()) {
+                        Formatter fmt = new Formatter(word);
+                        fmt.printColorText();
+                    }
+                }
+            } else {
+                Utils.warning("Can't find anything");
+            }
+
         } else {
-            Utils.warning("Can't find anything");
-        }
-    } else {
             Utils.warning("Nothing is inputed");
+        }
+
     }
-}
 }

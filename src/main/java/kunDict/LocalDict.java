@@ -108,14 +108,15 @@ abstract class LocalDict extends Dict {
 
     // operater in dictionary {{{ //
     // Query a word {{{ //
-    public Word queryWord(String wordSpell)
+
+    public Word queryWordBySpellAndSource(String wordSpell, String wordSource)
             throws SQLException {
         Word word = null;
         Connection con = db.getCurrentConUseDbName();
 
         // query from locale database
         try (Statement stmt = con.createStatement();) {
-            String query = SQLStr.queryWord(this.getShortName(), wordSpell);
+            String query = SQLStr.queryWordBySpellAndSource(this.getShortName(), wordSpell, wordSource);
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
@@ -167,7 +168,71 @@ abstract class LocalDict extends Dict {
         }
 
         return word;
-    };
+    }
+
+
+    public ArrayList<Word> queryWordBySpell(String wordSpell)
+            throws SQLException {
+        ArrayList<Word> words = new ArrayList<>();
+        Word word = null;
+        Connection con = db.getCurrentConUseDbName();
+
+        // query from locale database
+        try (Statement stmt = con.createStatement();) {
+            String query = SQLStr.queryWordBySpell(this.getShortName(), wordSpell);
+
+            // process the ResultSet {{{ //
+            ResultSet rs = stmt.executeQuery(query);
+
+            String source = null;
+            Pronounce pron = null;
+            Frequency fre = null;
+            int acounter = -1;
+            Instant mtime = null;
+            Instant atime = null;
+            ArrayList<String> forms = null;
+
+            ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
+            int count = 0;
+            while (rs.next()) {
+                if (count == 0) {
+                    wordSpell = rs.getString("word_spell");
+                    source = rs.getString("word_source");
+                    String soundmark = rs.getString("word_pron_soundmark");
+                    String sound = rs.getString("word_pron_sound");
+                    pron = new Pronounce(soundmark, sound);
+                    String freBand = String.valueOf(rs.getInt("fre_band"));
+                    String freDescription = rs.getString("fre_description");
+                    fre = new Frequency(freBand, freDescription);
+                    forms = Utils.convertStringToArrayList(
+                            rs.getString("word_forms"));
+                    acounter = rs.getInt("word_acounter");
+                    mtime = rs.getTimestamp("word_mtime").toInstant();
+                    atime = rs.getTimestamp("word_atime").toInstant();
+                }
+
+                SenseEntry senseEntry = new SenseEntry();
+                senseEntry.setWordClass(rs.getString("entry_wordClass"));
+                senseEntry.setSense(rs.getString("entry_sense"));
+                senseEntry.addExample(rs.getString("example_text"));
+
+                senseEntryList.add(senseEntry);
+                count++;
+            }
+
+            senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
+            word = new Word(wordSpell, pron, fre, forms, senseEntryList,
+                    source, acounter, mtime, atime);
+            words.add(word);
+            if (LocalDict.updateWordAccess && !word.isEmypty())
+                updateWordAccess(word);
+        // }}} process the ResultSet //
+        } catch (SQLException e) {
+            Database.printSQLException(e);
+        }
+
+        return words;
+    }
     // }}} Query a word //
 
     // update word fields {{{ //
@@ -177,6 +242,7 @@ abstract class LocalDict extends Dict {
             Utils.warning("Couldn't update access info of an empty word.");
         } else {
             String wordSpell = word.getSpell();
+            String wordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             Statement stmt = con.createStatement();
@@ -184,6 +250,7 @@ abstract class LocalDict extends Dict {
                     SQLStr.updateWordAccess(
                         this.getShortName(),
                         wordSpell,
+                        wordSource,
                         word.getAcounter() + 1));
             if (affectedRow > 0) {
                 Utils.info(String.format(
@@ -203,13 +270,15 @@ abstract class LocalDict extends Dict {
             Utils.warning("Couldn't update modify info of an empty word.");
         } else {
             String wordSpell = word.getSpell();
+            String wordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             Statement stmt = con.createStatement();
             affectedRow = stmt.executeUpdate(
                     SQLStr.updateWordModify(
                         this.getShortName(),
-                        wordSpell));
+                        wordSpell,
+                        wordSource));
             if (affectedRow > 0) {
                 Utils.info(String.format(
                             "Updated the modify info of word(%s)",
@@ -229,11 +298,12 @@ abstract class LocalDict extends Dict {
             Utils.warning("Couldn't update forms of an empty word.");
         } else {
             String wordSpell = word.getSpell();
+            String wordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             Statement stmt = con.createStatement();
             affectedRow = stmt.executeUpdate(SQLStr.updateWordForms(
-                    this.getShortName(), wordSpell, wordForms));
+                    this.getShortName(), wordSpell, wordSource, wordForms));
             if (affectedRow > 0) {
                 Utils.info(String.format("Updated the forms<%s> of word(%s)",
                         wordForms.toString(), wordSpell));
@@ -254,6 +324,7 @@ abstract class LocalDict extends Dict {
         } else {
             // initialize {{{ //
             String wordSpell = word.getSpell();
+            String wordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             PreparedStatement pstmtFrequencies = null;
@@ -291,7 +362,7 @@ abstract class LocalDict extends Dict {
 
                     // update fre_id in words table {{{ //
                     affectedRow = stmt.executeUpdate(SQLStr.updateWordFreID(
-                            this.getShortName(), wordSpell, freId));
+                            this.getShortName(), wordSpell, wordSource, freId));
                     if (affectedRow > 0) {
                         Utils.info(String.format(
                                 "Updated the frequency<%s> of word(%s)",
@@ -341,6 +412,7 @@ abstract class LocalDict extends Dict {
             Utils.warning("Couldn't update pronounce of an empty word.");
         } else {
             String wordSpell = word.getSpell();
+            String wordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             Statement stmt = con.createStatement();
@@ -348,6 +420,7 @@ abstract class LocalDict extends Dict {
                     SQLStr.updateWordPronounce(
                         this.getShortName(),
                         wordSpell,
+                        wordSource,
                         pronounce));
             if (affectedRow > 0) {
                 Utils.info(String.format(
@@ -365,12 +438,13 @@ abstract class LocalDict extends Dict {
 
     // }}} update word pronounce //
     // update word source {{{ //
-        public void updateWordSource(Word word, String wordSource)
+        public void updateWordSource(Word word, String newWordSource)
                 throws SQLException {
         if (word.isEmypty()) {
             Utils.warning("Couldn't update source of an empty word.");
         } else {
             String wordSpell = word.getSpell();
+            String oldWordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             Statement stmt = con.createStatement();
@@ -378,16 +452,17 @@ abstract class LocalDict extends Dict {
                     SQLStr.updateWordSource(
                         this.getShortName(),
                         wordSpell,
-                        wordSource));
+                        oldWordSource,
+                        newWordSource));
             if (affectedRow > 0) {
                 Utils.info(String.format(
                             "Updated the source<%s> of word(%s)",
-                            wordSource,
+                            newWordSource,
                             wordSpell));
             } else {
                 Utils.warning(String.format(
                             "Couldn't Update the source<%s> of word(%s)",
-                            wordSource,
+                            newWordSource,
                             wordSpell));
             }
         }
@@ -403,6 +478,7 @@ abstract class LocalDict extends Dict {
         } else {
             // initialize {{{ //
             String wordSpell = word.getSpell();
+            String wordSource = word.getSource();
             int affectedRow = 0;
             Connection con = db.getCurrentConUseDbName();
             PreparedStatement pstmtEntries = null;
@@ -423,7 +499,7 @@ abstract class LocalDict extends Dict {
                         Statement.RETURN_GENERATED_KEYS);
                 // try to get word_id {{{ //
                 rs = stmt.executeQuery(SQLStr.queryWordId(
-                        this.getShortName(), wordSpell));
+                        this.getShortName(), wordSpell, wordSource));
                 if (rs != null && !rs.isClosed() && rs.next()) {
                     wordId = rs.getInt(1);
                     rs.close();
@@ -633,7 +709,7 @@ abstract class LocalDict extends Dict {
                     } catch(SQLException e) {
                     if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
                         Utils.warning(
-                            "Duplicated word_spell, please try update method");
+                            "Duplicated (word_spell, word_source), please try update method");
                     }
                     }
 
@@ -745,7 +821,8 @@ abstract class LocalDict extends Dict {
                     "==> Trying to update word (%s) in {%s} database...",
                     word.getSpell(), this.getName()));
 
-            Word oldWord = queryWord(word.getSpell());
+            Word oldWord = queryWordBySpellAndSource(word.getSpell(),
+                    word.getSource());
             if (!oldWord.isEmypty()) {
                 Utils.debug("oldWord acounter: " + oldWord.getAcounter());
                 Utils.debug("oldWord atime: " + oldWord.getAtime());

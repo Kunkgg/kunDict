@@ -3,15 +3,14 @@ package kunDict;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-public class CollinsOnlineDict extends OnlineDict {
+public class LongmanOnlineDict extends OnlineDict {
 
-    private static String name = "Collins Online English Dictionary";
-    private static String shortName = "collins";
+    private static String name = "Longman Online English Dictionary";
+    private static String shortName = "longman";
     private static String description = "English to English";
-    private static String queryUrlBase = "https://www.collinsdictionary.com/"
-                                    + "us/dictionary/english/";
+    private static String queryUrlBase = "https://www.ldoceonline.com/dictionary/";
 
-    public CollinsOnlineDict(){
+    public LongmanOnlineDict() {
         super(name, shortName, description);
     }
 
@@ -26,7 +25,7 @@ public class CollinsOnlineDict extends OnlineDict {
             Request req = new Request(url);
             String html = req.get().body();
             Extractor extractor = new Extractor(html);
-            word = extractor.collinsOnline();
+            word = extractor.longmanOnline();
             if (word != null && ! word.isEmypty()) {
                 words.add(word);
             }
