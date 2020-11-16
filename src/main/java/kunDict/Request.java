@@ -23,7 +23,7 @@ public class Request {
     private boolean redirect = true;
     private int maxRedirect = 5;
     private int redirectCounter = 0;
-    private Duration timeout = Duration.ofSeconds(5);
+    private Duration timeout = Duration.ofSeconds(10);
 
     private HttpClient client;
     private HttpRequest.Builder requestBuilder;

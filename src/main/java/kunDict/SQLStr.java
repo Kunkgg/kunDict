@@ -339,7 +339,7 @@ public class SQLStr {
         return "CREATE TABLE " + shortName + "_frequencies"
                 + "("
                   + "fre_id             int       NOT NULL AUTO_INCREMENT,"
-                  + "fre_band           int       NOT NULL UNIQUE,"
+                  + "fre_band           char(25)  NOT NULL UNIQUE,"
                   + "fre_description    text      NULL ,"
                   + "PRIMARY KEY(fre_id)"
                 + ") ENGINE=InnoDB;";

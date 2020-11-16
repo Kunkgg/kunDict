@@ -138,7 +138,7 @@ abstract class LocalDict extends Dict {
                     String soundmark = rs.getString("word_pron_soundmark");
                     String sound = rs.getString("word_pron_sound");
                     pron = new Pronounce(soundmark, sound);
-                    String freBand = String.valueOf(rs.getInt("fre_band"));
+                    String freBand = rs.getString("fre_band");
                     String freDescription = rs.getString("fre_description");
                     fre = new Frequency(freBand, freDescription);
                     forms = Utils.convertStringToArrayList(
@@ -201,7 +201,7 @@ abstract class LocalDict extends Dict {
                     String soundmark = rs.getString("word_pron_soundmark");
                     String sound = rs.getString("word_pron_sound");
                     pron = new Pronounce(soundmark, sound);
-                    String freBand = String.valueOf(rs.getInt("fre_band"));
+                    String freBand = rs.getString("fre_band");
                     String freDescription = rs.getString("fre_description");
                     fre = new Frequency(freBand, freDescription);
                     forms = Utils.convertStringToArrayList(
@@ -600,7 +600,7 @@ abstract class LocalDict extends Dict {
 
         String band = word.getFrequency().getBand();
         band = band.equals("") ? "1" : band;
-        pstmt.setInt(1, Integer.parseInt(band));
+        pstmt.setString(1, band);
         pstmt.setString(2, word.getFrequency().getDescription());
 
         return pstmt;
