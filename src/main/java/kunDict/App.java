@@ -194,13 +194,13 @@ public class App {
 
     public void registerDicts() throws IOException, SQLException {
         DefaultLocalDict defaultDict = new DefaultLocalDict();
-        CollinsOnlineDict collinsDict = new CollinsOnlineDict();
+        // CollinsOnlineDict collinsDict = new CollinsOnlineDict();
         LongmanOnlineDict longmanDict = new LongmanOnlineDict();
 
         this.clearRegisteredDicts();
 
         this.registerDict(defaultDict);
-        this.registerDict(collinsDict);
+        // this.registerDict(collinsDict);
         this.registerDict(longmanDict);
     }
 
@@ -241,7 +241,6 @@ public class App {
     public ArrayList<Word> queryWordByAll(String wordSpell)
             throws SQLException {
         ArrayList<Word> words = new ArrayList<>();
-        Word word = null;
         String hitedDict = null;
         LocalDict defaultDict = this.getRegisteredLocalDicts().get(0);
 
@@ -253,10 +252,9 @@ public class App {
         for (Dict dict : registeredDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
-            words.addAll(dict.queryWordBySpell(wordSpell));
-            for (Word w : words) {
-                if (w != null && !w.isEmypty()) {
-                    word = w;
+            ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            for (Word word : wordsTemp) {
+                if (word != null && !word.isEmypty()) {
                     hitedDict = dict.getName();
 
                     Utils.info("==> Get result from " + hitedDict);
@@ -265,6 +263,7 @@ public class App {
                     }
                 }
             }
+            words.addAll(wordsTemp);
         }
 
         return words;

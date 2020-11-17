@@ -105,7 +105,7 @@ public class Extractor {
         if (dicts.size() > 0) {
 
         String source = "Longman Online English Dictionary";
-        String spell = dict.select("h1.pagetitle").text();
+        String spell = doc.select("h1.pagetitle").text();
         Pronounce pronounce = new Pronounce();
         pronounce.setSoundmark(dict.select("span.PRON").text());
         pronounce.setSound(

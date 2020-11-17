@@ -692,10 +692,13 @@ abstract class LocalDict extends Dict {
                         rs = stmt.executeQuery(
                                 SQLStr.queryFreId(this.getShortName(),
                                     word.getFrequency().getBand()));
+                    } else {
+                        Database.printSQLException(e);
                     }
                 }
                 if (rs != null && !rs.isClosed() && rs.next()) {
                     freId = rs.getInt(1);
+                    Utils.debug("freId: " + freId);
                     rs.close();
                 }
                 // }}} into frequencies tabl //
@@ -707,10 +710,12 @@ abstract class LocalDict extends Dict {
                         affectedRow = pstmtWords.executeUpdate();
                         rs = pstmtWords.getGeneratedKeys();
                     } catch(SQLException e) {
-                    if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
-                        Utils.warning(
-                            "Duplicated (word_spell, word_source), please try update method");
-                    }
+                        if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
+                            Utils.warning(
+                                "Duplicated (word_spell, word_source), please try update method");
+                        } else {
+                            Database.printSQLException(e);
+                        }
                     }
 
                     if (rs != null && !rs.isClosed() && rs.next()) {

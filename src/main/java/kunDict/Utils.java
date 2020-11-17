@@ -47,7 +47,8 @@ public class Utils {
 
     public static void debug(String... str) {
         if (debugMsg) {
-        ColorTerm.blackPrintln("[DEBUG] " + String.join(", ", str));
+        ColorTerm.magentaBoldPrintln("[DEBUG] " + String.join(", ", str));
+        // ColorTerm.blackPrintln("[DEBUG] " + String.join(", ", str));
         }
     }
 
