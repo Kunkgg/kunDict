@@ -99,6 +99,7 @@ public class Extractor {
         Word word = null;
         Document doc = Jsoup.parse(this.input);
 
+        Element wordFamily = doc.select("div.wordfams").first();
         Elements dicts = doc.select("span.dictentry");
         Element dict = dicts.first();
         Utils.debug("dicts size: " + dicts.size());
@@ -114,16 +115,14 @@ public class Extractor {
         Frequency fre = new Frequency();
         fre.setBand(dict.select("span.FREQ").first().text());
         fre.setDescription(dict.select("span.FREQ").first().attr("title"));
-        Elements formsEleCrossRef = dict.select("span.crossRef");
-        Elements formsEleW = dict.select("span.w");
+
         ArrayList<String> forms = new ArrayList<>();
-        for(Element formEle : formsEleCrossRef) {
-            String form = formEle.text();
-            if (!forms.contains(form)) forms.add(form);
-        }
-        for(Element formEle : formsEleW) {
-            String form = formEle.text();
-            if (!forms.contains(form)) forms.add(form);
+        if(wordFamily != null) {
+            Elements formsEleW = wordFamily.select(".w");
+            for(Element formEle : formsEleW) {
+                String form = formEle.text();
+                if (!forms.contains(form)) forms.add(form);
+            }
         }
 
         Elements entrys = dict.select("span.Sense");

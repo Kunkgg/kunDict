@@ -320,7 +320,7 @@ public class SQLStr {
     public static String createTableWords(String shortName) {
         return "CREATE TABLE " + shortName + "_words"
             + "("
-              + "word_id                int           NOT NULL AUTO_INCREMENT,"
+              + "word_id                int         NOT NULL AUTO_INCREMENT,"
               + "word_spell             char(50)    NOT NULL,"
               + "word_source            char(50)    NOT NULL,"
               + "word_forms             varchar(1024)   NULL,"
