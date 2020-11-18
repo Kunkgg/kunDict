@@ -73,6 +73,8 @@ public class SQLStr {
 
     public static String queryWordBySpell(String shortName, String wordSpell) {
         String columns = commaJoin(columnListInQueryWord);
+        String column_word_id = ", "+ shortName + "_words.word_id word_id";
+        columns = columns + column_word_id;
 
         String tables = tableStrDictQueryWord(shortName, tableListInDict);
         String wheres = whereStrDictQueryWordBySpell(shortName, wordSpell);

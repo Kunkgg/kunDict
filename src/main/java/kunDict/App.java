@@ -253,6 +253,8 @@ public class App {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
             ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            Utils.warning(String.format("Got %d word from {%s}",
+                        wordsTemp.size(), dict.getName()));
             for (Word word : wordsTemp) {
                 if (word != null && !word.isEmypty()) {
                     hitedDict = dict.getName();

@@ -186,14 +186,16 @@ public class Extractor {
             for (Element entry : entrys) {
                 String wordClass = getTextByCssSelector(entry, "span.SIGNPOST");
 
-                SenseEntry senseEntry = new SenseEntry();
-                senseEntry.setWordClass(wordClass);
                 String def = getTextByCssSelector(entry, "span.DEF");
-                senseEntry.setSense(def);
-                for (Element example : entry.select("span.EXAMPLE")) {
-                    senseEntry.addExample(example.text());
+                if (! def.equals("") || ! wordClass.equals("")) {
+                    SenseEntry senseEntry = new SenseEntry();
+                    senseEntry.setWordClass(wordClass);
+                    senseEntry.setSense(def);
+                    for (Element example : entry.select("span.EXAMPLE")) {
+                        senseEntry.addExample(example.text());
+                    }
+                    senseEntryList.add(senseEntry);
                 }
-                senseEntryList.add(senseEntry);
             }
             // }}} extract a word from longman website through Jsoup //
 

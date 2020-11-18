@@ -170,11 +170,73 @@ abstract class LocalDict extends Dict {
         return word;
     }
 
+    public static ArrayList<Word> makeWordsFromResultSet(ResultSet rs)
+            throws SQLException {
+        ArrayList<Word> words = new ArrayList<>();
+        ArrayList<ResultRowQueryWord> rows = new ArrayList<>();
+
+        while(rs.next()) {
+            ResultRowQueryWord row = new ResultRowQueryWord(rs);
+            rows.add(row);
+        }
+
+        ArrayList<Integer> wordIds = new ArrayList<>();
+        for(ResultRowQueryWord row : rows) {
+            if(! wordIds.contains(row.word_id)) {
+                wordIds.add(row.word_id);
+            }
+        }
+
+        for(int wordId : wordIds) {
+            String spell = null;
+            String source = null;
+            Pronounce pron = new Pronounce();
+            Frequency fre = new Frequency();
+            ArrayList<String> forms = null;
+            ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
+            int acounter = 0;
+            Instant mtime = null;
+            Instant atime = null;
+
+            boolean newWordFlag = true;
+
+            for (ResultRowQueryWord row : rows) {
+                if (row.word_id == wordId) {
+                    if(newWordFlag) {
+                        spell = row.word_spell;
+                        source = row.word_source;
+                        pron.setSoundmark(row.word_pron_soundmark);
+                        pron.setSound(row.word_pron_sound);
+                        fre.setBand(row.fre_band);
+                        fre.setDescription(row.fre_description);
+                        forms = Utils.convertStringToArrayList(row.word_forms);
+                        acounter = row.word_acounter;
+                        mtime = row.word_mtime.toInstant();
+                        atime = row.word_atime.toInstant();
+
+                        newWordFlag = false;
+                    }
+                    SenseEntry senseEntry = new SenseEntry();
+                    senseEntry.setWordClass(row.entry_wordClass);
+                    senseEntry.setSense(row.entry_sense);
+                    senseEntry.addExample(row.example_text);
+
+                    senseEntryList.add(senseEntry);
+                }
+            }
+            senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
+
+            Word word = new Word(spell, pron, fre, forms, senseEntryList,
+                    source, acounter, mtime, atime);
+            words.add(word);
+        }
+
+        return words;
+    }
 
     public ArrayList<Word> queryWordBySpell(String wordSpell)
             throws SQLException {
         ArrayList<Word> words = new ArrayList<>();
-        Word word = null;
         Connection con = db.getCurrentConUseDbName();
 
         // query from locale database
@@ -183,49 +245,12 @@ abstract class LocalDict extends Dict {
 
             // process the ResultSet {{{ //
             ResultSet rs = stmt.executeQuery(query);
+            words = makeWordsFromResultSet(rs);
 
-            String source = null;
-            Pronounce pron = null;
-            Frequency fre = null;
-            int acounter = -1;
-            Instant mtime = null;
-            Instant atime = null;
-            ArrayList<String> forms = null;
-
-            ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
-            int count = 0;
-            while (rs.next()) {
-                if (count == 0) {
-                    wordSpell = rs.getString("word_spell");
-                    source = rs.getString("word_source");
-                    String soundmark = rs.getString("word_pron_soundmark");
-                    String sound = rs.getString("word_pron_sound");
-                    pron = new Pronounce(soundmark, sound);
-                    String freBand = rs.getString("fre_band");
-                    String freDescription = rs.getString("fre_description");
-                    fre = new Frequency(freBand, freDescription);
-                    forms = Utils.convertStringToArrayList(
-                            rs.getString("word_forms"));
-                    acounter = rs.getInt("word_acounter");
-                    mtime = rs.getTimestamp("word_mtime").toInstant();
-                    atime = rs.getTimestamp("word_atime").toInstant();
-                }
-
-                SenseEntry senseEntry = new SenseEntry();
-                senseEntry.setWordClass(rs.getString("entry_wordClass"));
-                senseEntry.setSense(rs.getString("entry_sense"));
-                senseEntry.addExample(rs.getString("example_text"));
-
-                senseEntryList.add(senseEntry);
-                count++;
+            for(Word word : words) {
+                if (LocalDict.updateWordAccess && !word.isEmypty())
+                    updateWordAccess(word);
             }
-
-            senseEntryList = SenseEntry.noDuplicatedSense(senseEntryList);
-            word = new Word(wordSpell, pron, fre, forms, senseEntryList,
-                    source, acounter, mtime, atime);
-            words.add(word);
-            if (LocalDict.updateWordAccess && !word.isEmypty())
-                updateWordAccess(word);
         // }}} process the ResultSet //
         } catch (SQLException e) {
             Database.printSQLException(e);
@@ -872,4 +897,89 @@ abstract class LocalDict extends Dict {
 
     // abstract Word random();
     abstract void build();
+}
+
+/**
+ * ResultRowQueryWord
+ */
+class ResultRowQueryWord {
+    public int word_id;
+    public String word_spell;
+    public String word_source;
+    public String word_forms;
+    public String word_pron_soundmark;
+    public String word_pron_sound;
+    public String fre_band;
+    public String fre_description;
+    public int word_acounter;
+    public Timestamp word_mtime;
+    public Timestamp word_atime;
+    // public int entry_id;
+    public String entry_wordClass;
+    public String entry_sense;
+    public String example_text;
+
+    public ResultRowQueryWord(ResultSet rs) throws SQLException {
+        this.word_id = rs.getInt("word_id");
+        this.word_spell = rs.getString("word_spell");
+        this.word_source = rs.getString("word_source");
+        this.word_pron_soundmark = rs.getString("word_pron_soundmark");
+        this.word_pron_sound = rs.getString("word_pron_sound");
+        this.word_forms = rs.getString("word_forms");
+        this.fre_band = rs.getString("fre_band");
+        this.fre_description = rs.getString("fre_description");
+        this.word_acounter = rs.getInt("word_acounter");
+        this.word_mtime = rs.getTimestamp("word_mtime");
+        this.word_atime = rs.getTimestamp("word_atime");
+        // this.entry_id = rs.getInt("entry_id");
+        this.entry_wordClass = rs.getString("entry_wordClass");
+        this.entry_sense = rs.getString("entry_sense");
+        this.example_text = rs.getString("example_text");
+    }
+
+    // public int get_word_id() {
+    //     return this.word_id;
+    // }
+    // public String get_word_spell() {
+    //     return this.word_spell;
+    // }
+    // public String get_word_source() {
+    //     return this.word_source;
+    // }
+    // public String get_word_forms() {
+    //     return this.word_forms;
+    // }
+    // public String get_word_pron_soundmark() {
+    //     return this.word_pron_soundmark;
+    // }
+    // public String get_word_pron_sound() {
+    //     return this.word_pron_sound;
+    // }
+    // public String get_fre_band() {
+    //     return this.fre_band;
+    // }
+    // public String get_fre_description() {
+    //     return this.fre_description;
+    // }
+    // public int get_word_acounter() {
+    //     return this.word_acounter;
+    // }
+    // public Timestamp get_word_mtime() {
+    //     return this.word_mtime;
+    // }
+    // public Timestamp get_word_atime() {
+    //     return this.word_atime;
+    // }
+    // public int get_entry_id() {
+    //     return this.entry_id;
+    // }
+    // public String get_entry_wordClass() {
+    //     return this.entry_wordClass;
+    // }
+    // public String get_entry_sense() {
+    //     return this.entry_sense;
+    // }
+    // public String get_example_text() {
+    //     return this.example_text;
+    // }
 }
