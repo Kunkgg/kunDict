@@ -40,58 +40,105 @@ public class Extractor {
 
     // }}} ability, not implemented //
 
+    public static String getTextByCssSelector(Element parentEle,
+            String cssSelector) {
+        String text = "";
+
+        Elements eles = parentEle.select(cssSelector);
+        if (eles.size() > 0) {
+            text = eles.first().text();
+            Utils.debug(String.format(
+                    "Extracted text \"%s\" by CSS selector \"%s\"", text,
+                    cssSelector));
+        } else {
+            Utils.warning(String.format(
+                    "CSS selector \"%s\" not matched anything."
+                            + " This field was filled with empty string.",
+                    cssSelector));
+        }
+
+        return text;
+    }
+
+    public static String getAttrByCssSelector(Element parentEle,
+            String cssSelector, String attrName) {
+        String attrText = "";
+
+        Elements eles = parentEle.select(cssSelector);
+        if (eles.size() > 0) {
+            attrText = eles.first().attr(attrName);
+            Utils.debug(String.format(
+                    "Extracted attrText \"%s\" by CSS selector \"%s\"",
+                    attrText, cssSelector));
+        } else {
+            Utils.warning(String.format(
+                    "CSS selector \"%s\" not matched anything."
+                            + " This field was filled with empty string.",
+                    cssSelector));
+        }
+
+        return attrText;
+    }
+
     public Word collinsOnline() {
         // extract a word from collins website through Jsoup {{{ //
         Word word = null;
         Document doc = Jsoup.parse(this.input);
 
-        // Elements dict = doc.select("div.dictionary.Cob_adv_US.dictentry");
         Elements dicts = doc.select("div.dictentry");
         Element dict = dicts.first();
         Utils.debug("dicts size: " + dicts.size());
         if (dicts.size() > 0) {
 
-        String source = "Collins Online English Dictionary";
-        String spell = dict.select("h2.h2_entry span.orth").text();
-        Pronounce pronounce = new Pronounce();
-        pronounce.setSoundmark(dict.select("span.pron").text());
-        pronounce.setSound(
-                dict.select("a.hwd_sound.audio_play_button")
-                        .attr("data-src-mp3"));
-        Frequency fre = new Frequency();
-        String freBand = dict.select("span.word-frequency-img").attr("data-band");
-        freBand = freBand.equals("") ? "1" : freBand;
-        fre.setBand(freBand);
-        fre.setDescription(
-                dict.select("span.word-frequency-img").attr("title"));
-        Elements formsEle = dict.select("span.form span.orth");
-        ArrayList<String> forms = new ArrayList<>();
-        for(Element formEle : formsEle) {
-            String form = formEle.text();
-            if (!forms.contains(form)) forms.add(form);
-        }
+            String source = "Collins Online English Dictionary";
+            String spell = getTextByCssSelector(dict, "h2.h2_entry span.orth");
+            Pronounce pronounce = new Pronounce();
+            Frequency fre = new Frequency();
+            ArrayList<String> forms = new ArrayList<>();
+            ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
 
-        Elements entrys = dict.select("div.hom");
-        ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
+            String pronSoundmark = getTextByCssSelector(dict, "span.pron");
+            String pronSound = getAttrByCssSelector(dict,
+                    "a.hwd_sound.audio_play_button", "data-src-mp3");
+            String freBand = getAttrByCssSelector(dict,
+                    "span.word-frequency-img", "data-band");
+            String freDescription = getAttrByCssSelector(dict,
+                    "span.word-frequency-img", "title");
 
-        for (Element hom : entrys) {
-            String wordClass = hom.select("span.pos").text();
-            if (! wordClass.equals("")) {
+            pronounce.setSoundmark(pronSoundmark);
+            pronounce.setSound(pronSound);
+            fre.setBand(freBand);
+            fre.setDescription(freDescription);
 
-                for (Element sense : hom.select("div.sense")){
-                    SenseEntry senseEntry = new SenseEntry();
-                    senseEntry.setWordClass(wordClass);
-                    senseEntry.setSense(sense.select("div.def").text());
-                    for (Element example : sense.select("span.quote")) {
-                        senseEntry.addExample(example.text());
+            Elements formsEle = dict.select("span.form span.orth");
+            for (Element formEle : formsEle) {
+                String form = formEle.text();
+                if (!forms.contains(form))
+                    forms.add(form);
+            }
+
+            Elements entrys = dict.select("div.hom");
+
+            for (Element entry : entrys) {
+                String wordClass = getTextByCssSelector(entry, "span.pos");
+
+                if (!wordClass.equals("")) {
+                    for (Element sense : entry.select("div.sense")) {
+                        SenseEntry senseEntry = new SenseEntry();
+                        senseEntry.setWordClass(wordClass);
+                        String def = getTextByCssSelector(sense, "div.def");
+                        senseEntry.setSense(def);
+                        for (Element example : sense.select("span.quote")) {
+                            senseEntry.addExample(example.text());
+                        }
+                        senseEntryList.add(senseEntry);
                     }
-                    senseEntryList.add(senseEntry);
                 }
             }
-        }
-        // }}} extract a word from collins website through Jsoup //
+            // }}} extract a word from collins website through Jsoup //
 
-        word =  new Word(spell, pronounce, fre, forms, senseEntryList, source);
+            word = new Word(spell, pronounce, fre, forms, senseEntryList,
+                    source);
         }
         return word;
     }
@@ -101,53 +148,58 @@ public class Extractor {
         Word word = null;
         Document doc = Jsoup.parse(this.input);
 
-        Element wordFamily = doc.select("div.wordfams").first();
         Elements dicts = doc.select("span.dictentry");
         Element dict = dicts.first();
         Utils.debug("dicts size: " + dicts.size());
         if (dicts.size() > 0) {
 
-        String source = "Longman Online English Dictionary";
-        String spell = doc.select("h1.pagetitle").text();
-        Pronounce pronounce = new Pronounce();
-        pronounce.setSoundmark(dict.select("span.PRON").text());
-        pronounce.setSound(
-                dict.select("span.speaker.brefile")
-                        .attr("data-src-mp3"));
-        Frequency fre = new Frequency();
-        fre.setBand(dict.select("span.FREQ").first().text());
-        fre.setDescription(dict.select("span.FREQ").first().attr("title"));
+            String source = "Longman Online English Dictionary";
+            String spell = getTextByCssSelector(doc, "h1.pagetitle");
+            Pronounce pronounce = new Pronounce();
+            Frequency fre = new Frequency();
+            ArrayList<String> forms = new ArrayList<>();
+            ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
 
-        ArrayList<String> forms = new ArrayList<>();
-        if(wordFamily != null) {
-            Elements formsEleW = wordFamily.select(".w");
-            for(Element formEle : formsEleW) {
-                String form = formEle.text();
-                if (!forms.contains(form)) forms.add(form);
+            String pronSoundmark = getTextByCssSelector(dict, "span.PRON");
+            String pronSound = getAttrByCssSelector(dict,
+                    "span.speaker.brefile", "data-src-mp3");
+            String freBand = getTextByCssSelector(dict, "span.FREQ");
+            String freDescription = getAttrByCssSelector(dict,
+                    "span.FREQ", "title");
+
+            pronounce.setSoundmark(pronSoundmark);
+            pronounce.setSound(pronSound);
+            fre.setBand(freBand);
+            fre.setDescription(freDescription);
+
+            Element wordFamily = doc.select("div.wordfams").first();
+            if (wordFamily != null) {
+                Elements formsEleW = wordFamily.select(".w");
+                for (Element formEle : formsEleW) {
+                    String form = formEle.text();
+                    if (!forms.contains(form))
+                        forms.add(form);
+                }
             }
-        }
 
-        Elements entrys = dict.select("span.Sense");
-        ArrayList<SenseEntry> senseEntryList = new ArrayList<>();
+            Elements entrys = dict.select("span.Sense");
+            for (Element entry : entrys) {
+                String wordClass = getTextByCssSelector(entry, "span.SIGNPOST");
 
-        for (Element entry : entrys) {
-            String wordClass = entry.select("span.SIGNPOST").text();
-            if (! wordClass.equals("")) {
-
-                    SenseEntry senseEntry = new SenseEntry();
-                    senseEntry.setWordClass(wordClass);
-                    senseEntry.setSense(entry.select("span.DEF").text());
-                    for (Element example : entry.select("span.EXAMPLE")) {
-                        senseEntry.addExample(example.text());
-                    }
-                    senseEntryList.add(senseEntry);
+                SenseEntry senseEntry = new SenseEntry();
+                senseEntry.setWordClass(wordClass);
+                String def = getTextByCssSelector(entry, "span.DEF");
+                senseEntry.setSense(def);
+                for (Element example : entry.select("span.EXAMPLE")) {
+                    senseEntry.addExample(example.text());
+                }
+                senseEntryList.add(senseEntry);
             }
-        }
-        // }}} extract a word from longman website through Jsoup //
+            // }}} extract a word from longman website through Jsoup //
 
-        word =  new Word(spell, pronounce, fre, forms, senseEntryList, source);
+            word = new Word(spell, pronounce, fre, forms, senseEntryList,
+                    source);
         }
         return word;
     }
-
 }
