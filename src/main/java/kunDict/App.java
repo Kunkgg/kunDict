@@ -200,8 +200,8 @@ public class App {
         this.clearRegisteredDicts();
 
         this.registerDict(defaultDict);
-        this.registerDict(collinsDict);
         this.registerDict(longmanDict);
+        this.registerDict(collinsDict);
     }
 
     public Word queryWordByFirst(String wordSpell) throws SQLException {
@@ -238,7 +238,7 @@ public class App {
         return word;
     }
 
-    public ArrayList<Word> queryWordByAll(String wordSpell)
+    public ArrayList<Word> queryWordAll(String wordSpell)
             throws SQLException {
         ArrayList<Word> words = new ArrayList<>();
         String hitedDict = null;
@@ -270,6 +270,44 @@ public class App {
 
         return words;
     }
+
+    public void queryWordAllWrapper(String... args) throws SQLException {
+        if (args != null && args.length > 0) {
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
+            ArrayList<Word> words = queryWordAll(wordSpell);
+
+            if (words.size() > 0) {
+                for (Word word : words) {
+                    if (word != null && !word.isEmypty()) {
+                        Formatter fmt = new Formatter(word);
+                        fmt.printColorText();
+                    }
+                }
+            } else {
+                Utils.warning("Can't find anything");
+            }
+
+        } else {
+            Utils.warning("Nothing is inputed");
+        }
+    }
+
+    public void queryWordByFirstWrapper(String... args) throws SQLException {
+        if (args != null && args.length > 0) {
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
+            Word word = queryWordByFirst(wordSpell);
+
+            if (word != null && !word.isEmypty()) {
+                Formatter fmt = new Formatter(word);
+                fmt.printColorText();
+            } else {
+            Utils.warning("Can't find anything");
+            }
+        } else {
+            Utils.warning("Nothing is inputed");
+        }
+    }
+
 
     // register dict {{{ //
     /**
@@ -373,43 +411,11 @@ public class App {
     }
     // }}} register dict //
 
+
     public static void main(String... args) throws IOException, SQLException {
         App app = new App();
-        // Word word = null;
-        String wordSpell = null;
-
-        // if (args != null && args.length > 0) {
-        // wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
-        // word = app.queryWordByFirst(wordSpell);
-
-        // if (word != null && !word.isEmypty()) {
-        // Formatter fmt = new Formatter(word);
-        // fmt.printColorText();
-        // } else {
-        // Utils.warning("Can't find anything");
-        // }
-        // } else {
-        // Utils.warning("Nothing is inputed");
-        // }
-
-        if (args != null && args.length > 0) {
-            wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
-            ArrayList<Word> words = app.queryWordByAll(wordSpell);
-
-            if (words.size() > 0) {
-                for (Word word : words) {
-                    if (word != null && !word.isEmypty()) {
-                        Formatter fmt = new Formatter(word);
-                        fmt.printColorText();
-                    }
-                }
-            } else {
-                Utils.warning("Can't find anything");
-            }
-
-        } else {
-            Utils.warning("Nothing is inputed");
-        }
+        // app.queryWordAllWrapper(args);
+        app.queryWordByFirstWrapper(args);
 
     }
 }
