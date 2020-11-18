@@ -59,7 +59,9 @@ public class Extractor {
                 dict.select("a.hwd_sound.audio_play_button")
                         .attr("data-src-mp3"));
         Frequency fre = new Frequency();
-        fre.setBand(dict.select("span.word-frequency-img").attr("data-band"));
+        String freBand = dict.select("span.word-frequency-img").attr("data-band");
+        freBand = freBand.equals("") ? "1" : freBand;
+        fre.setBand(freBand);
         fre.setDescription(
                 dict.select("span.word-frequency-img").attr("title"));
         Elements formsEle = dict.select("span.form span.orth");

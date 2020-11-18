@@ -194,13 +194,13 @@ public class App {
 
     public void registerDicts() throws IOException, SQLException {
         DefaultLocalDict defaultDict = new DefaultLocalDict();
-        // CollinsOnlineDict collinsDict = new CollinsOnlineDict();
+        CollinsOnlineDict collinsDict = new CollinsOnlineDict();
         LongmanOnlineDict longmanDict = new LongmanOnlineDict();
 
         this.clearRegisteredDicts();
 
         this.registerDict(defaultDict);
-        // this.registerDict(collinsDict);
+        this.registerDict(collinsDict);
         this.registerDict(longmanDict);
     }
 

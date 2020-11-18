@@ -599,7 +599,6 @@ abstract class LocalDict extends Dict {
             Word word) throws SQLException {
 
         String band = word.getFrequency().getBand();
-        band = band.equals("") ? "1" : band;
         pstmt.setString(1, band);
         pstmt.setString(2, word.getFrequency().getDescription());
 
