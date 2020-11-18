@@ -204,6 +204,28 @@ public class App {
         this.registerDict(collinsDict);
     }
 
+    public void printWords(ArrayList<Word> words) {
+        if (words.size() > 0) {
+            for (Word word : words) {
+                if (word != null && !word.isEmypty()) {
+                    Formatter fmt = new Formatter(word);
+                    fmt.printColorText();
+                }
+            }
+        } else {
+            Utils.warning("Can't find anything");
+        }
+    }
+
+    public void printWord(Word word) {
+        if (word != null && !word.isEmypty()) {
+            Formatter fmt = new Formatter(word);
+            fmt.printColorText();
+        } else {
+            Utils.warning("Can't find anything");
+        }
+    }
+
     public Word queryWordByFirst(String wordSpell) throws SQLException {
         Word word = null;
         String hitedDict = null;
@@ -238,8 +260,7 @@ public class App {
         return word;
     }
 
-    public ArrayList<Word> queryWordAll(String wordSpell)
-            throws SQLException {
+    public ArrayList<Word> queryWordAll(String wordSpell) throws SQLException {
         ArrayList<Word> words = new ArrayList<>();
         String hitedDict = null;
         LocalDict defaultDict = this.getRegisteredLocalDicts().get(0);
@@ -253,8 +274,8 @@ public class App {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
             ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
-            Utils.warning(String.format("Got %d word from {%s}",
-                        wordsTemp.size(), dict.getName()));
+            Utils.warning(String.format("Get %d word from {%s}",
+                    wordsTemp.size(), dict.getName()));
             for (Word word : wordsTemp) {
                 if (word != null && !word.isEmypty()) {
                     hitedDict = dict.getName();
@@ -271,22 +292,92 @@ public class App {
         return words;
     }
 
-    public void queryWordAllWrapper(String... args) throws SQLException {
-        if (args != null && args.length > 0) {
-            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
-            ArrayList<Word> words = queryWordAll(wordSpell);
+    public ArrayList<Word> queryWordLocal(String wordSpell)
+            throws SQLException {
+        ArrayList<Word> words = new ArrayList<>();
+        String hitedDict = null;
+        ArrayList<LocalDict> localDicts = this.getRegisteredLocalDicts();
 
-            if (words.size() > 0) {
-                for (Word word : words) {
-                    if (word != null && !word.isEmypty()) {
-                        Formatter fmt = new Formatter(word);
-                        fmt.printColorText();
+        Utils.info("There are " + localDicts.size()
+                + " registered local dictionarys");
+        Utils.debug("Registered localDicts: " + localDicts);
+        for (LocalDict dict : localDicts) {
+            Utils.info(String.format("Searching (%s) in dictionary {%s}",
+                    wordSpell, dict.getName()));
+            ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            Utils.warning(String.format("Get %d word from {%s}",
+                    wordsTemp.size(), dict.getName()));
+            for (Word word : wordsTemp) {
+                if (word != null && !word.isEmypty()) {
+                    hitedDict = dict.getName();
+                    Utils.info("==> Get result from " + hitedDict);
+                }
+            }
+            words.addAll(wordsTemp);
+        }
+
+        return words;
+    }
+
+    public ArrayList<Word> queryWordOnline(String wordSpell)
+            throws SQLException {
+        ArrayList<Word> words = new ArrayList<>();
+        String hitedDict = null;
+        ArrayList<OnlineDict> onlineDicts = this.getRegisteredOnlineDicts();
+        LocalDict defaultDict = this.getRegisteredLocalDicts().get(0);
+
+        Utils.info("There are " + onlineDicts.size()
+                + " registered online dictionarys");
+        Utils.debug("Registered onlineDicts: " + onlineDicts);
+        for (OnlineDict dict : onlineDicts) {
+            Utils.info(String.format("Searching (%s) in dictionary {%s}",
+                    wordSpell, dict.getName()));
+            ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            Utils.warning(String.format("Get %d word from {%s}",
+                    wordsTemp.size(), dict.getName()));
+            for (Word word : wordsTemp) {
+                if (word != null && !word.isEmypty()) {
+                    hitedDict = dict.getName();
+                    Utils.info("==> Get result from " + hitedDict);
+                    if (!hitedDict.equals(defaultDict.getName())) {
+                        defaultDict.addWord(word);
                     }
                 }
-            } else {
-                Utils.warning("Can't find anything");
             }
+            words.addAll(wordsTemp);
+        }
 
+        return words;
+    }
+
+    public void queryWordLocalWrapper(String... args) throws SQLException {
+        if (args != null && args.length > 0) {
+            String wordSpell = Dict
+                    .preProcessWordSpell(String.join(" ", args));
+            ArrayList<Word> words = queryWordLocal(wordSpell);
+            printWords(words);
+        } else {
+            Utils.warning("Nothing is inputed");
+        }
+    }
+
+    public void queryWordOnlineWrapper(String... args) throws SQLException {
+        if (args != null && args.length > 0) {
+            String wordSpell = Dict
+                    .preProcessWordSpell(String.join(" ", args));
+            ArrayList<Word> words = queryWordOnline(wordSpell);
+            printWords(words);
+        } else {
+            Utils.warning("Nothing is inputed");
+        }
+    }
+
+    public void queryWordAllWrapper(String... args) throws SQLException {
+        if (args != null && args.length > 0) {
+            String wordSpell = Dict
+                    .preProcessWordSpell(String.join(" ", args));
+            ArrayList<Word> words = queryWordAll(wordSpell);
+            printWords(words);
         } else {
             Utils.warning("Nothing is inputed");
         }
@@ -294,20 +385,14 @@ public class App {
 
     public void queryWordByFirstWrapper(String... args) throws SQLException {
         if (args != null && args.length > 0) {
-            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
+            String wordSpell = Dict
+                    .preProcessWordSpell(String.join(" ", args));
             Word word = queryWordByFirst(wordSpell);
-
-            if (word != null && !word.isEmypty()) {
-                Formatter fmt = new Formatter(word);
-                fmt.printColorText();
-            } else {
-            Utils.warning("Can't find anything");
-            }
+            printWord(word);
         } else {
             Utils.warning("Nothing is inputed");
         }
     }
-
 
     // register dict {{{ //
     /**
@@ -353,7 +438,7 @@ public class App {
             if (rs != null && !rs.isClosed() && rs.next()) {
                 dictTypeId = rs.getInt(1);
                 rs.close();
-                Utils.debug("Got dict_type_id: " + dictTypeId);
+                Utils.debug("Get dict_type_id: " + dictTypeId);
             }
 
             if (dictTypeId > 0) {
@@ -411,11 +496,11 @@ public class App {
     }
     // }}} register dict //
 
-
     public static void main(String... args) throws IOException, SQLException {
         App app = new App();
         // app.queryWordAllWrapper(args);
-        app.queryWordByFirstWrapper(args);
+        // app.queryWordByFirstWrapper(args);
+        app.queryWordLocalWrapper(args);
 
     }
 }
