@@ -343,8 +343,7 @@ public class App {
 
     public void queryWordLocalWrapper(String... args) throws SQLException {
         if (args != null && args.length > 0) {
-            String wordSpell = Dict
-                    .preProcessWordSpell(String.join(" ", args));
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
             ArrayList<Word> words = queryWordLocal(wordSpell);
             printWords(words);
         } else {

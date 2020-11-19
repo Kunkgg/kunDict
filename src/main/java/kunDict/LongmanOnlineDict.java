@@ -36,4 +36,7 @@ public class LongmanOnlineDict extends OnlineDict {
         return words;
     };
 
+    public static String getQueryUrlBase() {
+        return queryUrlBase;
+    }
 }

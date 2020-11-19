@@ -1,6 +1,7 @@
 package kunDict;
 
 import java.util.ArrayList;
+import java.net.URISyntaxException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -147,6 +148,24 @@ public class Extractor {
         // extract a word from longman website through Jsoup {{{ //
         Word word = null;
         Document doc = Jsoup.parse(this.input);
+
+        // Justify if this page is a wordIndex page after redirection
+        Elements searchTitle = doc.select(".search_title");
+        if (searchTitle.size() > 0
+                && searchTitle.first().text().equals("Did you mean:")) {
+            String realWord = getTextByCssSelector(doc,"ul.didyoumean li");
+            if(! realWord.equals("")) {
+                try {
+                    String url = LongmanOnlineDict.getQueryUrlBase()
+                                        + realWord;
+                    Request req = new Request(url);
+                    String html = req.get().body();
+                    doc = Jsoup.parse(html);
+                } catch (URISyntaxException e) {
+                    Utils.warning("Syntax error. Please check the spell of word.");
+                }
+            }
+        }
 
         Elements dicts = doc.select("span.dictentry");
         Element dict = dicts.first();
