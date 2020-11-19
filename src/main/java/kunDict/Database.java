@@ -16,12 +16,12 @@ public class Database {
 
     private String dbms;
     private String dbName;
-    private String userName;
-    private String password;
+    private String dbUsername;
+    private String dbPassword;
+    private String dbDriver;
+    private String dbServername;
+    private int dbPort;
     private String urlString;
-    private String driver;
-    private String serverName;
-    private int portNumber;
     private Connection currentCon;
 
 
@@ -56,12 +56,12 @@ public class Database {
     public void getConnection() throws SQLException {
         if (! this.isConnected()) {
             Properties connectionProps = new Properties();
-            connectionProps.put("user", this.userName);
-            connectionProps.put("password", this.password);
+            connectionProps.put("user", this.dbUsername);
+            connectionProps.put("password", this.dbPassword);
 
             if (this.dbms.equals("mysql")) {
                 this.urlString = String.format("jdbc:%s://%s:%d/", this.dbms,
-                        this.serverName, this.portNumber);
+                        this.dbServername, this.dbPort);
                 this.currentCon = DriverManager.getConnection(this.urlString,
                         connectionProps);
                 Utils.info("Connected to " + this.dbms);
@@ -214,17 +214,16 @@ public class Database {
     private void loadConfigs() {
 
         this.dbms = App.configs.getProperty("dbms");
-        this.driver = App.configs.getProperty("driver");
+        this.dbDriver = App.configs.getProperty("dbDriver");
         if (App.configs.getProperty("testMode").equals("true")) {
             this.dbName = App.configs.getProperty("dbName") + "_test";
         } else {
             this.dbName = App.configs.getProperty("dbName");
         }
-        this.userName = App.configs.getProperty("userName");
-        this.password = App.configs.getProperty("password");
-        this.serverName = App.configs.getProperty("serverName");
-        this.portNumber = Integer
-                .parseInt(App.configs.getProperty("portNumber"));
+        this.dbUsername = App.configs.getProperty("dbUsername");
+        this.dbPassword = App.configs.getProperty("dbPassword");
+        this.dbServername = App.configs.getProperty("dbServername");
+        this.dbPort = Integer.parseInt(App.configs.getProperty("dbPort"));
     }
     // }}} load database config from property file //
 
@@ -238,11 +237,11 @@ public class Database {
     }
 
     public String getUserName() {
-        return this.userName;
+        return this.dbUsername;
     }
 
     public String getPassword() {
-        return this.password;
+        return this.dbPassword;
     }
 
     public String getUrlString() {
@@ -250,15 +249,15 @@ public class Database {
     }
 
     public String getDriver() {
-        return this.driver;
+        return this.dbDriver;
     }
 
     public String getServerName() {
-        return this.serverName;
+        return this.dbServername;
     }
 
     public int getPortNumber() {
-        return this.portNumber;
+        return this.dbPort;
     }
 
 
@@ -274,11 +273,11 @@ public class Database {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.dbUsername = userName;
     }
 
     public void setPassword(String password) {
-        this.password= password;
+        this.dbPassword= password;
     }
 
     public void setUrlString(String urlString) {
@@ -286,15 +285,15 @@ public class Database {
     }
 
     public void setDriver(String driver) {
-        this.driver = driver;
+        this.dbDriver = driver;
     }
 
     public void setServerName(String serverName) {
-        this.serverName = serverName;
+        this.dbServername = serverName;
     }
 
     public void setPortNumber(int portNumber) {
-        this.portNumber = portNumber;
+        this.dbPort = portNumber;
     }
 
     public void setCurrentCon(Connection currentCon){

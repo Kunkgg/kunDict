@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.InvalidPropertiesFormatException;
 
+// TODO: change frequency data type to ArrayList <19-11-20, gk07> //
 // TODO: Instaed registerDict() of database native trigger <27-10-20, gk07> //
 // TODO: change database table, unqie(word_id, word_source) <30-09-20, gk07> //
 // TODO: change database frequencies table, add column fre_explain <04-10-20, gk07> //
@@ -59,12 +60,12 @@ public class App {
         String warningMsg = App.configs.getProperty("warningMsg");
         String debugMsg = App.configs.getProperty("debugMsg");
         String dbms = App.configs.getProperty("dbms");
-        String driver = App.configs.getProperty("driver");
+        String dbDriver = App.configs.getProperty("dbDriver");
         String dbName = App.configs.getProperty("dbName");
-        String userName = App.configs.getProperty("userName");
-        String password = App.configs.getProperty("password");
-        String serverName = App.configs.getProperty("serverName");
-        String portNumber = App.configs.getProperty("portNumber");
+        String dbUsername = App.configs.getProperty("dbUsername");
+        String dbPassword = App.configs.getProperty("dbPassword");
+        String dbServername = App.configs.getProperty("dbServername");
+        String dbPort = App.configs.getProperty("dbPort");
         String updateWordAccess = App.configs.getProperty("updateWordAccess");
 
         Utils.config("Loaded the following configs:");
@@ -75,12 +76,12 @@ public class App {
         Utils.config("warningMsg: " + warningMsg);
         Utils.config("debugMsg: " + debugMsg);
         Utils.config("dbms: " + dbms);
-        Utils.config("driver: " + driver);
+        Utils.config("dbDriver: " + dbDriver);
         Utils.config("dbName: " + dbName);
-        Utils.config("userName: " + userName);
-        Utils.config("password: " + password);
-        Utils.config("serverName: " + serverName);
-        Utils.config("portNumber: " + portNumber);
+        Utils.config("dbUsername: " + dbUsername);
+        Utils.config("dbPassword: " + dbPassword);
+        Utils.config("dbServername: " + dbServername);
+        Utils.config("dbPort: " + dbPort);
         Utils.config("updateWordAccess: " + updateWordAccess);
     }
     // }}} load configs //

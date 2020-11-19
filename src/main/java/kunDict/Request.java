@@ -105,6 +105,7 @@ public class Request {
         if (!App.configs.getProperty("proxyPort").equals("")) {
             this.proxyPort = Integer.parseInt(App.configs.getProperty("proxyPort"));
         }
+
     }
 
     public void initializeClient() {
