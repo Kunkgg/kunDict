@@ -38,6 +38,7 @@ public class App {
     private ArrayList<LocalDict> registeredLocalDicts = new ArrayList<>();
     private ArrayList<OnlineDict> registeredOnlineDicts = new ArrayList<>();
     private String tablesPreffix = "dict";
+    private boolean autoRestoreWord;
 
     public App() throws IOException, SQLException {
         this.loadConfigs();
@@ -46,7 +47,6 @@ public class App {
     }
 
     // load configs {{{ //
-
     private void loadConfigs() throws FileNotFoundException, IOException,
             InvalidPropertiesFormatException {
         App.configs = new Properties();
@@ -54,35 +54,14 @@ public class App {
         App.configs.load(fis);
         fis.close();
 
-        String testMode = App.configs.getProperty("testMode");
-        String configMsg = App.configs.getProperty("configMsg");
-        String infoMsg = App.configs.getProperty("infoMsg");
-        String warningMsg = App.configs.getProperty("warningMsg");
-        String debugMsg = App.configs.getProperty("debugMsg");
-        String dbms = App.configs.getProperty("dbms");
-        String dbDriver = App.configs.getProperty("dbDriver");
-        String dbName = App.configs.getProperty("dbName");
-        String dbUsername = App.configs.getProperty("dbUsername");
-        String dbPassword = App.configs.getProperty("dbPassword");
-        String dbServername = App.configs.getProperty("dbServername");
-        String dbPort = App.configs.getProperty("dbPort");
-        String updateWordAccess = App.configs.getProperty("updateWordAccess");
-
         Utils.config("Loaded the following configs:");
         Utils.config("config file: " + this.configFileName);
-        Utils.config("testMode: " + testMode);
-        Utils.config("configMsg: " + configMsg);
-        Utils.config("infoMsg: " + infoMsg);
-        Utils.config("warningMsg: " + warningMsg);
-        Utils.config("debugMsg: " + debugMsg);
-        Utils.config("dbms: " + dbms);
-        Utils.config("dbDriver: " + dbDriver);
-        Utils.config("dbName: " + dbName);
-        Utils.config("dbUsername: " + dbUsername);
-        Utils.config("dbPassword: " + dbPassword);
-        Utils.config("dbServername: " + dbServername);
-        Utils.config("dbPort: " + dbPort);
-        Utils.config("updateWordAccess: " + updateWordAccess);
+        for(String option : App.configs.stringPropertyNames()) {
+            Utils.config(option + ": " + App.configs.getProperty(option));
+        }
+
+        this.autoRestoreWord = Utils.testString(
+                App.configs.getProperty("autoRestoreWord"));
     }
     // }}} load configs //
 
@@ -91,8 +70,16 @@ public class App {
         return this.configFileName;
     }
 
+    public boolean getAutoRestoreWord() {
+        return this.autoRestoreWord;
+    }
+
     public void setConfigFileName(String configFileName) {
         this.configFileName = configFileName;
+    }
+
+    public void setAutoRestoreWord(boolean autoRestoreWord) {
+        this.autoRestoreWord = autoRestoreWord;
     }
 
     public ArrayList<Dict> getRegisteredDicts() {
@@ -247,7 +234,8 @@ public class App {
                     hitedDict = dict.getName();
 
                     Utils.info("==> Get result from " + hitedDict);
-                    if (!hitedDict.equals(defaultDict.getName())) {
+                    if (this.autoRestoreWord
+                            && !hitedDict.equals(defaultDict.getName())) {
                         defaultDict.addWord(word);
                     }
                     break;
@@ -282,7 +270,8 @@ public class App {
                     hitedDict = dict.getName();
 
                     Utils.info("==> Get result from " + hitedDict);
-                    if (!hitedDict.equals(defaultDict.getName())) {
+                    if (this.autoRestoreWord &&
+                            !hitedDict.equals(defaultDict.getName())) {
                         defaultDict.addWord(word);
                     }
                 }
@@ -340,7 +329,8 @@ public class App {
                 if (word != null && !word.isEmypty()) {
                     hitedDict = dict.getName();
                     Utils.info("==> Get result from " + hitedDict);
-                    if (!hitedDict.equals(defaultDict.getName())) {
+                    if (this.autoRestoreWord &&
+                            !hitedDict.equals(defaultDict.getName())) {
                         defaultDict.addWord(word);
                     }
                 }
@@ -364,8 +354,7 @@ public class App {
 
     public void queryWordOnlineWrapper(String... args) throws SQLException {
         if (args != null && args.length > 0) {
-            String wordSpell = Dict
-                    .preProcessWordSpell(String.join(" ", args));
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
             ArrayList<Word> words = queryWordOnline(wordSpell);
             printWords(words);
         } else {
@@ -375,8 +364,7 @@ public class App {
 
     public void queryWordAllWrapper(String... args) throws SQLException {
         if (args != null && args.length > 0) {
-            String wordSpell = Dict
-                    .preProcessWordSpell(String.join(" ", args));
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
             ArrayList<Word> words = queryWordAll(wordSpell);
             printWords(words);
         } else {
@@ -386,8 +374,7 @@ public class App {
 
     public void queryWordByFirstWrapper(String... args) throws SQLException {
         if (args != null && args.length > 0) {
-            String wordSpell = Dict
-                    .preProcessWordSpell(String.join(" ", args));
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
             Word word = queryWordByFirst(wordSpell);
             printWord(word);
         } else {
@@ -397,8 +384,7 @@ public class App {
 
     public void queryWordLocalFirstWrapper(String... args) throws SQLException {
         if (args != null && args.length > 0) {
-            String wordSpell = Dict
-                    .preProcessWordSpell(String.join(" ", args));
+            String wordSpell = Dict.preProcessWordSpell(String.join(" ", args));
             ArrayList<Word> words = queryWordLocal(wordSpell);
             if(words.size() == 0) {
                 words = queryWordOnline(wordSpell);

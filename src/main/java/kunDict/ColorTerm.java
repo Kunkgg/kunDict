@@ -111,6 +111,12 @@ public class ColorTerm {
         System.out.print(Color.RESET);
     }
 
+    public static void cyanPrintln(String str) {
+        System.out.print(Color.CYAN);
+        System.out.println(str);
+        System.out.print(Color.RESET);
+    }
+
     public static void blackPrintln(String str) {
         System.out.print(Color.BLACK);
         System.out.println(str);

@@ -101,11 +101,16 @@ public class Request {
     }
 
     public void loadConfigs() {
-        this.proxyHost = App.configs.getProperty("proxyHost");
-        if (!App.configs.getProperty("proxyPort").equals("")) {
-            this.proxyPort = Integer.parseInt(App.configs.getProperty("proxyPort"));
+        this.proxyHost = App.configs.getProperty("requestProxyHost");
+        if (!App.configs.getProperty("requestProxyPort").equals("")) {
+            this.proxyPort = Integer.parseInt(App.configs.getProperty("requestProxyPort"));
         }
-
+        this.timeout = Duration.ofSeconds(
+                Integer.parseInt(App.configs.getProperty("requestTimeout")));
+        this.redirect = Utils.testString(
+                App.configs.getProperty("requestRedirect"));
+        this.maxRedirect = Integer.parseInt(
+                App.configs.getProperty("requestMaxRedirect"));
     }
 
     public void initializeClient() {

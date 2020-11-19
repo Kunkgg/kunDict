@@ -54,7 +54,7 @@ public class Utils {
 
     public static void config(String... str) {
         if (configMsg) {
-        ColorTerm.cyanPrint("[CONF ] " + String.join(", ", str));
+        ColorTerm.cyanPrintln("[CONF ] " + String.join(", ", str));
         }
     }
 
