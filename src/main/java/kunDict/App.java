@@ -394,6 +394,20 @@ public class App {
         }
     }
 
+    public void queryWordLocalFirstWrapper(String... args) throws SQLException {
+        if (args != null && args.length > 0) {
+            String wordSpell = Dict
+                    .preProcessWordSpell(String.join(" ", args));
+            ArrayList<Word> words = queryWordLocal(wordSpell);
+            if(words.size() == 0) {
+                words = queryWordOnline(wordSpell);
+            }
+            printWords(words);
+        } else {
+            Utils.warning("Nothing is inputed");
+        }
+    }
+
     // register dict {{{ //
     /**
      * registerDict insert the name, shortName, dict_type_id, dict_size, dict_mtime,
@@ -500,7 +514,8 @@ public class App {
         App app = new App();
         // app.queryWordAllWrapper(args);
         // app.queryWordByFirstWrapper(args);
-        app.queryWordLocalWrapper(args);
-
+        // app.queryWordLocalWrapper(args);
+        // app.queryWordOnlineWrapper(args);
+        app.queryWordLocalFirstWrapper(args);
     }
 }
