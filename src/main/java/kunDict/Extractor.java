@@ -204,7 +204,7 @@ public class Extractor {
 
             Elements entrys = dict.select("span.Sense");
             for (Element entry : entrys) {
-                String wordClass = getTextByCssSelector(entry, "span.SIGNPOST");
+                String wordClass = getTextByCssSelector(dict, ".dictentry .frequent.Head .POS");
 
                 String def = getTextByCssSelector(entry, "span.DEF");
                 if (! def.equals("") || ! wordClass.equals("")) {
