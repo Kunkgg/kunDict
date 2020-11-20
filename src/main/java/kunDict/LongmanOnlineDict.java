@@ -9,6 +9,7 @@ public class LongmanOnlineDict extends OnlineDict {
     private static String shortName = "longman";
     private static String description = "English to English";
     private static String queryUrlBase = "https://www.ldoceonline.com/dictionary/";
+    private static String homePage = "https://www.ldoceonline.com/";
 
     public LongmanOnlineDict() {
         super(name, shortName, description);
@@ -38,5 +39,9 @@ public class LongmanOnlineDict extends OnlineDict {
 
     public static String getQueryUrlBase() {
         return queryUrlBase;
+    }
+
+    public static String getHomePage() {
+        return homePage;
     }
 }

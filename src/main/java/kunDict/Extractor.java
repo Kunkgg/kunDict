@@ -153,11 +153,12 @@ public class Extractor {
         Elements searchTitle = doc.select(".search_title");
         if (searchTitle.size() > 0
                 && searchTitle.first().text().equals("Did you mean:")) {
-            String realWord = getTextByCssSelector(doc,"ul.didyoumean li");
-            if(! realWord.equals("")) {
+            String realTarget = getAttrByCssSelector(doc,
+                    "ul.didyoumean li:first-child a", "href");
+            if(! realTarget.equals("")) {
                 try {
-                    String url = LongmanOnlineDict.getQueryUrlBase()
-                                        + realWord;
+                    String url = LongmanOnlineDict.getHomePage()
+                                        + realTarget;
                     Request req = new Request(url);
                     String html = req.get().body();
                     doc = Jsoup.parse(html);
