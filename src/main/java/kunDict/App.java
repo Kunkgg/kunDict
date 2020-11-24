@@ -43,6 +43,7 @@ public class App {
     public App() throws IOException, SQLException {
         this.loadConfigs();
         App.db = new Database();
+        initializeTables();
         this.registerDicts();
     }
 
@@ -118,7 +119,6 @@ public class App {
         if (!hasTables()) {
             db.createTable(SQLStr.createTableDicts());
             db.createTable(SQLStr.createTableDictTypes());
-            db.addForeignKey(SQLStr.addForeignKeyDictTypeId());
             db.addForeignKey(SQLStr.addForeignKeyDictTypeId());
 
             this.insertValuesIntoDictTypes();
