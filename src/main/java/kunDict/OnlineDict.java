@@ -11,5 +11,5 @@ abstract class OnlineDict extends Dict {
     public OnlineDict(){
     }
 
-    abstract ArrayList<Word> queryWordBySpell(String wordSpell);
+    abstract ArrayList<Word> queryWord(String wordSpell);
 }

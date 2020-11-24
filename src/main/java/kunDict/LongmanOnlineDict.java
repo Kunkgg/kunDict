@@ -5,18 +5,18 @@ import java.util.ArrayList;
 
 public class LongmanOnlineDict extends OnlineDict {
 
-    private static String name = "Longman Online English Dictionary";
-    private static String shortName = "longman";
-    private static String description = "English to English";
-    private static String queryUrlBase = "https://www.ldoceonline.com/dictionary/";
-    private static String homePage = "https://www.ldoceonline.com/";
+    public static final String name = "Longman Online English Dictionary";
+    public static final String shortName = "longman";
+    public static final String description = "English to English";
+    public static final String queryUrlBase = "https://www.ldoceonline.com/dictionary/";
+    public static final String homePage = "https://www.ldoceonline.com/";
 
     public LongmanOnlineDict() {
         super(name, shortName, description);
     }
 
     @Override
-    public ArrayList<Word> queryWordBySpell(String wordSpell) {
+    public ArrayList<Word> queryWord(String wordSpell) {
         String url = queryUrlBase + preProcessWordSpell(wordSpell);
         Utils.debug("URL: " + url);
         Word word = null;
@@ -36,12 +36,4 @@ public class LongmanOnlineDict extends OnlineDict {
 
         return words;
     };
-
-    public static String getQueryUrlBase() {
-        return queryUrlBase;
-    }
-
-    public static String getHomePage() {
-        return homePage;
-    }
 }

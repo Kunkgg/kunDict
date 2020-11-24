@@ -13,7 +13,7 @@ public class SQLStr {
     // }}} SQLException code //
     // static fields {{{ //
     static final String[] tableListInDict = { "words", "frequencies",
-            "entries", "examples" };
+            "entries", "examples", "ref_words_frequencies" };
 
     static final String[] columnListInQueryWord = { "word_spell", "word_source",
             "word_forms", "word_pron_soundmark", "word_pron_sound",
@@ -25,12 +25,15 @@ public class SQLStr {
 
     static final String[] columnListInWords = { "word_spell", "word_source",
             "word_forms", "word_pron_soundmark", "word_pron_sound",
-            "word_atime", "word_acounter", "word_mtime","fre_id"};
+            "word_atime", "word_acounter", "word_mtime"};
     static final String[] columnListInEntries = { "entry_wordClass",
             "entry_sense", "word_id" };
 
     static final String[] columnListInExamples = { "example_text",
             "entry_id" };
+
+    static final String[] columnListInRefWordsFres = { "word_id",
+            "fre_id" };
 
     static final String[] tableListApp = {"dicts", "dict_types"};
 
@@ -102,20 +105,24 @@ public class SQLStr {
 
     public static String whereStrDictQueryWordBySpell(String shortName,
             String wordSpell) {
-        String[] conditions = new String[4];
+        String[] conditions = new String[6];
         conditions[0] = joinConditionStrDict(shortName,
                             "words", "frequencies", "fre_id");
         conditions[1] = joinConditionStrDict(shortName,
                             "words", "entries", "word_id");
         conditions[2] = joinConditionStrDict(shortName,
                             "entries", "examples", "entry_id");
+        conditions[3] = joinConditionStrDict(shortName,
+                            "ref_words_frequencies", "words", "word_id");
+        conditions[4] = joinConditionStrDict(shortName,
+                            "ref_words_frequencies", "frequencies", "fre_id");
 
         String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
                 shortName, wordSpell);
 
         String matchWordForms = String.format("%s_words.word_forms LIKE \'%s%%\'",
                 shortName, wordSpell);
-        conditions[3] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
+        conditions[5] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
 
         return String.join(" AND ", conditions);
     }
@@ -124,21 +131,25 @@ public class SQLStr {
             String shortName,
             String wordSpell,
             String wordSource) {
-        String[] conditions = new String[5];
+        String[] conditions = new String[7];
         conditions[0] = joinConditionStrDict(shortName,
                             "words", "frequencies", "fre_id");
         conditions[1] = joinConditionStrDict(shortName,
                             "words", "entries", "word_id");
         conditions[2] = joinConditionStrDict(shortName,
                             "entries", "examples", "entry_id");
+        conditions[3] = joinConditionStrDict(shortName,
+                            "ref_words_frequencies", "words", "word_id");
+        conditions[4] = joinConditionStrDict(shortName,
+                            "ref_words_frequencies", "frequencies", "fre_id");
 
         String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
                 shortName, wordSpell);
 
         String matchWordForms = String.format("%s_words.word_forms LIKE \'%s%%\'",
                 shortName, wordSpell);
-        conditions[3] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
-        conditions[4] = String.format("%s_words.word_source = \'%s\'", shortName,wordSource);
+        conditions[5] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
+        conditions[6] = String.format("%s_words.word_source = \'%s\'", shortName,wordSource);
 
         return String.join(" AND ", conditions);
     }
@@ -147,8 +158,10 @@ public class SQLStr {
 
     // update word {{{ //
     public static String selectWordCondition(String wordSpell, String wordSource) {
-        return String.format(" WHERE word_spell = \'%s\' AND word_source = \'%s\'", wordSpell, wordSource);
+        return String.format(" WHERE word_spell = \'%s\' AND word_source = \'%s\'",
+                wordSpell, wordSource);
     }
+
     public static String updateWordAccess(String shortName,
             String wordSpell, String wordSource, int acounter) {
         String result = null;
@@ -235,13 +248,32 @@ public class SQLStr {
         Utils.debug(result);
         return result;
     }
+
+    public static String deleteWordSenseEntries(String shortName, String wordSpell, String wordSource) {
+        String result = String.format(
+                "DELETE FROM %s_entries ",
+                shortName)
+                + selectWordCondition(wordSpell, wordSource);
+        Utils.debug(result);
+        return result;
+    }
     // }}} update word //
 
     // delete {{{ //
-    public static String deleteWord(String shortName, String wordSpell) {
+    public static String deleteWordBySpell(String shortName, String wordSpell) {
         String result = String.format(
                 "DELETE FROM %s_words WHERE word_spell = \'%s\'",
                 shortName, wordSpell);
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String deleteWordBySpellAndSource(String shortName,
+            String wordSpell, String wordSource) {
+        String result = String.format(
+                "DELETE FROM %s_words WHERE word_spell = \'%s\' AND word_source = \'%s\'",
+                shortName, wordSpell, wordSource);
 
         Utils.debug(result);
         return result;
@@ -280,6 +312,14 @@ public class SQLStr {
         String columns = commaJoin(columnListInExamples);
         String placeholder = getPlaceholder(columnListInExamples);
         String result =  String.format("INSERT INTO %s_examples(%s) VALUES(%s)", shortName, columns, placeholder);
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String insertValueIntoRefWordsFres(String shortName) {
+        String columns = commaJoin(columnListInRefWordsFres);
+        String placeholder = getPlaceholder(columnListInRefWordsFres);
+        String result =  String.format("INSERT INTO %s_ref_words_frequencies(%s) VALUES(%s)", shortName, columns, placeholder);
         Utils.debug(result);
         return result;
     }
@@ -347,6 +387,17 @@ public class SQLStr {
                 + ") ENGINE=InnoDB;";
     }
 
+    public static String createTableRefWordsFrequencies(String shortName) {
+        return "CREATE TABLE " + shortName + "_ref_words_frequencies"
+                + "("
+                  + "ref_id             int       NOT NULL AUTO_INCREMENT,"
+                  + "word_id            int       NOT NULL,"
+                  + "fre_id             int       NOT NULL,"
+                  + "CONSTRAINT uc_word_fre UNIQUE (word_id, fre_id),"
+                  + "PRIMARY KEY(ref_id)"
+                + ") ENGINE=InnoDB;";
+    }
+
     public static String createTableEntries(String shortName) {
         return "CREATE TABLE " + shortName + "_entries"
                 + "("
@@ -368,17 +419,20 @@ public class SQLStr {
                 + ") ENGINE=InnoDB;";
     }
 
-    public static String addForeignKeyFreId(String shortName) {
-        String result = addForeignKey(shortName, "words", "frequencies", "fre_id");
+    // public static String addForeignKeyFreId(String shortName) {
+    //     String result = addForeignKey(
+    //             shortName, "words", "frequencies", "fre_id");
 
-        Utils.debug(result);
-        return result;
-    }
+    //     Utils.debug(result);
+    //     return result;
+    // }
 
     public static String addForeignKeyWordId(String shortName) {
         String onDeleteCascade = " ON DELETE CASCADE";
-        String result = addForeignKey(shortName, "entries", "words", "word_id")
-            + onDeleteCascade;
+        String onUpdateCascade = " ON UPDATE CASCADE";
+        String result = addForeignKey(
+                shortName, "entries", "words", "word_id")
+            + onDeleteCascade + onUpdateCascade;
 
         Utils.debug(result);
         return result;
@@ -386,23 +440,57 @@ public class SQLStr {
 
     public static String addForeignKeyEntryId(String shortName) {
         String onDeleteCascade = " ON DELETE CASCADE";
-        String result = addForeignKey(shortName, "examples", "entries", "entry_id")
-            + onDeleteCascade;
+        String onUpdateCascade = " ON UPDATE CASCADE";
+        String result = addForeignKey(
+                shortName, "examples", "entries", "entry_id")
+            + onDeleteCascade + onUpdateCascade;
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String addForeignKeyRefFreId(String shortName) {
+        String onDeleteCascade = " ON DELETE CASCADE";
+        String onUpdateCascade = " ON UPDATE CASCADE";
+        String result = addForeignKey(
+                shortName, "ref_words_frequencies", "frequencies", "fre_id")
+            + onDeleteCascade + onUpdateCascade;
+
+        Utils.debug(result);
+        return result;
+    }
+
+    public static String addForeignKeyRefWordId(String shortName) {
+        String onDeleteCascade = " ON DELETE CASCADE";
+        String onUpdateCascade = " ON UPDATE CASCADE";
+        String result = addForeignKey(
+                shortName, "ref_words_frequencies", "words", "word_id")
+            + onDeleteCascade + onUpdateCascade;
 
         Utils.debug(result);
         return result;
     }
 
     public static String addForeignKey(String shortName,
-            String tableA, String tableB, String foreignKey) {
-        String constraintName = shortName + "_fk_" + tableA + "_" + tableB;
-        tableA = shortName + "_" + tableA;
-        tableB = shortName + "_" + tableB;
+            String table, String refedTable, String foreignKey) {
+        String constraintName = shortName + "_fk_" + table + "_" + refedTable;
+        table = shortName + "_" + table;
+        refedTable = shortName + "_" + refedTable;
 
-        return "ALTER TABLE " + tableA
+        return "ALTER TABLE " + table
             + " ADD CONSTRAINT " + constraintName
             + " FOREIGN KEY (" + foreignKey + ")"
-            + " REFERENCES " + tableB + "(" + foreignKey + ")";
+            + " REFERENCES " + refedTable + "(" + foreignKey + ")";
+    }
+
+    public static String addForeignKey(
+            String table, String refedTable, String foreignKey) {
+        String constraintName = "fk_" + table + "_" + refedTable;
+
+        return "ALTER TABLE " + table
+            + " ADD CONSTRAINT " + constraintName
+            + " FOREIGN KEY (" + foreignKey + ")"
+            + " REFERENCES " + refedTable + "(" + foreignKey + ")";
     }
     // }}} Create table in a dictionary //
 
@@ -449,9 +537,13 @@ public class SQLStr {
     }
 
     public static String addForeignKeyDictTypeId() {
-        return "ALTER TABLE dicts ADD CONSTRAINT fk_dicts_types "
-            + "FOREIGN KEY (dict_type_id) "
-            + "REFERENCES  dict_types (dict_type_id);";
+        String onDeleteCascade = " ON DELETE CASCADE";
+        String onUpdateCascade = " ON UPDATE CASCADE";
+        String result = addForeignKey("dicts", "dict_types", "dict_type_id")
+            + onDeleteCascade + onUpdateCascade;
+
+        Utils.debug(result);
+        return result;
     }
 
     public static String insertValueIntoDictTypes(String dictType) {

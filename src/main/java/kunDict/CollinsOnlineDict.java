@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 public class CollinsOnlineDict extends OnlineDict {
 
-    private static String name = "Collins Online English Dictionary";
-    private static String shortName = "collins";
-    private static String description = "English to English";
-    private static String queryUrlBase = "https://www.collinsdictionary.com/"
+    public static final String name = "Collins Online English Dictionary";
+    public static final String shortName = "collins";
+    public static final String description = "English to English";
+    public static final String queryUrlBase = "https://www.collinsdictionary.com/"
                                     + "us/dictionary/english/";
 
     public CollinsOnlineDict(){
@@ -16,7 +16,7 @@ public class CollinsOnlineDict extends OnlineDict {
     }
 
     @Override
-    public ArrayList<Word> queryWordBySpell(String wordSpell) {
+    public ArrayList<Word> queryWord(String wordSpell) {
         String url = queryUrlBase + preProcessWordSpell(wordSpell);
         Utils.debug("URL: " + url);
         Word word = null;

@@ -68,18 +68,18 @@ public class Utils {
 
 
     public static ArrayList<String> cloneArrayListString(ArrayList<String> arrayListString) {
-        Object clonedFormsObj = arrayListString.clone();
-        ArrayList<String> clonedList = new ArrayList<>();
-        if (clonedFormsObj instanceof ArrayList<?>) {
-            ArrayList<?> clonedFormsObjList = (ArrayList<?>) clonedFormsObj;
-            for(Object clonedFormObj : clonedFormsObjList) {
-                if (clonedFormObj instanceof String) {
-                    String clonedForm = (String) clonedFormObj;
-                    clonedList.add(clonedForm);
+        ArrayList<String> container = new ArrayList<>();
+        Object clonedList = arrayListString.clone();
+        if (clonedList instanceof ArrayList<?>) {
+            ArrayList<?> clonedObjList = (ArrayList<?>) clonedList;
+            for(Object obj : clonedObjList) {
+                if (obj instanceof String) {
+                    String cloned = (String) obj;
+                    container.add(cloned);
                 }
             }
         }
 
-        return clonedList;
+        return container;
     }
 }

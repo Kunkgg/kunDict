@@ -119,6 +119,8 @@ public class App {
             db.createTable(SQLStr.createTableDicts());
             db.createTable(SQLStr.createTableDictTypes());
             db.addForeignKey(SQLStr.addForeignKeyDictTypeId());
+            db.addForeignKey(SQLStr.addForeignKeyDictTypeId());
+
             this.insertValuesIntoDictTypes();
         }
 
@@ -227,7 +229,7 @@ public class App {
         for (Dict dict : registeredDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
-            ArrayList<Word> words = dict.queryWordBySpell(wordSpell);
+            ArrayList<Word> words = dict.queryWord(wordSpell);
             for (Word w : words) {
                 if (w != null && !w.isEmypty()) {
                     word = w;
@@ -262,7 +264,7 @@ public class App {
         for (Dict dict : registeredDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
-            ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            ArrayList<Word> wordsTemp = dict.queryWord(wordSpell);
             Utils.warning(String.format("Get %d word from {%s}",
                     wordsTemp.size(), dict.getName()));
             for (Word word : wordsTemp) {
@@ -294,7 +296,7 @@ public class App {
         for (LocalDict dict : localDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
-            ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            ArrayList<Word> wordsTemp = dict.queryWord(wordSpell);
             Utils.warning(String.format("Get %d word from {%s}",
                     wordsTemp.size(), dict.getName()));
             for (Word word : wordsTemp) {
@@ -322,7 +324,7 @@ public class App {
         for (OnlineDict dict : onlineDicts) {
             Utils.info(String.format("Searching (%s) in dictionary {%s}",
                     wordSpell, dict.getName()));
-            ArrayList<Word> wordsTemp = dict.queryWordBySpell(wordSpell);
+            ArrayList<Word> wordsTemp = dict.queryWord(wordSpell);
             Utils.warning(String.format("Get %d word from {%s}",
                     wordsTemp.size(), dict.getName()));
             for (Word word : wordsTemp) {

@@ -29,13 +29,13 @@ public class Formatter {
                     + this.word.getPronounce().getSoundmark());
             System.out.println("Sound: "
                     + this.word.getPronounce().getSound());
-            System.out.println("FreBand: "
-                    + this.word.getFrequency().getBand());
-            System.out.println(
-                    "FreDesc: " + this.word.getFrequency().getDescription());
+            for(Frequency fre : word.getFrequencies()) {
+                System.out.println("FreBand: " + fre.getBand());
+                System.out.println("FreDesc: " + fre.getDescription());
+            }
             System.out.println();
             System.out.println("Senses List:");
-            for (SenseEntry entry : this.word.getSenesEntries()) {
+            for (SenseEntry entry : this.word.getSenseEntries()) {
                 System.out.println(entry);
             }
         }
@@ -56,13 +56,13 @@ public class Formatter {
                     + this.word.getPronounce().getSoundmark());
             System.out.println("Sound: "
                     + this.word.getPronounce().getSound());
-            System.out.println("FreBand: "
-                    + this.word.getFrequency().getBand());
-            System.out.println(
-                    "FreDesc: " + this.word.getFrequency().getDescription());
+            for(Frequency fre : word.getFrequencies()) {
+                System.out.println("FreBand: " + fre.getBand());
+                System.out.println("FreDesc: " + fre.getDescription());
+            }
             System.out.println();
             ColorTerm.magentaBoldPrintln("Senses List:");
-            for (SenseEntry entry : this.word.getSenesEntries()) {
+            for (SenseEntry entry : this.word.getSenseEntries()) {
                 ColorTerm.cyanPrint(entry.getWordClass());
                 System.out.print(", ");
                 System.out.print(entry.getSense());

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Word implements Cloneable {
     private String spell;
     private ArrayList<String> forms;
-    private Frequency frequency;
+    private ArrayList<Frequency> frequencyList;
     private Pronounce pronounce;
     private ArrayList<SenseEntry> senseEntryList;
     private String source = "";
@@ -23,25 +23,25 @@ public class Word implements Cloneable {
     private int acounter = 0;
 
     // constructors {{{ //
-    public Word(String spell, Pronounce pronounce, Frequency frequency,
+    public Word(String spell, Pronounce pronounce, ArrayList<Frequency> frequencyList,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
             String source) {
 
         this.spell = spell;
         this.pronounce = pronounce;
-        this.frequency = frequency;
+        this.frequencyList = frequencyList;
         this.forms = forms;
         this.senseEntryList = senseEntryList;
         this.source = source;
     }
 
-    public Word(String spell, Pronounce pronounce, Frequency frequency,
+    public Word(String spell, Pronounce pronounce, ArrayList<Frequency> frequencyList,
             ArrayList<String> forms, ArrayList<SenseEntry> senseEntryList,
             String source, int acounter, Instant mtime, Instant atime) {
 
         this.spell = spell;
         this.pronounce = pronounce;
-        this.frequency = frequency;
+        this.frequencyList = frequencyList;
         this.forms = forms;
         this.senseEntryList = senseEntryList;
         this.source = source;
@@ -51,31 +51,59 @@ public class Word implements Cloneable {
     }
     // }}} constructors //
 
+    private ArrayList<Frequency> cloneArrayListFrequencies(ArrayList<Frequency> arrayListFrequencies)
+            throws CloneNotSupportedException {
+        ArrayList<Frequency> container = new ArrayList<>();
+
+        Object clonedList = arrayListFrequencies.clone();
+        if (clonedList instanceof ArrayList<?>) {
+            ArrayList<?> clonedObjList = (ArrayList<?>) clonedList;
+            for(Object obj : clonedObjList) {
+                if (obj instanceof Frequency) {
+                    Frequency fre = (Frequency) obj;
+                    container.add(fre.clone());
+                }
+            }
+        }
+
+        return container;
+    }
+
+    private ArrayList<SenseEntry> cloneArrayListSenseEntries(ArrayList<SenseEntry> arrayListSenseEntries)
+            throws CloneNotSupportedException {
+        ArrayList<SenseEntry> container = new ArrayList<>();
+
+        Object clonedList = arrayListSenseEntries.clone();
+        if (clonedList instanceof ArrayList<?>) {
+            ArrayList<?> clonedObjList = (ArrayList<?>) clonedList;
+            for(Object entry : clonedObjList) {
+                if(entry instanceof SenseEntry) {
+                    SenseEntry clonedEntry = (SenseEntry) entry;
+                    container.add(clonedEntry.clone());
+                }
+            }
+        }
+
+        return container;
+    }
+
     @Override
     public Word clone() throws CloneNotSupportedException {
         Word cloned = (Word) super.clone();
 
         ArrayList<String> clonedForms = Utils.cloneArrayListString(
                 cloned.getForms());
-        Frequency clonedFrequency = cloned.getFrequency().clone();
+
+        ArrayList<Frequency> clonedFrequencyList =
+            cloneArrayListFrequencies(cloned.getFrequencies());
+        ArrayList<SenseEntry> clonedSenseEntryList =
+            cloneArrayListSenseEntries(cloned.getSenseEntries());
         Pronounce clonedPronounce = cloned.getPronounce().clone();
 
-        Object clonedSenseEntryListObj = cloned.getSenesEntries().clone();
-        ArrayList<SenseEntry> clonedSenseEntryList = new ArrayList<>();
-        if (clonedSenseEntryListObj instanceof ArrayList<?>) {
-            ArrayList<?> temp = (ArrayList<?>) clonedSenseEntryListObj;
-            for(Object clonedSenseEntry : temp) {
-                if(clonedSenseEntry instanceof SenseEntry) {
-                    SenseEntry entry = (SenseEntry) clonedSenseEntry;
-                    clonedSenseEntryList.add(entry.clone());
-                }
-            }
-        }
-
         cloned.setForms(clonedForms);
-        cloned.setFrequency(clonedFrequency);
+        cloned.setFrequencies(clonedFrequencyList);
         cloned.setPronounce(clonedPronounce);
-        cloned.setSenesEntries(clonedSenseEntryList);
+        cloned.setSenseEntries(clonedSenseEntryList);
 
         return cloned;
     }
@@ -85,7 +113,7 @@ public class Word implements Cloneable {
         return String.format(
                 "[%s]%n%s, %s, %s, %s, length of examples: %d%nFirst entry:%n%s",
                 this.source, this.spell, this.pronounce.toString(),
-                this.frequency.toString(), this.forms.toString(),
+                this.frequencyList.toString(), this.forms.toString(),
                 this.senseEntryList.size(),
                 this.senseEntryList.get(0).toString());
     }
@@ -99,9 +127,9 @@ public class Word implements Cloneable {
 
         return (this.spell.equals(other.getSpell()) &&
                 this.forms.equals(other.getForms()) &&
-                this.frequency.equals(other.getFrequency()) &&
                 this.pronounce.equals(other.getPronounce()) &&
-                this.senseEntryList.equals(other.getSenesEntries()) &&
+                this.frequencyList.equals(other.getFrequencies()) &&
+                this.senseEntryList.equals(other.getSenseEntries()) &&
                 this.source.equals(other.getSource()));
     }
 
@@ -121,15 +149,15 @@ public class Word implements Cloneable {
         return this.pronounce;
     }
 
-    public Frequency getFrequency() {
-        return this.frequency;
+    public ArrayList<Frequency> getFrequencies() {
+        return this.frequencyList;
     }
 
     public ArrayList<String> getForms() {
         return this.forms;
     }
 
-    public ArrayList<SenseEntry> getSenesEntries() {
+    public ArrayList<SenseEntry> getSenseEntries() {
         return this.senseEntryList;
     }
 
@@ -177,8 +205,8 @@ public class Word implements Cloneable {
         updateMtime();
     }
 
-    public void setFrequency(Frequency frequency) {
-        this.frequency = frequency;
+    public void setFrequencies(ArrayList<Frequency> frequencyList) {
+        this.frequencyList = frequencyList;
         updateMtime();
     }
 
@@ -187,7 +215,7 @@ public class Word implements Cloneable {
         updateMtime();
     }
 
-    public void setSenesEntries(ArrayList<SenseEntry> senseEntryList) {
+    public void setSenseEntries(ArrayList<SenseEntry> senseEntryList) {
         this.senseEntryList = senseEntryList;
         updateMtime();
     }
@@ -287,7 +315,7 @@ class SenseEntry implements Cloneable {
 
     /**
      * combine
-     * combine with other duplicated {@link SenseEntry} instance
+     * combine with other duplicated {@link #SenseEntry} instance
      * Duplicated senseEntries have same wordClass and sense,
      * regardless whether they have same examples.
      */

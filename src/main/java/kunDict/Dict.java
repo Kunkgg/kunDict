@@ -65,7 +65,7 @@ abstract class Dict {
         return wordSpell.strip();
     }
 
-    abstract ArrayList<Word> queryWordBySpell(String wordSpell) throws SQLException;
+    abstract ArrayList<Word> queryWord(String wordSpell) throws SQLException;
 }
 
 enum  DictType {
