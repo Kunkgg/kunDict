@@ -105,16 +105,14 @@ public class SQLStr {
 
     public static String whereStrDictQueryWordBySpell(String shortName,
             String wordSpell) {
-        String[] conditions = new String[6];
+        String[] conditions = new String[5];
         conditions[0] = joinConditionStrDict(shortName,
-                            "words", "frequencies", "fre_id");
-        conditions[1] = joinConditionStrDict(shortName,
                             "words", "entries", "word_id");
-        conditions[2] = joinConditionStrDict(shortName,
+        conditions[1] = joinConditionStrDict(shortName,
                             "entries", "examples", "entry_id");
-        conditions[3] = joinConditionStrDict(shortName,
+        conditions[2] = joinConditionStrDict(shortName,
                             "ref_words_frequencies", "words", "word_id");
-        conditions[4] = joinConditionStrDict(shortName,
+        conditions[3] = joinConditionStrDict(shortName,
                             "ref_words_frequencies", "frequencies", "fre_id");
 
         String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
@@ -122,7 +120,7 @@ public class SQLStr {
 
         String matchWordForms = String.format("%s_words.word_forms LIKE \'%s%%\'",
                 shortName, wordSpell);
-        conditions[5] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
+        conditions[4] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
 
         return String.join(" AND ", conditions);
     }
@@ -131,16 +129,14 @@ public class SQLStr {
             String shortName,
             String wordSpell,
             String wordSource) {
-        String[] conditions = new String[7];
+        String[] conditions = new String[6];
         conditions[0] = joinConditionStrDict(shortName,
-                            "words", "frequencies", "fre_id");
-        conditions[1] = joinConditionStrDict(shortName,
                             "words", "entries", "word_id");
-        conditions[2] = joinConditionStrDict(shortName,
+        conditions[1] = joinConditionStrDict(shortName,
                             "entries", "examples", "entry_id");
-        conditions[3] = joinConditionStrDict(shortName,
+        conditions[2] = joinConditionStrDict(shortName,
                             "ref_words_frequencies", "words", "word_id");
-        conditions[4] = joinConditionStrDict(shortName,
+        conditions[3] = joinConditionStrDict(shortName,
                             "ref_words_frequencies", "frequencies", "fre_id");
 
         String matchWordSpell = String.format("%s_words.word_spell = \'%s\'",
@@ -148,8 +144,8 @@ public class SQLStr {
 
         String matchWordForms = String.format("%s_words.word_forms LIKE \'%s%%\'",
                 shortName, wordSpell);
-        conditions[5] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
-        conditions[6] = String.format("%s_words.word_source = \'%s\'", shortName,wordSource);
+        conditions[4] = String.format("(%s OR %s)", matchWordSpell, matchWordForms);
+        conditions[5] = String.format("%s_words.word_source = \'%s\'", shortName,wordSource);
 
         return String.join(" AND ", conditions);
     }
@@ -368,7 +364,6 @@ public class SQLStr {
               + "word_forms             varchar(1024)   NULL,"
               + "word_pron_soundmark    char(50)    NULL,"
               + "word_pron_sound        char(255)   NULL,"
-              + "fre_id                 int         NULL,"
               + "word_mtime             TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,"
               + "word_atime             TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,"
               + "word_acounter          int         DEFAULT 0,"

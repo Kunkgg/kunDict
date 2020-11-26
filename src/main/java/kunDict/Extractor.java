@@ -41,6 +41,7 @@ public class Extractor {
 
     // }}} ability, not implemented //
 
+    // helper functions {{{ //
     private static String getTextByCssSelector(Element parentEle,
             String cssSelector) {
         String text = "";
@@ -80,7 +81,9 @@ public class Extractor {
 
         return attrText;
     }
+    // }}} helper functions //
 
+    // Collins {{{ //
     private String makeCollinsSpell(Element dict) {
         String spell = getTextByCssSelector(dict, "h2.h2_entry span.orth");
         return spell;
@@ -169,7 +172,9 @@ public class Extractor {
         }
         return word;
     }
+    // }}} Collins //
 
+    // Longman {{{ //
     private ArrayList<Frequency> makeLongmanFreList(Element dict) {
         ArrayList<Frequency> freList = new ArrayList<>();
 
@@ -232,7 +237,7 @@ public class Extractor {
                     ".dictentry .frequent.Head .POS");
 
             String def = getTextByCssSelector(entry, "span.DEF");
-            if (!def.equals("") || !wordClass.equals("")) {
+            if (!def.equals("")) {
                 SenseEntry senseEntry = new SenseEntry();
                 senseEntry.setWordClass(wordClass);
                 senseEntry.setSense(def);
@@ -293,4 +298,5 @@ public class Extractor {
         }
         return word;
     }
+    // }}} Longman //
 }

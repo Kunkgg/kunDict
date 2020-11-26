@@ -580,8 +580,7 @@ abstract class LocalDict extends Dict {
                 SQLStr.insertValueIntoFrequenies(this.getShortName()),
                 Statement.RETURN_GENERATED_KEYS);
 
-        String band = fre.getBand();
-        pstmt.setString(1, band);
+        pstmt.setString(1, fre.getBand());
         pstmt.setString(2, fre.getDescription());
 
         return pstmt;
@@ -648,15 +647,18 @@ abstract class LocalDict extends Dict {
 
     // insert value into localdict tables {{{ //
     private ArrayList<Integer> insertValueIntoFrequenies(Connection con,
-            Word word)
-            throws SQLException {
+            Word word) throws SQLException {
+        Utils.err("Start intsert into frequenies table");
+        int affectedRow = 0;
         ResultSet rs = null;
         ArrayList<Integer> freIdList = new ArrayList<>();
 
         for(Frequency fre : word.getFrequencies()) {
             try(PreparedStatement pstmtFrequencies = setPstmtFrequencies(con, fre);) {
+                affectedRow = pstmtFrequencies.executeUpdate();
                 rs = pstmtFrequencies.getGeneratedKeys();
-                if (rs != null && !rs.isClosed() && rs.next()) {
+                if (affectedRow > 0 && rs != null
+                        && !rs.isClosed() && rs.next()) {
                     int freId = rs.getInt(1);
                     Utils.debug("freId: " + freId);
                     freIdList.add(freId);
@@ -685,6 +687,10 @@ abstract class LocalDict extends Dict {
         try(PreparedStatement pstmtWords = setPstmtWords(con, word);) {
             affectedRow = pstmtWords.executeUpdate();
             rs = pstmtWords.getGeneratedKeys();
+            if (affectedRow > 0 && rs != null && !rs.isClosed() && rs.next()) {
+                wordId = rs.getInt(1);
+                rs.close();
+            }
         } catch(SQLException e) {
             if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
                 Utils.warning(
@@ -693,11 +699,6 @@ abstract class LocalDict extends Dict {
                 rollback(con);
                 Database.printSQLException(e);
             }
-        }
-
-        if (affectedRow > 0 && rs != null && !rs.isClosed() && rs.next()) {
-            wordId = rs.getInt(1);
-            rs.close();
         }
 
         return wordId;
@@ -928,7 +929,6 @@ class ResultRowQueryWord {
     public int word_acounter;
     public Timestamp word_mtime;
     public Timestamp word_atime;
-    // public int entry_id;
     public String entry_wordClass;
     public String entry_sense;
     public String example_text;
@@ -945,56 +945,10 @@ class ResultRowQueryWord {
         this.word_acounter = rs.getInt("word_acounter");
         this.word_mtime = rs.getTimestamp("word_mtime");
         this.word_atime = rs.getTimestamp("word_atime");
-        // this.entry_id = rs.getInt("entry_id");
         this.entry_wordClass = rs.getString("entry_wordClass");
         this.entry_sense = rs.getString("entry_sense");
         this.example_text = rs.getString("example_text");
     }
 
-    // public int get_word_id() {
-    //     return this.word_id;
-    // }
-    // public String get_word_spell() {
-    //     return this.word_spell;
-    // }
-    // public String get_word_source() {
-    //     return this.word_source;
-    // }
-    // public String get_word_forms() {
-    //     return this.word_forms;
-    // }
-    // public String get_word_pron_soundmark() {
-    //     return this.word_pron_soundmark;
-    // }
-    // public String get_word_pron_sound() {
-    //     return this.word_pron_sound;
-    // }
-    // public String get_fre_band() {
-    //     return this.fre_band;
-    // }
-    // public String get_fre_description() {
-    //     return this.fre_description;
-    // }
-    // public int get_word_acounter() {
-    //     return this.word_acounter;
-    // }
-    // public Timestamp get_word_mtime() {
-    //     return this.word_mtime;
-    // }
-    // public Timestamp get_word_atime() {
-    //     return this.word_atime;
-    // }
-    // public int get_entry_id() {
-    //     return this.entry_id;
-    // }
-    // public String get_entry_wordClass() {
-    //     return this.entry_wordClass;
-    // }
-    // public String get_entry_sense() {
-    //     return this.entry_sense;
-    // }
-    // public String get_example_text() {
-    //     return this.example_text;
-    // }
 }
 // }}} Result Row //
