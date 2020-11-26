@@ -223,15 +223,18 @@ public class SQLStr {
             return result;
         }
 
-    public static String updateWordFreID(String shortName,
-                String wordSpell, String wordSource, int freId) {
+    public static String updateFrequency(String shortName, int freId,
+            String freBand, String freDescription) {
             String result = null;
-            result = String.format("UPDATE %s_words "
+            result = String.format("UPDATE %s_frequencies "
                 + "SET word_mtime = CURRENT_TIMESTAMP(), "
-                + "fre_id = %d ",
+                + "fre_band = %s "
+                + "fre_description = %s "
+                + "WHERE fre_id = %d",
                 shortName,
-                freId)
-                + selectWordCondition(wordSpell, wordSource);
+                freBand,
+                freDescription,
+                freId);
 
             Utils.debug(result);
             return result;

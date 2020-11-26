@@ -232,6 +232,85 @@ abstract class LocalDict extends Dict {
     }
     // }}} Query a word //
 
+    // Query wordId {{{ //
+    public int queryWordId(Connection con,
+            String wordSpell, String wordSource) throws SQLException {
+        int wordId = 0;
+        ResultSet rs = null;
+
+        try (Statement stmt = con.createStatement()){
+            rs = stmt.executeQuery(SQLStr.queryWordId(
+                    this.getShortName(), wordSpell, wordSource));
+            if (rs != null && !rs.isClosed() && rs.next()) {
+                wordId = rs.getInt(1);
+
+                if ( wordId == 0) {
+                Utils.warning(
+                    String.format("Couldn't found wordId by spell(%s) && source(%s)\n",
+                        wordSpell, wordSource));
+                }
+                rs.close();
+            }
+        } catch(SQLException e) {
+            Database.printSQLException(e);
+            rollback(con);
+        }
+
+        return wordId;
+    }
+
+    public int queryWordId(String wordSpell, String wordSource)
+            throws SQLException {
+        int wordId = 0;
+        Connection con = db.getCurrentConUseDbName();
+        wordId = queryWordId(con, wordSpell, wordSource);
+
+        return wordId;
+    }
+
+    public int queryWordId(Word word) throws SQLException {
+        String wordSpell = word.getSpell();
+        String wordSource = word.getSource();
+
+        return queryWordId(wordSpell, wordSource);
+    }
+
+    public int queryWordId(Connection con, Word word) throws SQLException {
+        String wordSpell = word.getSpell();
+        String wordSource = word.getSource();
+
+        return queryWordId(con, wordSpell, wordSource);
+    }
+    // }}} Query wordId //
+
+    // Query freId {{{ //
+    public int queryFreId(Connection con, String freBand)
+            throws SQLException {
+        int freId = 0;
+        ResultSet rs = null;
+
+        try (Statement stmt = con.createStatement()){
+            rs = stmt.executeQuery(SQLStr.queryFreId(
+                    this.getShortName(), freBand));
+            if (rs != null && !rs.isClosed() && rs.next()) {
+                freId = rs.getInt(1);
+
+                if ( freId == 0) {
+                Utils.warning(
+                    String.format("Couldn't found freId by freBand(%s)\n",
+                        freBand));
+                }
+                rs.close();
+            }
+        } catch(SQLException e) {
+            Database.printSQLException(e);
+            rollback(con);
+        }
+
+        return freId;
+    }
+    // }}} Query freId //
+
     // update word fields {{{ //
     // update atime and acounter {{{ //
     public void updateWordAccess(Word word) throws SQLException {
@@ -318,40 +397,61 @@ abstract class LocalDict extends Dict {
 
     // }}} update word forms //
     // update word frequency {{{ //
-    public void updateWordFrequency(Word word, ArrayList<Frequency> freList)
+    public void updateFrequency(Connection con, Frequency newFre)
             throws SQLException {
-        if (word.isEmypty()) {
-            Utils.warning("Couldn't update frequency List of an empty word.");
+        int affectedRow = 0;
+        int freId = queryFreId(con, newFre.getBand());
+
+        if (freId > 0) {
+            try(Statement stmt = con.createStatement()) {
+                affectedRow = stmt.executeUpdate(
+                        SQLStr.updateFrequency(
+                            this.getShortName(),
+                            freId,
+                            newFre.getBand(),
+                            newFre.getDescription()));
+                if(affectedRow > 0) {
+                    Utils.info(String.format(
+                            "Updated the frequency by freId(%d)", freId));
+                }
+            } catch (SQLException e) {
+                Utils.warning(
+                    String.format(
+                    "Couldn't update the frequency by freId(%d)", freId));
+                rollback(con);
+                Database.printSQLException(e);
+            }
         } else {
-            String wordSpell = word.getSpell();
-            String wordSource = word.getSource();
-            word.setFrequencies(freList);
+            insertValueIntoFrequenies(con, newFre);
+        }
+    }
+
+    public void updateWordFrequencies(ArrayList<Frequency> freList)
+            throws SQLException {
+        if (freList.size() == 0) {
+            Utils.warning("Couldn't update empty frequencies List.");
+        } else {
             Connection con = db.getCurrentConUseDbName();
+            String curFreBand = null;
 
             try {
                 con.setAutoCommit(false);
-                ArrayList<Integer> freIdList = insertValueIntoFrequenies(con, word);
-                int wordId = queryWordId(con, word);
-                if(freIdList.size() > 0) {
-                    insertValueIntoRefWordsFres(con, wordId, freIdList);
+                for(Frequency fre : freList) {
+                    curFreBand = fre.getBand();
+                    updateFrequency(con, fre);
                 }
-                con.commit();
-                Utils.info(String.format("Updated the freList<%d> by spell(%s) && source(%s)",
-                        freList.size(), wordSpell, wordSource));
             } catch (SQLException e) {
-                Utils.warning(String.format("Couldn't update the freList by spell(%s) && source(%s)",
-                        wordSpell, wordSource));
+                Utils.warning(
+                    String.format("Couldn't update the frequency by freBand(%s)", curFreBand));
                 rollback(con);
                 Database.printSQLException(e);
             } finally {
-                // finally close everything{{{ //
                 try {
                     if (con != null)
                         con.setAutoCommit(true);
                 } catch (SQLException e) {
                     Database.printSQLException(e);
                 }
-                // }}} finally close everything //
             }
         }
     }
@@ -426,55 +526,6 @@ abstract class LocalDict extends Dict {
 
     // }}} update word source //
     // update word senseEntryList {{{ //
-    public int queryWordId(String wordSpell, String wordSource)
-            throws SQLException {
-        int wordId = 0;
-        Connection con = db.getCurrentConUseDbName();
-        wordId = queryWordId(con, wordSpell, wordSource);
-
-        return wordId;
-    }
-
-    public int queryWordId(Connection con,
-            String wordSpell, String wordSource) throws SQLException {
-        int wordId = 0;
-        ResultSet rs = null;
-
-        try (Statement stmt = con.createStatement()){
-            rs = stmt.executeQuery(SQLStr.queryWordId(
-                    this.getShortName(), wordSpell, wordSource));
-            if (rs != null && !rs.isClosed() && rs.next()) {
-                wordId = rs.getInt(1);
-
-                if ( wordId == 0) {
-                Utils.warning(
-                    String.format("Couldn't found wordId by spell(%s) && source(%s)\n",
-                        wordSpell, wordSource));
-                }
-                rs.close();
-            }
-        } catch(SQLException e) {
-            Database.printSQLException(e);
-            rollback(con);
-        }
-
-        return wordId;
-    }
-
-    public int queryWordId(Word word) throws SQLException {
-        String wordSpell = word.getSpell();
-        String wordSource = word.getSource();
-
-        return queryWordId(wordSpell, wordSource);
-    }
-
-    public int queryWordId(Connection con, Word word) throws SQLException {
-        String wordSpell = word.getSpell();
-        String wordSource = word.getSource();
-
-        return queryWordId(con, wordSpell, wordSource);
-    }
-
     public void deleteWordSenseEntries(int wordId) throws SQLException{
         Connection con = db.getCurrentConUseDbName();
         deleteWordSenseEntries(con, wordId);
@@ -648,35 +699,51 @@ abstract class LocalDict extends Dict {
     // insert value into localdict tables {{{ //
     private ArrayList<Integer> insertValueIntoFrequenies(Connection con,
             Word word) throws SQLException {
-        Utils.err("Start intsert into frequenies table");
-        int affectedRow = 0;
-        ResultSet rs = null;
         ArrayList<Integer> freIdList = new ArrayList<>();
+        ArrayList<Frequency> freList = word.getFrequencies();
+        if(freList.size() == 0) {
+            Frequency emptyFre = new Frequency("", "");
+            freList.add(emptyFre);
+        }
 
         for(Frequency fre : word.getFrequencies()) {
-            try(PreparedStatement pstmtFrequencies = setPstmtFrequencies(con, fre);) {
-                affectedRow = pstmtFrequencies.executeUpdate();
-                rs = pstmtFrequencies.getGeneratedKeys();
-                if (affectedRow > 0 && rs != null
-                        && !rs.isClosed() && rs.next()) {
-                    int freId = rs.getInt(1);
-                    Utils.debug("freId: " + freId);
-                    freIdList.add(freId);
-                    rs.close();
-                }
-            } catch(SQLException e) {
-                if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
-                    Utils.warning("Duplicated fre_band");
-                    Utils.info("Querying freId from database ...");
-                } else {
-                    rollback(con);
-                    Database.printSQLException(e);
-                }
-            }
+            int freId = insertValueIntoFrequenies(con, fre);
+            if (freId > 0) freIdList.add(freId);
         }
 
         return freIdList;
     }
+
+    private int insertValueIntoFrequenies(Connection con, Frequency fre)
+            throws SQLException{
+        int affectedRow = 0;
+        int freId = 0;
+        ResultSet rs = null;
+
+        try(PreparedStatement pstmtFrequencies = setPstmtFrequencies(con, fre);) {
+            affectedRow = pstmtFrequencies.executeUpdate();
+            rs = pstmtFrequencies.getGeneratedKeys();
+            if (affectedRow > 0 && rs != null
+                    && !rs.isClosed() && rs.next()) {
+                freId = rs.getInt(1);
+                Utils.info("freId: " + freId);
+                rs.close();
+            }
+        } catch(SQLException e) {
+            if (e.getErrorCode() == SQLStr.ERRORCODE_DUPLICATE_ENTRY) {
+                Utils.warning("Duplicated fre_band");
+                Utils.info("Querying freId from database ...");
+                freId = queryFreId(con, fre.getBand());
+            } else {
+                rollback(con);
+                Database.printSQLException(e);
+            }
+        }
+
+        return freId;
+    }
+
+
 
     private int insertValueIntoWords(Connection con, Word word)
             throws SQLException{
