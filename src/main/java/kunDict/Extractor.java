@@ -107,10 +107,15 @@ public class Extractor {
                 "data-band");
         String freDescription = getAttrByCssSelector(dict,
                 "span.word-frequency-img", "title");
+        freDescription = trimFreDescription(freDescription);
         fre.setBand(freBand);
         fre.setDescription(freDescription);
         freList.add(fre);
         return freList;
+    }
+
+    private String trimFreDescription(String freDescription) {
+        return freDescription.replaceAll("\\..*$", "");
     }
 
     private ArrayList<String> makeCollionsForms(Element dict) {
