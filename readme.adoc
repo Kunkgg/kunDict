@@ -23,6 +23,8 @@ endif::asciidoctor[]
 :url-github: https://github.com/Kunkgg
 //:url-blog: http-to-my-blog
 
+== UML
+
 ["plantuml"]
 ----
 class App {
@@ -301,3 +303,16 @@ Formatter <-- Printer
 
 // Dict o.. Word
 // LocaleDict o.. Word
+
+== API
+
+=== Word
+
+===== Query word by wordspell
+
+Method   : GET
+URL      : /word/[wordspell]
+Response :
+
+
+=== Dict
